@@ -1,0 +1,29 @@
+name: Upload ECS Task Definition
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".deploy/task/task-definition.json"
+
+jobs:
+  upload_task:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials For ECS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+
+      - name: Upload ECS Task Definition
+        run: |
+          cd .deploy/task
+          aws ecs register-task-definition --cli-input-json file://task-definition.json
+          
