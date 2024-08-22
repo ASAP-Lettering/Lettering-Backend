@@ -1,0 +1,34 @@
+{
+  "executionRoleArn": "arn:aws:iam::396608783702:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "lettering_application",
+      "image": "public.ecr.aws/p3m3n4m8/lettering:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "protocol": "tcp",
+          "containerPort": 8080
+        }
+      ],
+      "secrets": [
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:396608783702:secret:dev/mysql-vHY6zz:DB_URL::",
+          "name": "DB_URL"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:396608783702:secret:dev/mysql-vHY6zz:DB_USERNAME::",
+          "name": "DB_USERNAME"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:396608783702:secret:dev/mysql-vHY6zz:DB_PASSWORD::",
+          "name": "DB_PASSWORD"
+        }
+      ]
+    }
+  ],
+  "cpu": "512",
+  "memory": "768",
+  "family": "lettering-task"
+}
