@@ -67,7 +67,7 @@ jobs:
           ECR_REPOSITORY_NAME: ${{ env.ECR_REPOSITORY_NAME }}
           TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_ALIAS/$ECR_REPOSITORY_NAME:$TAG .
+          docker build -f ./.deploy/Dockerfile -t $ECR_REGISTRY/$ECR_ALIAS/$ECR_REPOSITORY_NAME:$TAG .
           docker push $ECR_REGISTRY/$ECR_ALIAS/$ECR_REPOSITORY_NAME:$TAG
           # 추후 버전 정보를 추가로 관리할 것이기 때문에 변수로 추출
           echo "new_image_name=$ECR_REGISTRY/$ECR_ALIAS/$ECR_REPOSITORY_NAME:$TAG" >> "$GITHUB_OUTPUT"
