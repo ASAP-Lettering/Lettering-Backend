@@ -1,6 +1,6 @@
 FROM amazoncorretto:17-alpine-jdk
 
-ARG TARGET_JAR=/api/build/libs/api.jar
+ARG TARGET_JAR=/api/build/libs/app.jar
 
 COPY ${TARGET_JAR} /app.jar
 
