@@ -17,6 +17,7 @@ allprojects {
     version = ""
 
     val javaVersion = "17"
+    val kotestVersion = "5.0.0"
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = javaVersion
@@ -30,7 +31,7 @@ allprojects {
     }
 
     tasks.withType<BootJar> {
-        if (project.name == "api") {
+        if (project.name == "app") {
             enabled = true
         } else {
             enabled = false
@@ -59,6 +60,14 @@ allprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+
+        // kotest
+        testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+
+        // jackson
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     }
 
     kotlin {

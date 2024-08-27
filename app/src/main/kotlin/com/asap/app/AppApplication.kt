@@ -1,13 +1,13 @@
-package com.asap.api
+package com.asap.app
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class ApiApplication {
+class AppApplication {
 
 }
 
 fun main(args: Array<String>) {
-    SpringApplication.run(ApiApplication::class.java, *args)
+    SpringApplication.run(AppApplication::class.java, *args)
 }
