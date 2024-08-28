@@ -1,3 +1,3 @@
 rootProject.name = "Lettering-Backend"
 
-include(":app")
+include(":Bootstrap-Module")

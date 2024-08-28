@@ -31,11 +31,7 @@ allprojects {
     }
 
     tasks.withType<BootJar> {
-        if (project.name == "app") {
-            enabled = true
-        } else {
-            enabled = false
-        }
+        enabled = project.name == "Bootstrap-Module"
     }
 
 
