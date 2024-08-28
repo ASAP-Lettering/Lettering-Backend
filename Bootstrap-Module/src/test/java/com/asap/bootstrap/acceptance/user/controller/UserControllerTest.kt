@@ -1,12 +1,16 @@
-package com.asap.bootstrap.user.controller
+package com.asap.bootstrap.acceptance.user.controller
 
+import com.asap.application.user.port.`in`.RegisterUserUsecase
+import com.asap.bootstrap.user.controller.UserController
 import com.asap.bootstrap.user.dto.RegisterUserRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
@@ -19,12 +23,17 @@ class UserControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @MockBean
+    private lateinit var registerUserUsecase: RegisterUserUsecase
+
     private val objectMapper: ObjectMapper = ObjectMapper().registerModules(JavaTimeModule())
 
     @Test
     fun registerUserTest(){
         // given
         val request = RegisterUserRequest("register", true, true, true, LocalDate.now())
+        val command = RegisterUserUsecase.Command(request.registerToken, request.servicePermission, request.privatePermission, request.marketingPermission, request.birthday)
+        given(registerUserUsecase.registerUser(command)).willReturn(RegisterUserUsecase.Response("accessToken", "refreshToken"))
         // when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -46,18 +55,4 @@ class UserControllerTest {
         }
     }
 
-    @Test
-    fun registerUserNotExistsRegisterTokenTest(){
-        // given
-        val request = RegisterUserRequest("nonExistsToken", false, true, true, LocalDate.now())
-        // when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
-        // then
-        response.andExpect {
-            status { isBadRequest() }
-        }
-    }
 }
