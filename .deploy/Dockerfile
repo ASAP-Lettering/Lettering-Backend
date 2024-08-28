@@ -1,6 +1,6 @@
 FROM amazoncorretto:17-alpine-jdk
 
-ARG TARGET_JAR=/app/build/libs/Bootstrap-Module.jar
+ARG TARGET_JAR=/Bootstrap-Module/build/libs/Bootstrap-Module.jar
 
 COPY ${TARGET_JAR} /application.jar
 

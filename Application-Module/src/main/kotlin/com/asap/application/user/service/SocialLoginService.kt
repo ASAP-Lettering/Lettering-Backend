@@ -1,0 +1,44 @@
+package com.asap.application.user.service
+
+import com.asap.application.user.port.`in`.SocialLoginUsecase
+import com.asap.application.user.port.out.AuthInfoRetrievePort
+import com.asap.application.user.port.out.UserAuthManagementPort
+import com.asap.application.user.port.out.UserManagementPort
+import com.asap.application.user.port.out.UserTokenManagementPort
+import com.asap.common.exception.DefaultException
+import com.asap.domain.user.enums.SocialLoginProvider
+import org.springframework.stereotype.Service
+
+
+@Service
+class SocialLoginService(
+    private val userAuthManagementPort: UserAuthManagementPort,
+    private val authInfoRetrievePort: AuthInfoRetrievePort,
+    private val userTokenManagementPort: UserTokenManagementPort,
+    private val userManagementPort: UserManagementPort
+) : SocialLoginUsecase {
+
+    override fun login(command: SocialLoginUsecase.Command): SocialLoginUsecase.Response {
+        val authInfo =
+            authInfoRetrievePort.getAuthInfo(SocialLoginProvider.parse(command.provider), command.accessToken)
+        val userAuth = userAuthManagementPort.getUserAuth(authInfo.socialId, authInfo.socialLoginProvider)
+        return userAuth?.let {
+            userManagementPort.getUser(userAuth.userId)?.let {
+                SocialLoginUsecase.Success(
+                    userTokenManagementPort.generateAccessToken(it),
+                    userTokenManagementPort.generateRefreshToken(it)
+                )
+            } ?: run {
+                throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
+            }
+        } ?: run {
+            val registerToken = userTokenManagementPort.generateRegisterToken(
+                authInfo.socialId,
+                authInfo.socialLoginProvider.name,
+                authInfo.username
+            )
+            SocialLoginUsecase.NonRegistered(registerToken)
+        }
+    }
+
+}
