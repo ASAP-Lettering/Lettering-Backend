@@ -1,6 +1,7 @@
 package com.asap.bootstrap
 
 import com.asap.application.ApplicationConfig
+import com.asap.client.ClientConfig
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Import
 @Import(
     value = [
         ApplicationConfig::class,
+        ClientConfig::class
     ]
 )
 class BootstrapApplication {}
