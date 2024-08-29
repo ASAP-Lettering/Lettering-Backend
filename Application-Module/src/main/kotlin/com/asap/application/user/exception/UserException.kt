@@ -15,9 +15,11 @@ sealed class UserException(
     )
 
 
-    class UserAuthNotFoundException: UserException(
+    class UserAuthNotFoundException(
+        message: String = "사용자 인증 정보를 찾을 수 없습니다."
+    ): UserException(
         errorCode = 2,
-        message = "사용자 인증 정보를 찾을 수 없습니다."
+        message = message
     )
 
     class UserNotFoundException: UserException(
