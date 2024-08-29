@@ -9,6 +9,9 @@ plugins {
 
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.jpa") version "1.9.24"
+
+    // test fixtures
+    `java-test-fixtures`
 }
 
 
@@ -49,6 +52,9 @@ allprojects {
 
         plugin("org.springframework.boot")
         plugin("io.spring.dependency-management")
+
+
+        plugin("java-test-fixtures")
     }
 
     dependencies {
@@ -57,7 +63,13 @@ allprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
+        testFixturesImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
+
+        // mock server
+        testImplementation("com.squareup.okhttp3:mockwebserver")
+        testFixturesImplementation("com.squareup.okhttp3:mockwebserver")
 
         // kotest
         testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

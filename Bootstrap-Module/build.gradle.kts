@@ -6,4 +6,7 @@ dependencies{
 
     implementation(project(":Application-Module"))
     implementation(project(":Common-Module"))
+
+    implementation(project(":Infrastructure-Module:Client"))
+    testImplementation(testFixtures(project(":Infrastructure-Module:Client")))
 }

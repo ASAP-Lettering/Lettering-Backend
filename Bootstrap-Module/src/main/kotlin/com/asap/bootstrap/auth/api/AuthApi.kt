@@ -45,6 +45,7 @@ interface AuthApi {
         ]
     )
     fun socialLogin(
+        @Schema(description = "소셜 로그인 플랫폼, ex) KAKAO")
         @PathVariable provider: String,
         @RequestBody request: SocialLoginRequest
     ): ResponseEntity<SocialLoginResponse>
