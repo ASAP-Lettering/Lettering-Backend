@@ -35,7 +35,7 @@ class SocialLoginServiceTest : BehaviorSpec({
 
     given("소셜 로그인에서 요청한 사용자가") {
         var command = SocialLoginUsecase.Command(SocialLoginProvider.KAKAO.name, "registered")
-        val authInfo = AuthInfo(SocialLoginProvider.KAKAO, "socialId", "name")
+        val authInfo = AuthInfo(SocialLoginProvider.KAKAO, "socialId", "name", "profileImage")
         val getUserAuth = UserAuth(
             userId = DomainId.generate(),
             socialId = "socialId",
@@ -78,7 +78,7 @@ class SocialLoginServiceTest : BehaviorSpec({
         command = SocialLoginUsecase.Command(SocialLoginProvider.KAKAO.name, "nonRegistered")
         every { mockAuthInfoRetrievePort.getAuthInfo(SocialLoginProvider.KAKAO, "nonRegistered") } returns authInfo
         every { mockUserAuthManagementPort.getUserAuth(authInfo.socialId, authInfo.socialLoginProvider) } returns null
-        every { mockUserTokenConvertPort.generateRegisterToken(authInfo.socialId, authInfo.socialLoginProvider.name, authInfo.username) } returns "registerToken"
+        every { mockUserTokenConvertPort.generateRegisterToken(authInfo.socialId, authInfo.socialLoginProvider.name, authInfo.username, authInfo.profileImage) } returns "registerToken"
         `when`("가입되지 않았다면") {
             val response = socialLoginService.login(command)
             then("register token을 반환하는 nonRegistered 인스턴스를 반환한다.") {

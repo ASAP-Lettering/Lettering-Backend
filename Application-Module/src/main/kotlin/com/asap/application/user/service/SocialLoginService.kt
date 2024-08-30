@@ -35,7 +35,8 @@ class SocialLoginService(
             val registerToken = userTokenConvertPort.generateRegisterToken(
                 authInfo.socialId,
                 authInfo.socialLoginProvider.name,
-                authInfo.username
+                authInfo.username,
+                authInfo.profileImage
             )
 
             SocialLoginUsecase.NonRegistered(registerToken)
