@@ -9,4 +9,6 @@ dependencies{
 
     implementation(project(":Infrastructure-Module:Client"))
     testImplementation(testFixtures(project(":Infrastructure-Module:Client")))
+    implementation(project(":Infrastructure-Module:Security"))
+    testImplementation(testFixtures(project(":Infrastructure-Module:Security")))
 }

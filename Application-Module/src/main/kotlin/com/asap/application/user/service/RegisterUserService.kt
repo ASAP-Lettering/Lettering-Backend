@@ -4,7 +4,7 @@ import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.RegisterUserUsecase
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
-import com.asap.application.user.port.out.UserTokenManagementPort
+import com.asap.application.user.port.out.UserTokenConvertPort
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
 import com.asap.domain.user.vo.UserPermission
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RegisterUserService(
-    private val userTokenManagementPort: UserTokenManagementPort,
+    private val userTokenConvertPort: UserTokenConvertPort,
     private val userAuthManagementPort: UserAuthManagementPort,
     private val userManagementPort: UserManagementPort
 ) : RegisterUserUsecase {
@@ -23,9 +23,8 @@ class RegisterUserService(
      * 3. 추출한 사용자 정보와 함께 사용자 동의 검증 -> 동의하지 않으면 에러
      * 4. 사용자 정보 저장 및 jwt 토큰 반환
      */
-
     override fun registerUser(command: RegisterUserUsecase.Command): RegisterUserUsecase.Response {
-        val userClaims = userTokenManagementPort.resolveRegisterToken(command.registerToken)
+        val userClaims = userTokenConvertPort.resolveRegisterToken(command.registerToken)
         if (userAuthManagementPort.isExistsUserAuth(userClaims.socialId, userClaims.socialLoginProvider)) {
             throw UserException.UserAlreadyRegisteredException()
         }
@@ -47,8 +46,8 @@ class RegisterUserService(
         userAuthManagementPort.saveUserAuth(userAuth)
 
         return RegisterUserUsecase.Response(
-            userTokenManagementPort.generateAccessToken(registerUser),
-            userTokenManagementPort.generateRefreshToken(registerUser)
+            userTokenConvertPort.generateAccessToken(registerUser),
+            userTokenConvertPort.generateRefreshToken(registerUser)
         )
     }
 }

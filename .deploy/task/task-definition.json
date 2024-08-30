@@ -24,6 +24,10 @@
         {
           "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:396608783702:secret:dev/mysql-vHY6zz:DB_PASSWORD::",
           "name": "DB_PASSWORD"
+        },
+        {
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:396608783702:parameter/jwt/secret",
+          "name": "JWT_SECRET"
         }
       ]
     }

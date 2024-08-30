@@ -4,7 +4,7 @@ import com.asap.application.user.port.`in`.SocialLoginUsecase
 import com.asap.application.user.port.out.AuthInfoRetrievePort
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
-import com.asap.application.user.port.out.UserTokenManagementPort
+import com.asap.application.user.port.out.UserTokenConvertPort
 import com.asap.application.user.vo.AuthInfo
 import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
@@ -24,12 +24,12 @@ class SocialLoginServiceTest : BehaviorSpec({
     val mockUserAuthManagementPort = mockk<UserAuthManagementPort>()
     val mockAuthInfoRetrievePort = mockk<AuthInfoRetrievePort>()
     val mockUserManagementPort = mockk<UserManagementPort>()
-    val mockUserTokenManagementPort = mockk<UserTokenManagementPort>()
+    val mockUserTokenConvertPort = mockk<UserTokenConvertPort>()
 
     val socialLoginService = SocialLoginService(
         mockUserAuthManagementPort,
         mockAuthInfoRetrievePort,
-        mockUserTokenManagementPort,
+        mockUserTokenConvertPort,
         mockUserManagementPort
     )
 
@@ -54,8 +54,8 @@ class SocialLoginServiceTest : BehaviorSpec({
             )
         } returns getUserAuth
         every{ mockUserManagementPort.getUser(any()) } returns getUser
-        every { mockUserTokenManagementPort.generateAccessToken(getUser) } returns "accessToken"
-        every { mockUserTokenManagementPort.generateRefreshToken(getUser) } returns "refreshToken"
+        every { mockUserTokenConvertPort.generateAccessToken(getUser) } returns "accessToken"
+        every { mockUserTokenConvertPort.generateRefreshToken(getUser) } returns "refreshToken"
         `when`("기존에 존재한다면") {
             val response = socialLoginService.login(command)
             then("access token과 refresh token을 반환하는 success 인스턴스를 반환한다.") {
@@ -78,7 +78,7 @@ class SocialLoginServiceTest : BehaviorSpec({
         command = SocialLoginUsecase.Command(SocialLoginProvider.KAKAO.name, "nonRegistered")
         every { mockAuthInfoRetrievePort.getAuthInfo(SocialLoginProvider.KAKAO, "nonRegistered") } returns authInfo
         every { mockUserAuthManagementPort.getUserAuth(authInfo.socialId, authInfo.socialLoginProvider) } returns null
-        every { mockUserTokenManagementPort.generateRegisterToken(authInfo.socialId, authInfo.socialLoginProvider.name, authInfo.username) } returns "registerToken"
+        every { mockUserTokenConvertPort.generateRegisterToken(authInfo.socialId, authInfo.socialLoginProvider.name, authInfo.username) } returns "registerToken"
         `when`("가입되지 않았다면") {
             val response = socialLoginService.login(command)
             then("register token을 반환하는 nonRegistered 인스턴스를 반환한다.") {

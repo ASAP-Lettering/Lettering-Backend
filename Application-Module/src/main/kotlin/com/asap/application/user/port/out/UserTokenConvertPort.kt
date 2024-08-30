@@ -3,7 +3,7 @@ package com.asap.application.user.port.out
 import com.asap.application.user.vo.UserClaims
 import com.asap.domain.user.entity.User
 
-interface UserTokenManagementPort {
+interface UserTokenConvertPort {
     fun resolveRegisterToken(token: String): UserClaims.Register
 
     fun generateRegisterToken(

@@ -1,0 +1,3 @@
+jwt:
+  user:
+    secret: ${JWT_USER_SECRET}

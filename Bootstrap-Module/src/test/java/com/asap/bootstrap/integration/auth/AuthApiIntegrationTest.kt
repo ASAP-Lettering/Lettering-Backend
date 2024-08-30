@@ -76,6 +76,8 @@ class AuthApiIntegrationTest {
                 isString()
                 isNotEmpty()
             }
+        }.andDo {
+            print()
         }
     }
 
