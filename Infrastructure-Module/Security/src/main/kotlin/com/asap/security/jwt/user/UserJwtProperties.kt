@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "jwt.user")
 class UserJwtProperties(
-    val secret: String
+    var secret: String
 ) {
 
     companion object{
