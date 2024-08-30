@@ -8,12 +8,8 @@ import org.springframework.context.annotation.Configuration
 @OpenAPIDefinition(
     servers = [
         Server(
-            url = "https://api.lettering.world",
-            description = "Production Server"
-        ),
-        Server(
             url = "http://localhost:8080",
-            description = "Local Server"
+            description = "Server"
         ),
     ]
 )
