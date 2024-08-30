@@ -28,11 +28,17 @@ class UserTokenConvertAdapter(
         )
     }
 
-    override fun generateRegisterToken(socialId: String, socialLoginProvider: String, username: String): String {
+    override fun generateRegisterToken(
+        socialId: String,
+        socialLoginProvider: String,
+        username: String,
+        profileImage: String
+    ): String {
         val jwtClaims = UserRegisterJwtClaims(
             socialId = socialId,
             socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
             username = username,
+            profileImage = profileImage
         )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.REGISTER_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)

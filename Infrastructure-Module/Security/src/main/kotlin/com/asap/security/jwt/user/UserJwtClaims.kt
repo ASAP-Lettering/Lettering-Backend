@@ -14,6 +14,7 @@ class UserRegisterJwtClaims(
     val socialId: String,
     val socialLoginProvider: SocialLoginProvider,
     val username: String,
+    val profileImage: String,
 ): JwtClaims {
     val tokenType: TokenType = TokenType.REGISTER
 }

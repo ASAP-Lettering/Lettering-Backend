@@ -1,6 +1,7 @@
 package com.asap.security.jwt
 
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import java.util.*
 import javax.crypto.SecretKey
@@ -26,7 +27,7 @@ object JwtProvider {
     fun generateKey(
         secretKey: String
     ): SecretKey{
-        return Keys.hmacShaKeyFor(secretKey.toByteArray())
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey))
     }
 
     inline fun <reified T: JwtClaims> resolveToken(

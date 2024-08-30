@@ -26,7 +26,8 @@ class TestJwtDataGenerator(
                 claims = UserRegisterJwtClaims(
                     socialId = socialId,
                     socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
-                    username = username
+                    username = username,
+                    profileImage = "profileImage"
                 )
             ),
             userJwtProperties.secret

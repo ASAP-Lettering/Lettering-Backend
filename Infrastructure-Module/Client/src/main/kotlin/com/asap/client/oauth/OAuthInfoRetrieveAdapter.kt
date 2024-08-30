@@ -18,7 +18,8 @@ class OAuthInfoRetrieveAdapter(
             return AuthInfo(
                 socialLoginProvider = provider,
                 socialId = oAuthResponse.socialId,
-                username = oAuthResponse.username
+                username = oAuthResponse.username,
+                profileImage = oAuthResponse.profileImage
             )
         }catch (e: OAuthException){
             throw UserException.UserAuthNotFoundException("OAuth 정보를 가져오는데 실패했습니다. 에러 메시지: ${e.message}")
