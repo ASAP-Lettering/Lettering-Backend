@@ -1,13 +1,8 @@
 spring:
-    config:
-      activate:
-        on-profile: dev
-
-
----
-
-
-spring:
-  config:
-    activate:
-      on-profile: default
+  profiles:
+    group:
+      dev:
+        - security
+      local:
+        - security-local
+    active: local
