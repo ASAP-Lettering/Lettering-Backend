@@ -1,6 +1,7 @@
 package com.asap.security.jwt
 
 import com.asap.domain.user.enums.SocialLoginProvider
+import com.asap.domain.user.enums.TokenType
 import io.jsonwebtoken.Claims
 import java.util.*
 import kotlin.reflect.full.memberProperties
@@ -35,10 +36,12 @@ interface JwtClaims{
 
             val args = constructor.parameters.associateWith {
                 val value = claimsMap[it.name]?: throw IllegalArgumentException("Claim not found")
+
                 when(it.type.classifier){
                     String::class -> value.toString()
                     Long::class -> value.toString().toLong()
                     SocialLoginProvider::class -> SocialLoginProvider.parse(value.toString())
+                    TokenType::class -> TokenType.valueOf(value.toString())
                     else -> throw IllegalArgumentException("Unsupported type")
                 }
             }

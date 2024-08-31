@@ -1,12 +1,11 @@
 package com.asap.application.user.service
 
 import com.asap.application.user.port.`in`.SocialLoginUsecase
-import com.asap.application.user.port.out.AuthInfoRetrievePort
-import com.asap.application.user.port.out.UserAuthManagementPort
-import com.asap.application.user.port.out.UserManagementPort
-import com.asap.application.user.port.out.UserTokenConvertPort
+import com.asap.application.user.port.out.*
 import com.asap.common.exception.DefaultException
+import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.enums.SocialLoginProvider
+import com.asap.domain.user.enums.TokenType
 import org.springframework.stereotype.Service
 
 
@@ -15,7 +14,8 @@ class SocialLoginService(
     private val userAuthManagementPort: UserAuthManagementPort,
     private val authInfoRetrievePort: AuthInfoRetrievePort,
     private val userTokenConvertPort: UserTokenConvertPort,
-    private val userManagementPort: UserManagementPort
+    private val userManagementPort: UserManagementPort,
+    private val userTokenManagementPort: UserTokenManagementPort
 ) : SocialLoginUsecase {
 
     override fun login(command: SocialLoginUsecase.Command): SocialLoginUsecase.Response {
@@ -24,10 +24,10 @@ class SocialLoginService(
         val userAuth = userAuthManagementPort.getUserAuth(authInfo.socialId, authInfo.socialLoginProvider)
         return userAuth?.let {
             userManagementPort.getUser(userAuth.userId)?.let {
-                SocialLoginUsecase.Success(
-                    userTokenConvertPort.generateAccessToken(it),
-                    userTokenConvertPort.generateRefreshToken(it)
-                )
+                val accessToken = userTokenConvertPort.generateAccessToken(it)
+                val refreshToken = userTokenConvertPort.generateRefreshToken(it)
+                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, type = TokenType.REFRESH))
+                SocialLoginUsecase.Success(accessToken, refreshToken)
             } ?: run {
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
             }
@@ -38,7 +38,7 @@ class SocialLoginService(
                 authInfo.username,
                 authInfo.profileImage
             )
-
+            userTokenManagementPort.saveUserToken(UserToken(token = registerToken, type = TokenType.REGISTER))
             SocialLoginUsecase.NonRegistered(registerToken)
         }
     }

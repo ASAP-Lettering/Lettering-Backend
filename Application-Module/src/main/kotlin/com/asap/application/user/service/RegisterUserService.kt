@@ -5,8 +5,11 @@ import com.asap.application.user.port.`in`.RegisterUserUsecase
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.application.user.port.out.UserTokenConvertPort
+import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
+import com.asap.domain.user.entity.UserToken
+import com.asap.domain.user.enums.TokenType
 import com.asap.domain.user.vo.UserPermission
 import org.springframework.stereotype.Service
 
@@ -14,7 +17,8 @@ import org.springframework.stereotype.Service
 class RegisterUserService(
     private val userTokenConvertPort: UserTokenConvertPort,
     private val userAuthManagementPort: UserAuthManagementPort,
-    private val userManagementPort: UserManagementPort
+    private val userManagementPort: UserManagementPort,
+    private val userTokenManagementPort: UserTokenManagementPort
 ) : RegisterUserUsecase {
 
     /**
@@ -24,6 +28,9 @@ class RegisterUserService(
      * 4. 사용자 정보 저장 및 jwt 토큰 반환
      */
     override fun registerUser(command: RegisterUserUsecase.Command): RegisterUserUsecase.Response {
+        if (!userTokenManagementPort.isExistsToken(command.registerToken, TokenType.REGISTER)) {
+            throw UserException.UserPermissionDeniedException("존재하지 않는 가입 토큰입니다.")
+        }
         val userClaims = userTokenConvertPort.resolveRegisterToken(command.registerToken)
         if (userAuthManagementPort.isExistsUserAuth(userClaims.socialId, userClaims.socialLoginProvider)) {
             throw UserException.UserAlreadyRegisteredException()
@@ -45,9 +52,16 @@ class RegisterUserService(
         userManagementPort.saveUser(registerUser)
         userAuthManagementPort.saveUserAuth(userAuth)
 
-        return RegisterUserUsecase.Response(
-            userTokenConvertPort.generateAccessToken(registerUser),
-            userTokenConvertPort.generateRefreshToken(registerUser)
+        val accessToken = userTokenConvertPort.generateAccessToken(registerUser)
+        val refreshToken = userTokenConvertPort.generateRefreshToken(registerUser)
+
+        userTokenManagementPort.saveUserToken(
+            UserToken(
+                token = refreshToken,
+                type = TokenType.REFRESH
+            )
         )
+
+        return RegisterUserUsecase.Response(accessToken, refreshToken)
     }
 }
