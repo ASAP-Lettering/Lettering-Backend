@@ -1,10 +1,7 @@
 package com.asap.application.user.service
 
 import com.asap.application.user.port.`in`.SocialLoginUsecase
-import com.asap.application.user.port.out.AuthInfoRetrievePort
-import com.asap.application.user.port.out.UserAuthManagementPort
-import com.asap.application.user.port.out.UserManagementPort
-import com.asap.application.user.port.out.UserTokenConvertPort
+import com.asap.application.user.port.out.*
 import com.asap.application.user.vo.AuthInfo
 import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
@@ -18,6 +15,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 
 class SocialLoginServiceTest : BehaviorSpec({
 
@@ -25,12 +23,14 @@ class SocialLoginServiceTest : BehaviorSpec({
     val mockAuthInfoRetrievePort = mockk<AuthInfoRetrievePort>()
     val mockUserManagementPort = mockk<UserManagementPort>()
     val mockUserTokenConvertPort = mockk<UserTokenConvertPort>()
+    val mockUserTokenManagementPort = mockk<UserTokenManagementPort>(relaxed = true)
 
     val socialLoginService = SocialLoginService(
         mockUserAuthManagementPort,
         mockAuthInfoRetrievePort,
         mockUserTokenConvertPort,
-        mockUserManagementPort
+        mockUserManagementPort,
+        mockUserTokenManagementPort
     )
 
     given("소셜 로그인에서 요청한 사용자가") {
@@ -62,6 +62,7 @@ class SocialLoginServiceTest : BehaviorSpec({
                 response.shouldBeInstanceOf<SocialLoginUsecase.Success>()
                 response.accessToken.isNotEmpty() shouldBe true
                 response.refreshToken.isNotEmpty() shouldBe true
+                verify { mockUserTokenManagementPort.saveUserToken(any()) }
             }
         }
 
@@ -84,6 +85,7 @@ class SocialLoginServiceTest : BehaviorSpec({
             then("register token을 반환하는 nonRegistered 인스턴스를 반환한다.") {
                 response.shouldBeInstanceOf<SocialLoginUsecase.NonRegistered>()
                 response.registerToken.isNotEmpty() shouldBe true
+                verify { mockUserTokenManagementPort.saveUserToken(any()) }
             }
         }
     }

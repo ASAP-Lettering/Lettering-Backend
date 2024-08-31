@@ -1,33 +1,23 @@
 package com.asap.bootstrap.integration.auth
 
+import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
 import com.asap.client.KakaoTestData
 import com.asap.client.TestWebClientConfig
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import kotlin.test.Test
 
-
-@SpringBootTest
-@AutoConfigureMockMvc
 @Import(TestWebClientConfig::class)
-class AuthApiIntegrationTest {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
+class AuthApiIntegrationTest : IntegrationSupporter() {
 
     @Autowired
     lateinit var mockWebServer: MockWebServer
-
-    val objectMapper: ObjectMapper = ObjectMapper().registerModules(JavaTimeModule())
 
 
     @Test

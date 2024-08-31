@@ -27,6 +27,13 @@ sealed class UserException(
         message = "사용자를 찾을 수 없습니다."
     )
 
+    class UserPermissionDeniedException(
+        message: String = "사용자 권한이 없습니다."
+    ): UserException(
+        errorCode = 4,
+        message = message
+    )
+
 
     companion object{
         const val CODE_PREFIX = "USER"
