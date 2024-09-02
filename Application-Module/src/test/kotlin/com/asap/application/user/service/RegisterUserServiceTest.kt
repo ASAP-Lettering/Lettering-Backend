@@ -41,7 +41,8 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenConvertPort.resolveRegisterToken("valid") } returns UserClaims.Register(
             socialId = "123",
             socialLoginProvider = SocialLoginProvider.KAKAO,
-            username = "test"
+            username = "test",
+            profileImage = "profileImage"
         )
         every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false
         every { mockUserTokenConvertPort.generateAccessToken(any()) } returns "accessToken"
@@ -59,7 +60,8 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenConvertPort.resolveRegisterToken("duplicate") } returns UserClaims.Register(
             socialId = "duplicate",
             socialLoginProvider = SocialLoginProvider.KAKAO,
-            username = "test"
+            username = "test",
+            profileImage = "profileImage"
         )
         every { mockUserTokenManagementPort.isExistsToken("duplicate", TokenType.REGISTER) } returns true
         every { mockUserAuthManagementPort.isExistsUserAuth("duplicate", SocialLoginProvider.KAKAO) } returns true
@@ -99,7 +101,8 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenConvertPort.resolveRegisterToken("valid") } returns UserClaims.Register(
             socialId = "123",
             socialLoginProvider = SocialLoginProvider.KAKAO,
-            username = "test"
+            username = "test",
+            profileImage = "profileImage"
         )
         every { mockUserTokenManagementPort.isExistsToken("valid", TokenType.REGISTER) } returns true
         every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false
