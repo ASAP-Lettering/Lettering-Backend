@@ -11,6 +11,10 @@ import org.springframework.context.annotation.Configuration
             url = "http://localhost:8080",
             description = "Server"
         ),
+        Server(
+            url = "https://api.lettering.world",
+            description = "Production Server"
+        )
     ]
 )
 class SwaggerConfig {
