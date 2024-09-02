@@ -6,6 +6,7 @@ import com.asap.domain.user.vo.UserPermission
 data class User(
     val id: DomainId = DomainId.generate(),
     val nickname: String,
+    val profileImage: String,
     val permission: UserPermission
 ) {
 }

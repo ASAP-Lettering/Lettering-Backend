@@ -24,7 +24,8 @@ class UserTokenConvertAdapter(
         return UserClaims.Register(
             socialId = jwtClaims.socialId,
             socialLoginProvider = jwtClaims.socialLoginProvider,
-            username = jwtClaims.username
+            username = jwtClaims.username,
+            profileImage = jwtClaims.profileImage
         )
     }
 

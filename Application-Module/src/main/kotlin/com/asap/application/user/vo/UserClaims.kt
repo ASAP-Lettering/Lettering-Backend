@@ -7,7 +7,8 @@ class UserClaims {
     data class Register(
         val socialId: String,
         val socialLoginProvider: SocialLoginProvider,
-        val username: String
+        val username: String,
+        val profileImage: String
     )
 
 }
