@@ -4,7 +4,6 @@ import com.asap.application.user.port.out.UserTokenConvertPort
 import com.asap.application.user.vo.UserClaims
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.enums.SocialLoginProvider
-import com.asap.domain.user.enums.TokenType
 import com.asap.security.jwt.JwtClaims
 import com.asap.security.jwt.JwtPayload
 import com.asap.security.jwt.JwtProvider
@@ -47,8 +46,8 @@ class UserTokenConvertAdapter(
 
     override fun generateAccessToken(user: User): String {
         val jwtClaims = UserJwtClaims(
-            tokenType = TokenType.ACCESS,
-            userId = user.id.id
+            userId = user.id.id,
+            tokenType = TokenType.ACCESS
         )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.ACCESS_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)
@@ -56,8 +55,8 @@ class UserTokenConvertAdapter(
 
     override fun generateRefreshToken(user: User): String {
         val jwtClaims = UserJwtClaims(
-            tokenType = TokenType.REFRESH,
-            userId = user.id.id
+            userId = user.id.id,
+            tokenType = TokenType.REFRESH
         )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.REFRESH_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)

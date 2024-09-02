@@ -5,7 +5,6 @@ import com.asap.application.user.port.out.*
 import com.asap.common.exception.DefaultException
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.enums.SocialLoginProvider
-import com.asap.domain.user.enums.TokenType
 import org.springframework.stereotype.Service
 
 
@@ -26,7 +25,7 @@ class SocialLoginService(
             userManagementPort.getUser(userAuth.userId)?.let {
                 val accessToken = userTokenConvertPort.generateAccessToken(it)
                 val refreshToken = userTokenConvertPort.generateRefreshToken(it)
-                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, type = TokenType.REFRESH))
+                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken))
                 SocialLoginUsecase.Success(accessToken, refreshToken)
             } ?: run {
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
@@ -38,7 +37,7 @@ class SocialLoginService(
                 authInfo.username,
                 authInfo.profileImage
             )
-            userTokenManagementPort.saveUserToken(UserToken(token = registerToken, type = TokenType.REGISTER))
+            userTokenManagementPort.saveUserToken(UserToken(token = registerToken))
             SocialLoginUsecase.NonRegistered(registerToken)
         }
     }

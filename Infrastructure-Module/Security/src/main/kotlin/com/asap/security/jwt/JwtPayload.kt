@@ -1,7 +1,7 @@
 package com.asap.security.jwt
 
 import com.asap.domain.user.enums.SocialLoginProvider
-import com.asap.domain.user.enums.TokenType
+import com.asap.security.jwt.user.TokenType
 import io.jsonwebtoken.Claims
 import java.util.*
 import kotlin.reflect.full.memberProperties

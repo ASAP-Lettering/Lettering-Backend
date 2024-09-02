@@ -2,7 +2,6 @@ package com.asap.application.user.port.out.memory
 
 import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.user.entity.UserToken
-import com.asap.domain.user.enums.TokenType
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 
@@ -13,7 +12,7 @@ class MemoryUserTokenManagementAdapter: UserTokenManagementPort {
     private val tokens = mutableSetOf<String>()
     private val userTokens = mutableSetOf<UserToken>()
 
-    override fun isExistsToken(token: String, tokenType: TokenType): Boolean {
+    override fun isExistsToken(token: String): Boolean {
         return tokens.contains(token)
     }
 
