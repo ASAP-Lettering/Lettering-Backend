@@ -2,6 +2,7 @@ package com.asap.bootstrap.auth.api
 
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
 import com.asap.bootstrap.auth.dto.SocialLoginResponse
+import com.asap.bootstrap.common.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -39,6 +40,16 @@ interface AuthApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = SocialLoginResponse.NonRegistered::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "4XX",
+                description = "소셜 로그인 실패",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class)
                     )
                 ]
             )

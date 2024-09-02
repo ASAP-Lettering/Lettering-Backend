@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @Primary
 class MemoryUserManagementAdapter: UserManagementPort {
     private val users = mutableMapOf<DomainId, User>().apply {
-        put(DomainId("registered"), User(DomainId("registered"), "username", UserPermission(true,true,true)))
+        put(DomainId("registered"), User(DomainId("registered"), "username", "profileImage",UserPermission(true,true,true)))
     }
 
     override fun saveUser(user: User): User {

@@ -37,6 +37,7 @@ class RegisterUserService(
         }
         val registerUser = User(
             nickname = userClaims.username,
+            profileImage = userClaims.profileImage,
             permission = UserPermission(
                 command.servicePermission,
                 command.privatePermission,

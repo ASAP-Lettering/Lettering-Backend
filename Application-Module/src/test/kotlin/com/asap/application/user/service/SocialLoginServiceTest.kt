@@ -44,7 +44,8 @@ class SocialLoginServiceTest : BehaviorSpec({
         val getUser = User(
             id = getUserAuth.userId,
             nickname = authInfo.username,
-            permission = UserPermission(true, true, true)
+            permission = UserPermission(true, true, true),
+            profileImage = authInfo.profileImage
         )
         every { mockAuthInfoRetrievePort.getAuthInfo(SocialLoginProvider.KAKAO, "registered") } returns authInfo
         every {
