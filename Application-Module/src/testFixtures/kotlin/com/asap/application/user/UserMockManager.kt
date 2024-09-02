@@ -2,7 +2,6 @@ package com.asap.application.user
 
 import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.user.entity.UserToken
-import com.asap.domain.user.enums.TokenType
 
 
 class UserMockManager(
@@ -16,7 +15,6 @@ class UserMockManager(
         tokenManagementPort.saveUserToken(
             UserToken(
                 token = token,
-                type = TokenType.ACCESS
             )
         )
     }
