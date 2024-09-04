@@ -18,7 +18,8 @@ class UserTokenConvertAdapter(
     private val userJwtProperties: UserJwtProperties
 ) : UserTokenConvertPort {
     override fun resolveRegisterToken(token: String): UserClaims.Register {
-        val jwtPayload: JwtPayload<UserRegisterJwtClaims> = resolveToken { resolveToken(token, userJwtProperties.secret) }
+        val jwtPayload: JwtPayload<UserRegisterJwtClaims> =
+            resolveToken { resolveToken(token, userJwtProperties.secret) }
         val jwtClaims = jwtPayload.claims
         return UserClaims.Register(
             socialId = jwtClaims.socialId,
@@ -53,6 +54,16 @@ class UserTokenConvertAdapter(
         return JwtProvider.createToken(payload, userJwtProperties.secret)
     }
 
+    override fun resolveAccessToken(token: String): UserClaims.Access {
+        val jwtPayload: JwtPayload<UserJwtClaims> = TokenType.ACCESS.resolveUserToken {
+            resolveToken(token, userJwtProperties.secret)
+        }
+        val jwtClaims = jwtPayload.claims
+        return UserClaims.Access(
+            userId = jwtClaims.userId
+        )
+    }
+
     override fun generateRefreshToken(user: User): String {
         val jwtClaims = UserJwtClaims(
             userId = user.id.id,
@@ -77,12 +88,24 @@ class UserTokenConvertAdapter(
     private fun <T : JwtClaims> resolveToken(resolve: () -> JwtPayload<T>): JwtPayload<T> {
         try {
             return resolve()
-        } catch (e: Exception){
-            when(e){
+        } catch (e: Exception) {
+            when (e) {
                 is MalformedJwtException -> throw TokenException.InvalidTokenException()
                 is ExpiredJwtException -> throw TokenException.ExpiredTokenException()
                 else -> throw e
             }
+        }
+    }
+
+    private fun TokenType.resolveUserToken(
+        resolve: () -> JwtPayload<UserJwtClaims>
+    ): JwtPayload<UserJwtClaims> {
+        return resolveToken {
+            val jwtPayload = resolve()
+            if (jwtPayload.claims.tokenType != this) {
+                throw TokenException.InvalidTokenException("요청 토큰 타입이 올바르지 않습니다.")
+            }
+            return@resolveToken jwtPayload
         }
     }
 }

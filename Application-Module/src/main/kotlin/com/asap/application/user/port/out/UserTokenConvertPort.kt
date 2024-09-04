@@ -15,5 +15,7 @@ interface UserTokenConvertPort {
 
     fun generateAccessToken(user: User): String
 
+    fun resolveAccessToken(token: String): UserClaims.Access
+
     fun generateRefreshToken(user: User): String
 }
