@@ -30,7 +30,7 @@ interface SpaceApi {
         ]
     )
     @GetMapping("/main")
-    fun getMainSpaceId(): MainSpaceInfoResponse
+    fun getMainSpace(): MainSpaceInfoResponse
 
 
     @Operation(summary = "전체 스페이스 목록 조회")

@@ -1,4 +1,4 @@
-package com.asap.bootstrap.common
+package com.asap.bootstrap.common.exception
 
 import com.asap.common.exception.BusinessException
 import org.springframework.http.HttpStatus
@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
+/**
+ * TODO: 예외 핸들링 세부적으로 처리하기
+ */
 @RestControllerAdvice
 class GlobalExceptionHandler {
 

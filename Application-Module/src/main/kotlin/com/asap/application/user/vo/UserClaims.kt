@@ -11,4 +11,8 @@ class UserClaims {
         val profileImage: String
     )
 
+    data class Access(
+        val userId: String
+    )
+
 }

@@ -1,16 +1,18 @@
 package com.asap.bootstrap.space.controller
 
+import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
 import com.asap.bootstrap.space.api.SpaceApi
 import com.asap.bootstrap.space.dto.*
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SpaceController(
-
+    private val mainSpaceQueryUsecase: MainSpaceQueryUsecase
 ): SpaceApi {
 
-    override fun getMainSpaceId(): MainSpaceInfoResponse {
-        return MainSpaceInfoResponse("mainSpaceId")
+    override fun getMainSpace(): MainSpaceInfoResponse {
+        val response = mainSpaceQueryUsecase.query()
+        return MainSpaceInfoResponse(response.id)
     }
 
     override fun getSpaces(): GetAllSpaceResponse {
