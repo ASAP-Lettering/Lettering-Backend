@@ -6,7 +6,7 @@ import com.asap.application.user.utils.UserUtils
 import org.springframework.stereotype.Service
 
 @Service
-class MainSpaceQueryService(
+class SpaceQueryService(
     private val spaceManagementPort: SpaceManagementPort,
     private val userUtils: UserUtils
 ): MainSpaceQueryUsecase {
