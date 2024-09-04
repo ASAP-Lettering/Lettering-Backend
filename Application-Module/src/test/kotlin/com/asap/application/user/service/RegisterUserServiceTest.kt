@@ -9,7 +9,6 @@ import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.application.user.vo.UserClaims
 import com.asap.common.exception.DefaultException
 import com.asap.domain.user.enums.SocialLoginProvider
-import com.asap.domain.user.enums.TokenType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -37,7 +36,7 @@ class RegisterUserServiceTest : BehaviorSpec({
 
     given("회원 가입 요청이 들어왔을 때") {
         val successCommand = RegisterUserUsecase.Command("valid", true, true, true, LocalDate.now())
-        every { mockUserTokenManagementPort.isExistsToken("valid", TokenType.REGISTER) } returns true
+        every { mockUserTokenManagementPort.isExistsToken("valid") } returns true
         every { mockUserTokenConvertPort.resolveRegisterToken("valid") } returns UserClaims.Register(
             socialId = "123",
             socialLoginProvider = SocialLoginProvider.KAKAO,
@@ -63,7 +62,7 @@ class RegisterUserServiceTest : BehaviorSpec({
             username = "test",
             profileImage = "profileImage"
         )
-        every { mockUserTokenManagementPort.isExistsToken("duplicate", TokenType.REGISTER) } returns true
+        every { mockUserTokenManagementPort.isExistsToken("duplicate") } returns true
         every { mockUserAuthManagementPort.isExistsUserAuth("duplicate", SocialLoginProvider.KAKAO) } returns true
         `when`("중복 가입 요청이 들어왔을 때") {
             val failCommand = RegisterUserUsecase.Command("duplicate", true, true, true, LocalDate.now())
@@ -74,7 +73,7 @@ class RegisterUserServiceTest : BehaviorSpec({
             }
         }
 
-        every { mockUserTokenManagementPort.isExistsToken("invalid", TokenType.REGISTER) } returns true
+        every { mockUserTokenManagementPort.isExistsToken("invalid") } returns true
         every { mockUserTokenConvertPort.resolveRegisterToken("invalid") } throws IllegalArgumentException("Invalid token")
         `when`("register token이 유요하지 않다면") {
             val failCommandWithoutRegisterToken =
@@ -86,7 +85,7 @@ class RegisterUserServiceTest : BehaviorSpec({
             }
         }
 
-        every { mockUserTokenManagementPort.isExistsToken("non-saved", TokenType.REGISTER) } returns false
+        every { mockUserTokenManagementPort.isExistsToken("non-saved") } returns false
         `when`("register token이 존재하지 않는다면") {
             val failCommandWithoutRegisterToken =
                 RegisterUserUsecase.Command("non-saved", true, true, true, LocalDate.now())
@@ -104,7 +103,7 @@ class RegisterUserServiceTest : BehaviorSpec({
             username = "test",
             profileImage = "profileImage"
         )
-        every { mockUserTokenManagementPort.isExistsToken("valid", TokenType.REGISTER) } returns true
+        every { mockUserTokenManagementPort.isExistsToken("valid") } returns true
         every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false
         `when`("서비스 동의를 하지 않았다면") {
             val failCommandWithoutServicePermission =

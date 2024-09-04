@@ -1,14 +1,10 @@
 package com.asap.client
 
-import okhttp3.mockwebserver.MockResponse
-
 object KakaoTestData {
 
-    val KAKAO_OAUTH_SUCCESS_RESPONSE: MockResponse = MockResponse()
-        .setResponseCode(200)
-        .addHeader("Content-Type", "application/json")
-        .setBody(
-            """
+    val KAKAO_OAUTH_SUCCESS_RESPONSE = MockServer.Response(
+        responseCode = 200,
+        body = """
             {
                 "id": "socialId",
                 "properties": {
@@ -16,14 +12,15 @@ object KakaoTestData {
                     "profile_image": "test"
                 }
             }
-            """.trimIndent()
+        """.trimIndent(),
+        headers = mapOf(
+            "Content-Type" to "application/json"
         )
+    )
 
-    val KAKAO_OAUTH_FAIL_RESPONSE_WITH_NON_REGISTERED: MockResponse = MockResponse()
-        .setResponseCode(200)
-        .addHeader("Content-Type", "application/json")
-        .setBody(
-            """
+    val KAKAO_OAUTH_FAIL_RESPONSE_WITH_NON_REGISTERED = MockServer.Response(
+        responseCode = 200,
+        body = """
             {
                 "id": "non-registered",
                 "properties": {
@@ -31,19 +28,23 @@ object KakaoTestData {
                     "profile_image": "test"
                 }
             }
-            """.trimIndent()
+        """.trimIndent(),
+        headers = mapOf(
+            "Content-Type" to "application/json"
         )
+    )
 
-    val KAKAO_OAUTH_FAIL_RESPONSE_WITH_INVALID_ACCESS_TOKEN: MockResponse = MockResponse()
-        .setResponseCode(400)
-        .addHeader("Content-Type", "application/json")
-        .setBody(
-            """
+    val KAKAO_OAUTH_FAIL_RESPONSE_WITH_INVALID_ACCESS_TOKEN = MockServer.Response(
+        responseCode = 401,
+        body = """
             {
                 "error": "invalid_token",
                 "error_description": "An error occurred while attempting to retrieve the access token."
             }
-            """.trimIndent()
+        """.trimIndent(),
+        headers = mapOf(
+            "Content-Type" to "application/json"
         )
+    )
 
 }

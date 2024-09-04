@@ -60,16 +60,16 @@ allprojects {
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+        // kotlin test
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-        testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
         testFixturesImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
+        // spring boot test
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
 
-        // mock server
-        testImplementation("com.squareup.okhttp3:mockwebserver")
-        testFixturesImplementation("com.squareup.okhttp3:mockwebserver")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
         // kotest
         testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

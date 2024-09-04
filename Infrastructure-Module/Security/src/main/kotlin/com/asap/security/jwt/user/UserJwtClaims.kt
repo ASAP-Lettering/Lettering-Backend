@@ -1,12 +1,11 @@
 package com.asap.security.jwt.user
 
 import com.asap.domain.user.enums.SocialLoginProvider
-import com.asap.domain.user.enums.TokenType
 import com.asap.security.jwt.JwtClaims
 
 class UserJwtClaims(
-    val tokenType: TokenType,
     val userId: String,
+    val tokenType: TokenType
 ): JwtClaims {
 }
 
@@ -15,7 +14,5 @@ class UserRegisterJwtClaims(
     val socialLoginProvider: SocialLoginProvider,
     val username: String,
     val profileImage: String,
-): JwtClaims {
-    val tokenType: TokenType = TokenType.REGISTER
-}
+): JwtClaims {}
 
