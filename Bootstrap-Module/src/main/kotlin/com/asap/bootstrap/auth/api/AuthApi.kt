@@ -2,7 +2,7 @@ package com.asap.bootstrap.auth.api
 
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
 import com.asap.bootstrap.auth.dto.SocialLoginResponse
-import com.asap.bootstrap.common.ExceptionResponse
+import com.asap.bootstrap.common.exception.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema

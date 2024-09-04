@@ -1,4 +1,4 @@
-package com.asap.bootstrap.common
+package com.asap.bootstrap.common.exception
 
 import com.asap.common.exception.BusinessException
 import io.swagger.v3.oas.annotations.media.Schema
@@ -13,7 +13,7 @@ data class ExceptionResponse(
 ) {
 
     companion object{
-        fun of(businessException: BusinessException): ExceptionResponse{
+        fun of(businessException: BusinessException): ExceptionResponse {
             return ExceptionResponse(businessException.message, businessException.code)
         }
     }

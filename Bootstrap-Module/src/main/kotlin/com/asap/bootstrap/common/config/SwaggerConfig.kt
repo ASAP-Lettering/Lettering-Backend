@@ -1,4 +1,4 @@
-package com.asap.bootstrap.common
+package com.asap.bootstrap.common.config
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.servers.Server
