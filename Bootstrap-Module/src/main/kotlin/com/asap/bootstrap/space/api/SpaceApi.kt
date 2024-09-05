@@ -1,5 +1,6 @@
 package com.asap.bootstrap.space.api
 
+import com.asap.bootstrap.common.security.annotation.AccessUser
 import com.asap.bootstrap.space.dto.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -30,7 +31,9 @@ interface SpaceApi {
         ]
     )
     @GetMapping("/main")
-    fun getMainSpace(): MainSpaceInfoResponse
+    fun getMainSpace(
+        @AccessUser userId: String
+    ): MainSpaceInfoResponse
 
 
     @Operation(summary = "전체 스페이스 목록 조회")
@@ -62,7 +65,8 @@ interface SpaceApi {
         ]
     )
     fun createSpace(
-        @RequestBody request: CreateSpaceRequest
+        @RequestBody request: CreateSpaceRequest,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "스페이스 이름 수정")

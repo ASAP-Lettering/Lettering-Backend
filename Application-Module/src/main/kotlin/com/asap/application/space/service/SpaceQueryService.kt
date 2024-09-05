@@ -2,20 +2,21 @@ package com.asap.application.space.service
 
 import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
-import com.asap.application.user.utils.UserUtils
+import com.asap.domain.common.DomainId
 import org.springframework.stereotype.Service
 
 @Service
 class SpaceQueryService(
     private val spaceManagementPort: SpaceManagementPort,
-    private val userUtils: UserUtils
-): MainSpaceQueryUsecase {
-    override fun query(): MainSpaceQueryUsecase.Response {
+) : MainSpaceQueryUsecase {
+    override fun get(
+        query: MainSpaceQueryUsecase.Query
+    ): MainSpaceQueryUsecase.Response {
         val mainSpace = spaceManagementPort.getMainSpace(
-            userId = userUtils.getAccessUserId()
+            userId = DomainId(query.userId)
         )
         return MainSpaceQueryUsecase.Response(
-            id = mainSpace.id
+            id = mainSpace.id.value
         )
     }
 }
