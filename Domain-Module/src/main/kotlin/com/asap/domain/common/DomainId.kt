@@ -3,7 +3,7 @@ package com.asap.domain.common
 import com.fasterxml.uuid.Generators
 
 data class DomainId(
-    val id: String
+    val value: String
 ) {
     companion object{
         fun generate(): DomainId {

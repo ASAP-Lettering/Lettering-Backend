@@ -1,21 +1,17 @@
 package com.asap.bootstrap.integration.user
 
-import com.asap.application.user.UserApplicationConfig
 import com.asap.application.user.UserMockManager
 import com.asap.application.user.exception.UserException
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.user.dto.RegisterUserRequest
-import com.asap.security.jwt.JwtTestConfig
 import com.asap.security.jwt.TestJwtDataGenerator
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.post
 import java.time.LocalDate
 
 
-@Import(JwtTestConfig::class, UserApplicationConfig::class)
 class UserApiIntegrationTest: IntegrationSupporter() {
 
 

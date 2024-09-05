@@ -4,14 +4,11 @@ import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
 import com.asap.client.KakaoTestData
 import com.asap.client.MockServer
-import com.asap.client.TestWebClientConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.post
 import kotlin.test.Test
 
-@Import(TestWebClientConfig::class)
 class AuthApiIntegrationTest : IntegrationSupporter() {
 
     @Autowired

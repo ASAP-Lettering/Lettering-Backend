@@ -1,4 +1,4 @@
-package com.asap.bootstrap.common.security
+package com.asap.bootstrap.common.security.filter
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

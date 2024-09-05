@@ -18,12 +18,12 @@ class TestJwtDataGenerator(
         socialLoginProvider: String = SocialLoginProvider.KAKAO.name,
         username: String = "username",
         issuedAt: Date = Date()
-    ): String{
+    ): String {
         return JwtProvider.createToken(
             JwtPayload(
                 issuedAt = issuedAt,
                 issuer = UserJwtProperties.ISSUER,
-                subject= UserJwtProperties.SUBJECT,
+                subject = UserJwtProperties.SUBJECT,
                 expireTime = UserJwtProperties.REGISTER_TOKEN_EXPIRE_TIME,
                 claims = UserRegisterJwtClaims(
                     socialId = socialId,
@@ -40,12 +40,12 @@ class TestJwtDataGenerator(
     fun generateAccessToken(
         userId: String = "userId",
         issuedAt: Date = Date()
-    ): String{
+    ): String {
         return JwtProvider.createToken(
             JwtPayload(
                 issuedAt = issuedAt,
                 issuer = UserJwtProperties.ISSUER,
-                subject= UserJwtProperties.SUBJECT,
+                subject = UserJwtProperties.SUBJECT,
                 expireTime = UserJwtProperties.ACCESS_TOKEN_EXPIRE_TIME,
                 claims = UserJwtClaims(
                     userId = userId,

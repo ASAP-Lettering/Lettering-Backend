@@ -47,7 +47,7 @@ class UserTokenConvertAdapter(
 
     override fun generateAccessToken(user: User): String {
         val jwtClaims = UserJwtClaims(
-            userId = user.id.id,
+            userId = user.id.value,
             tokenType = TokenType.ACCESS
         )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.ACCESS_TOKEN_EXPIRE_TIME)
@@ -66,7 +66,7 @@ class UserTokenConvertAdapter(
 
     override fun generateRefreshToken(user: User): String {
         val jwtClaims = UserJwtClaims(
-            userId = user.id.id,
+            userId = user.id.value,
             tokenType = TokenType.REFRESH
         )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.REFRESH_TOKEN_EXPIRE_TIME)

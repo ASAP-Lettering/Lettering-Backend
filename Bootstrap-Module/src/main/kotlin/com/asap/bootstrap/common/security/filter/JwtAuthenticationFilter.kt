@@ -1,7 +1,7 @@
-package com.asap.bootstrap.common.security
+package com.asap.bootstrap.common.security.filter
 
 import com.asap.application.user.port.`in`.TokenResolveUsecase
-import com.asap.application.user.vo.UserAuthentication
+import com.asap.bootstrap.common.security.vo.UserAuthentication
 import com.asap.common.security.SecurityContext
 import com.asap.common.security.SecurityContextHolder
 import jakarta.servlet.FilterChain
