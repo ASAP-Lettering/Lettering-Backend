@@ -16,6 +16,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 
 class SocialLoginServiceTest : BehaviorSpec({
 
@@ -45,7 +46,8 @@ class SocialLoginServiceTest : BehaviorSpec({
             id = getUserAuth.userId,
             username = authInfo.username,
             permission = UserPermission(true, true, true),
-            profileImage = authInfo.profileImage
+            profileImage = authInfo.profileImage,
+            birthday = LocalDate.now()
         )
         every { mockAuthInfoRetrievePort.getAuthInfo(SocialLoginProvider.KAKAO, "registered") } returns authInfo
         every {

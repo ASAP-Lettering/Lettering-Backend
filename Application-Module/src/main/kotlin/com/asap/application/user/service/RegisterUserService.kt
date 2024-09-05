@@ -41,7 +41,8 @@ class RegisterUserService(
                 command.servicePermission,
                 command.privatePermission,
                 command.marketingPermission
-            )
+            ),
+            birthday = command.birthday
         )
         val userAuth = UserAuth(
             userId = registerUser.id,
