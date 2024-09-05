@@ -1,4 +1,4 @@
-package com.asap.application.user.vo
+package com.asap.bootstrap.common.security.vo
 
 import com.asap.common.security.Authentication
 

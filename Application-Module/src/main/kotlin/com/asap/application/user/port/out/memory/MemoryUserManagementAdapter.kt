@@ -22,8 +22,4 @@ class MemoryUserManagementAdapter: UserManagementPort {
     override fun getUser(userId: DomainId): User? {
         return users[userId]
     }
-
-    override fun existsUser(userId: DomainId): Boolean {
-        return users.containsKey(userId)
-    }
 }
