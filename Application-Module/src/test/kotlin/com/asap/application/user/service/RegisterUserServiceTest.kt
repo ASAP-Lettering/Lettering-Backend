@@ -35,7 +35,9 @@ class RegisterUserServiceTest : BehaviorSpec({
 
 
     given("회원 가입 요청이 들어왔을 때") {
-        val successCommand = RegisterUserUsecase.Command("valid", true, true, true, LocalDate.now())
+        val successCommand = RegisterUserUsecase.Command(
+            "valid", true, true, true, LocalDate.now(), "test"
+        )
         every { mockUserTokenManagementPort.isExistsToken("valid") } returns true
         every { mockUserTokenConvertPort.resolveRegisterToken("valid") } returns UserClaims.Register(
             socialId = "123",
@@ -65,7 +67,14 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenManagementPort.isExistsToken("duplicate") } returns true
         every { mockUserAuthManagementPort.isExistsUserAuth("duplicate", SocialLoginProvider.KAKAO) } returns true
         `when`("중복 가입 요청이 들어왔을 때") {
-            val failCommand = RegisterUserUsecase.Command("duplicate", true, true, true, LocalDate.now())
+            val failCommand = RegisterUserUsecase.Command(
+                "duplicate",
+                true,
+                true,
+                true,
+                LocalDate.now(),
+                "test"
+            )
             then("UserAlreadyRegisteredException 예외가 발생한다.") {
                 shouldThrow<UserException.UserAlreadyRegisteredException> {
                     registerUserService.registerUser(failCommand)
@@ -77,7 +86,7 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenConvertPort.resolveRegisterToken("invalid") } throws IllegalArgumentException("Invalid token")
         `when`("register token이 유요하지 않다면") {
             val failCommandWithoutRegisterToken =
-                RegisterUserUsecase.Command("invalid", true, true, true, LocalDate.now())
+                RegisterUserUsecase.Command("invalid", true, true, true, LocalDate.now(), "test")
             then("예외가 발생한다.") {
                 shouldThrow<Exception> {
                     registerUserService.registerUser(failCommandWithoutRegisterToken)
@@ -88,7 +97,7 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserTokenManagementPort.isExistsToken("non-saved") } returns false
         `when`("register token이 존재하지 않는다면") {
             val failCommandWithoutRegisterToken =
-                RegisterUserUsecase.Command("non-saved", true, true, true, LocalDate.now())
+                RegisterUserUsecase.Command("non-saved", true, true, true, LocalDate.now(), "test")
             then("UserPermissionDeniedException 예외가 발생한다.") {
                 shouldThrow<UserException.UserPermissionDeniedException> {
                     registerUserService.registerUser(failCommandWithoutRegisterToken)
@@ -107,7 +116,7 @@ class RegisterUserServiceTest : BehaviorSpec({
         every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false
         `when`("서비스 동의를 하지 않았다면") {
             val failCommandWithoutServicePermission =
-                RegisterUserUsecase.Command("valid", false, true, true, LocalDate.now())
+                RegisterUserUsecase.Command("valid", false, true, true, LocalDate.now(), "test")
             then("InvalidPropertyException 예외가 발생한다.") {
                 shouldThrow<DefaultException.InvalidDefaultException> {
                     registerUserService.registerUser(failCommandWithoutServicePermission)
@@ -117,7 +126,7 @@ class RegisterUserServiceTest : BehaviorSpec({
 
         `when`("개인정보 동의를 하지 않았다면") {
             val failCommandWithoutPrivatePermission =
-                RegisterUserUsecase.Command("valid", true, false, true, LocalDate.now())
+                RegisterUserUsecase.Command("valid", true, false, true, LocalDate.now(), "test")
             then("InvalidPropertyException 예외가 발생한다.") {
                 shouldThrow<DefaultException.InvalidDefaultException> {
                     registerUserService.registerUser(failCommandWithoutPrivatePermission)

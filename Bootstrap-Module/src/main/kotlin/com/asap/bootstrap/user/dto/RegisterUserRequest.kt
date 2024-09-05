@@ -14,6 +14,8 @@ data class RegisterUserRequest(
     @Schema(description = "마케팅 정보 수신 동의")
     val marketingPermission: Boolean,
     @Schema(description = "생년 월일, yyyy-MM-dd, 값이 안넘어올 수 있음")
-    val birthday: LocalDate?
+    val birthday: LocalDate?,
+    @Schema(description = "실명")
+    val realName: String
 ) {
 }

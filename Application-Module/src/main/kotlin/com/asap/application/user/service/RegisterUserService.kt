@@ -35,7 +35,7 @@ class RegisterUserService(
             throw UserException.UserAlreadyRegisteredException()
         }
         val registerUser = User(
-            nickname = userClaims.username,
+            username = command.realName,
             profileImage = userClaims.profileImage,
             permission = UserPermission(
                 command.servicePermission,

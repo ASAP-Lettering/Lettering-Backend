@@ -12,7 +12,8 @@ interface RegisterUserUsecase {
         val servicePermission: Boolean,
         val privatePermission: Boolean,
         val marketingPermission: Boolean,
-        val birthday: LocalDate?
+        val birthday: LocalDate?,
+        val realName: String
     )
 
     data class Response(

@@ -30,7 +30,7 @@ class UserMockManager(
         userManagementPort.saveUser(
             User(
                 id = DomainId(userId),
-                nickname = "nickname",
+                username = "nickname",
                 profileImage = "profileImage",
                 permission = UserPermission(true, true, true)
             )

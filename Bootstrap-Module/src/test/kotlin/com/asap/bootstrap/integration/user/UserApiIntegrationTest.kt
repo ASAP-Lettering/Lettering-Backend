@@ -25,7 +25,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         // given
         val registerToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(registerToken)
-        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now())
+        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -54,7 +54,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
             socialId = "duplicate",
         )
         userMockManager.settingToken(duplicateRegisterToken)
-        val request = RegisterUserRequest(duplicateRegisterToken, true, true, true, LocalDate.now())
+        val request = RegisterUserRequest(duplicateRegisterToken, true, true, true, LocalDate.now(), "realName")
         // when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -71,7 +71,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         // given
         val registerToken = testJwtDataGenerator.generateInvalidToken()
         userMockManager.settingToken(registerToken)
-        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now())
+        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -91,7 +91,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
     fun registerUserInvalidTest_with_NonSavedRegisterToken() {
         // given
         val registerToken = testJwtDataGenerator.generateInvalidToken()
-        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now())
+        val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -113,7 +113,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         //given
         val registerToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(registerToken)
-        val request = RegisterUserRequest(registerToken, false, true, true, LocalDate.now())
+        val request = RegisterUserRequest(registerToken, false, true, true, LocalDate.now(), "realName")
         //when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
@@ -130,7 +130,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         //given
         val registerToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(registerToken)
-        val request = RegisterUserRequest(registerToken, true, false, true, LocalDate.now())
+        val request = RegisterUserRequest(registerToken, true, false, true, LocalDate.now(), "realName")
         //when
         val response = mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON

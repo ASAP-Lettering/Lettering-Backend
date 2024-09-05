@@ -18,7 +18,8 @@ class UserController(
                 request.servicePermission,
                 request.privatePermission,
                 request.marketingPermission,
-                request.birthday
+                request.birthday,
+                request.realName
             )
         )
         return RegisterUserResponse(response.accessToken, response.refreshToken)

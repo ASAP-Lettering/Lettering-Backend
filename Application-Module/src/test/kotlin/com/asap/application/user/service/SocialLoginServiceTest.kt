@@ -43,7 +43,7 @@ class SocialLoginServiceTest : BehaviorSpec({
         )
         val getUser = User(
             id = getUserAuth.userId,
-            nickname = authInfo.username,
+            username = authInfo.username,
             permission = UserPermission(true, true, true),
             profileImage = authInfo.profileImage
         )
