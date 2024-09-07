@@ -49,6 +49,25 @@ class MemorySpaceManagementPort(
         return space
     }
 
+    override fun getSpace(userId: DomainId, spaceId: DomainId): Space {
+        val spaceEntity = spaces[spaceId.value] ?: throw IllegalArgumentException("Space not found")
+        return Space(
+            id = DomainId(spaceEntity.id),
+            userId = DomainId(spaceEntity.userId),
+            name = spaceEntity.name
+        )
+    }
+
+    override fun update(space: Space): Space {
+        val spaceEntity = spaces[space.id.value] ?: throw IllegalArgumentException("Space not found")
+        val updatedSpaceEntity = spaceEntity.copy(
+            name = space.name,
+            updatedAt = LocalDateTime.now()
+        )
+        spaces[space.id.value] = updatedSpaceEntity
+        return space
+    }
+
 
     data class SpaceEntity(
         val id: String,

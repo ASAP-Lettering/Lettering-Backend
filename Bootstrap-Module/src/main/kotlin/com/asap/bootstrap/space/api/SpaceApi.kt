@@ -81,7 +81,8 @@ interface SpaceApi {
     )
     fun updateSpaceName(
         @PathVariable spaceId: String,
-        @RequestBody request: UpdateSpaceNameRequest
+        @RequestBody request: UpdateSpaceNameRequest,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "스페이스 삭제")
