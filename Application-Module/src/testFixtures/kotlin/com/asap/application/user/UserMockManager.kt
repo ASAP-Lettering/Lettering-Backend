@@ -6,6 +6,7 @@ import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.vo.UserPermission
+import java.time.LocalDate
 
 
 class UserMockManager(
@@ -30,9 +31,10 @@ class UserMockManager(
         userManagementPort.saveUser(
             User(
                 id = DomainId(userId),
-                nickname = "nickname",
+                username = "nickname",
                 profileImage = "profileImage",
-                permission = UserPermission(true, true, true)
+                permission = UserPermission(true, true, true),
+                birthday = LocalDate.now()
             )
         )
     }

@@ -21,8 +21,8 @@ class UserControllerTest: AcceptanceSupporter() {
     @Test
     fun registerUserTest(){
         // given
-        val request = RegisterUserRequest("register", true, true, true, LocalDate.now())
-        val command = RegisterUserUsecase.Command(request.registerToken, request.servicePermission, request.privatePermission, request.marketingPermission, request.birthday)
+        val request = RegisterUserRequest("register", true, true, true, LocalDate.now(), "realName")
+        val command = RegisterUserUsecase.Command(request.registerToken, request.servicePermission, request.privatePermission, request.marketingPermission, request.birthday, request.realName)
         given(registerUserUsecase.registerUser(command)).willReturn(RegisterUserUsecase.Response("accessToken", "refreshToken"))
         // when
         val response = mockMvc.post("/api/v1/users") {

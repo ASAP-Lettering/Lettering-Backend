@@ -7,4 +7,8 @@ data class Space(
     val userId: DomainId,
     val name: String
 ) {
+
+    fun updateName(name: String): Space {
+        return this.copy(name = name)
+    }
 }

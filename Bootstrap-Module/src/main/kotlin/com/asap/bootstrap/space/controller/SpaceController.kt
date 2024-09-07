@@ -2,6 +2,7 @@ package com.asap.bootstrap.space.controller
 
 import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
+import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.bootstrap.space.api.SpaceApi
 import com.asap.bootstrap.space.dto.*
 import org.springframework.web.bind.annotation.RestController
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class SpaceController(
     private val mainSpaceQueryUsecase: MainSpaceQueryUsecase,
-    private val spaceCreateUsecase: SpaceCreateUsecase
+    private val spaceCreateUsecase: SpaceCreateUsecase,
+    private val spaceUpdateNameUsecase: SpaceUpdateNameUsecase
 ) : SpaceApi {
 
     override fun getMainSpace(
@@ -48,8 +50,18 @@ class SpaceController(
         )
     }
 
-    override fun updateSpaceName(spaceId: String, request: UpdateSpaceNameRequest) {
-
+    override fun updateSpaceName(
+        spaceId: String,
+        request: UpdateSpaceNameRequest,
+        userId: String
+    ) {
+        spaceUpdateNameUsecase.update(
+            SpaceUpdateNameUsecase.Command(
+                userId = userId,
+                spaceId = spaceId,
+                name = request.spaceName
+            )
+        )
     }
 
     override fun deleteSpace(spaceId: String) {

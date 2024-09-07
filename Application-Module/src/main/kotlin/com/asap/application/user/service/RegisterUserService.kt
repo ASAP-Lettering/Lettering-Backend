@@ -35,13 +35,14 @@ class RegisterUserService(
             throw UserException.UserAlreadyRegisteredException()
         }
         val registerUser = User(
-            nickname = userClaims.username,
+            username = command.realName,
             profileImage = userClaims.profileImage,
             permission = UserPermission(
                 command.servicePermission,
                 command.privatePermission,
                 command.marketingPermission
-            )
+            ),
+            birthday = command.birthday
         )
         val userAuth = UserAuth(
             userId = registerUser.id,

@@ -16,4 +16,13 @@ interface SpaceManagementPort {
         templateType: Int
     ): Space
 
+
+    fun getSpace(
+        userId: DomainId,
+        spaceId: DomainId
+    ): Space
+
+
+    fun update(space: Space): Space
+
 }
