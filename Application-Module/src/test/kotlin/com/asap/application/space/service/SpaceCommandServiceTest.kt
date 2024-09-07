@@ -48,7 +48,8 @@ class SpaceCommandServiceTest:BehaviorSpec({
         val mockSpace = Space(
             id = DomainId(spaceUpdateNameCommand.spaceId),
             userId = DomainId(spaceUpdateNameCommand.userId),
-            name = "oldName"
+            name = "oldName",
+            templateType = 1
         )
         every { spaceManagementPort.getSpace(
             userId = DomainId(spaceUpdateNameCommand.userId),

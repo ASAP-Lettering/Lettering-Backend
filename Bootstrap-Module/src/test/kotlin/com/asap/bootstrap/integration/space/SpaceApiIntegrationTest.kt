@@ -6,6 +6,8 @@ import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.space.dto.UpdateSpaceNameRequest
 import com.asap.security.jwt.TestJwtDataGenerator
+import io.kotest.matchers.maps.haveValue
+import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -89,6 +91,54 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun getSpaces(){
+        // given
+        val userId = UUID.randomUUID().toString()
+        userMockManager.settingUser(userId)
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        for(i in 0..2)
+            spaceMockManager.settingSpace(userId)
+        // when
+        val response = mockMvc.get("/api/v1/spaces") {
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.spaces") {
+                isArray()
+                isNotEmpty()
+                haveLength(3)
+                for(i in 0..2){
+                    jsonPath("$.spaces[$i].spaceId") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.spaces[$i].spaceName") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.spaces[$i].letterCount") {
+                        exists()
+                        isNumber()
+                    }
+                    jsonPath("$.spaces[$i].isMainSpace") {
+                        exists()
+                        isBoolean()
+                    }
+                    jsonPath("$.spaces[$i].spaceIndex") {
+                        exists()
+                        isNumber()
+                        haveValue(i)
+                    }
+                }
+            }
         }
     }
 
