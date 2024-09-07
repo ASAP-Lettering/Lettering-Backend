@@ -1,6 +1,6 @@
 package com.asap.application.space.port.`in`
 
-interface MainSpaceQueryUsecase {
+interface MainSpaceGetUsecase {
 
     fun get(query: Query): Response
 

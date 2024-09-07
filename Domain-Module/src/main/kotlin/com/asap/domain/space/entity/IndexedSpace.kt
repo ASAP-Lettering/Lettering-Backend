@@ -2,14 +2,15 @@ package com.asap.domain.space.entity
 
 import com.asap.domain.common.DomainId
 
-data class Space(
-    val id: DomainId = DomainId.generate(),
+data class IndexedSpace(
+    val id: DomainId,
     val userId: DomainId,
     val name: String,
+    val index: Int,
     val templateType: Int
 ) {
 
-    fun updateName(name: String): Space {
-        return this.copy(name = name)
+    fun isMain(): Boolean {
+        return index == 0
     }
 }

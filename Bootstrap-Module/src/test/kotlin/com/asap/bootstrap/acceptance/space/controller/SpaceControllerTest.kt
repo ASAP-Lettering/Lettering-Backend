@@ -1,13 +1,15 @@
 package com.asap.bootstrap.acceptance.space.controller
 
-import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
+import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
+import com.asap.application.space.port.`in`.SpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.space.controller.SpaceController
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.security.jwt.JwtTestConfig
 import com.asap.security.jwt.TestJwtDataGenerator
+import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,11 +26,16 @@ import org.springframework.test.web.servlet.put
 class SpaceControllerTest : AcceptanceSupporter() {
 
     @MockBean
-    lateinit var mainSpaceQueryUsecase: MainSpaceQueryUsecase
+    lateinit var mainSpaceGetUsecase: MainSpaceGetUsecase
+
     @MockBean
     lateinit var spaceUpdateNameUsecase: SpaceUpdateNameUsecase
+
     @MockBean
     lateinit var spaceCreateUsecase: SpaceCreateUsecase
+
+    @MockBean
+    lateinit var spaceGetUsecase: SpaceGetUsecase
 
     @Autowired
     lateinit var testJwtDataGenerator: TestJwtDataGenerator
@@ -38,10 +45,10 @@ class SpaceControllerTest : AcceptanceSupporter() {
         // given
         val accessToken = testJwtDataGenerator.generateAccessToken("userId")
         BDDMockito.given(
-            mainSpaceQueryUsecase.get(
-                MainSpaceQueryUsecase.Query("userId")
+            mainSpaceGetUsecase.get(
+                MainSpaceGetUsecase.Query("userId")
             )
-        ).willReturn(MainSpaceQueryUsecase.Response("spaceId"))
+        ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
         // when
         val response = mockMvc.get("/api/v1/spaces/main") {
             header("Authorization", "Bearer $accessToken")
@@ -67,10 +74,10 @@ class SpaceControllerTest : AcceptanceSupporter() {
             templateType = 0
         )
         BDDMockito.given(
-            mainSpaceQueryUsecase.get(
-                MainSpaceQueryUsecase.Query("userId")
+            mainSpaceGetUsecase.get(
+                MainSpaceGetUsecase.Query("userId")
             )
-        ).willReturn(MainSpaceQueryUsecase.Response("spaceId"))
+        ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
         // when
         val response = mockMvc.post("/api/v1/spaces") {
             contentType = MediaType.APPLICATION_JSON
@@ -102,4 +109,76 @@ class SpaceControllerTest : AcceptanceSupporter() {
             status { isOk() }
         }
     }
+
+    @Test
+    fun getSpaces() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        BDDMockito.given(
+            spaceGetUsecase.getAll(
+                SpaceGetUsecase.GetAllQuery("userId")
+            )
+        ).willReturn(
+            SpaceGetUsecase.GetAllResponse(
+                listOf(
+                    SpaceGetUsecase.SpaceDetail(
+                        spaceName = "spaceName",
+                        letterCount = 0,
+                        isMainSpace = true,
+                        spaceIndex = 0,
+                        spaceId = "spaceId"
+                    ),
+                    SpaceGetUsecase.SpaceDetail(
+                        spaceName = "spaceName",
+                        letterCount = 0,
+                        isMainSpace = false,
+                        spaceIndex = 1,
+                        spaceId = "spaceId"
+                    )
+                )
+            )
+        )
+        // when
+        val response = mockMvc.get("/api/v1/spaces") {
+            header("Authorization", "Bearer $accessToken")
+        }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.spaces") {
+                exists()
+                isArray()
+                isNotEmpty()
+                haveLength(2)
+                for (i in 0..1) {
+                    jsonPath("$.spaces[$i].spaceId") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.spaces[$i].spaceName") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.spaces[$i].letterCount") {
+                        exists()
+                        isNumber()
+                    }
+                    jsonPath("$.spaces[$i].isMainSpace") {
+                        exists()
+                        isBoolean()
+                    }
+                    jsonPath("$.spaces[$i].spaceIndex") {
+                        exists()
+                        isNumber()
+                        value(i)
+                    }
+                }
+            }
+        }
+    }
+
+
 }
