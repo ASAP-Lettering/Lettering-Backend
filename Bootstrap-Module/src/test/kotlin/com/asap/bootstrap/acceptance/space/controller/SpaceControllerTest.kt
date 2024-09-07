@@ -1,6 +1,6 @@
 package com.asap.bootstrap.acceptance.space.controller
 
-import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
+import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.bootstrap.AcceptanceSupporter
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.put
 class SpaceControllerTest : AcceptanceSupporter() {
 
     @MockBean
-    lateinit var mainSpaceQueryUsecase: MainSpaceQueryUsecase
+    lateinit var mainSpaceGetUsecase: MainSpaceGetUsecase
     @MockBean
     lateinit var spaceUpdateNameUsecase: SpaceUpdateNameUsecase
     @MockBean
@@ -38,10 +38,10 @@ class SpaceControllerTest : AcceptanceSupporter() {
         // given
         val accessToken = testJwtDataGenerator.generateAccessToken("userId")
         BDDMockito.given(
-            mainSpaceQueryUsecase.get(
-                MainSpaceQueryUsecase.Query("userId")
+            mainSpaceGetUsecase.get(
+                MainSpaceGetUsecase.Query("userId")
             )
-        ).willReturn(MainSpaceQueryUsecase.Response("spaceId"))
+        ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
         // when
         val response = mockMvc.get("/api/v1/spaces/main") {
             header("Authorization", "Bearer $accessToken")
@@ -67,10 +67,10 @@ class SpaceControllerTest : AcceptanceSupporter() {
             templateType = 0
         )
         BDDMockito.given(
-            mainSpaceQueryUsecase.get(
-                MainSpaceQueryUsecase.Query("userId")
+            mainSpaceGetUsecase.get(
+                MainSpaceGetUsecase.Query("userId")
             )
-        ).willReturn(MainSpaceQueryUsecase.Response("spaceId"))
+        ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
         // when
         val response = mockMvc.post("/api/v1/spaces") {
             contentType = MediaType.APPLICATION_JSON

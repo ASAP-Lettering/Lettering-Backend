@@ -1,6 +1,6 @@
 package com.asap.application.space.service
 
-import com.asap.application.space.port.`in`.MainSpaceQueryUsecase
+import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.MainSpace
@@ -22,7 +22,7 @@ class SpaceQueryServiceTest : BehaviorSpec({
         val mainSpace = MainSpace(
             id = DomainId.generate()
         )
-        val query = MainSpaceQueryUsecase.Query(
+        val query = MainSpaceGetUsecase.Query(
             userId = "userId"
         )
         every { spaceManagementPort.getMainSpace(any()) } returns mainSpace

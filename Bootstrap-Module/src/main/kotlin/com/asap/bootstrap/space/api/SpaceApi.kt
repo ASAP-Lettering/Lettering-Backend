@@ -52,7 +52,9 @@ interface SpaceApi {
             )
         ]
     )
-    fun getSpaces(): GetAllSpaceResponse
+    fun getSpaces(
+        @AccessUser userId: String
+    ): GetAllSpaceResponse
 
     @Operation(summary = "스페이스 생성")
     @PostMapping
