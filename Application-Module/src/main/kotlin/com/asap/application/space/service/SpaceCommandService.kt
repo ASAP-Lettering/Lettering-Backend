@@ -1,10 +1,12 @@
 package com.asap.application.space.service
 
+import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
 import com.asap.application.space.port.`in`.SpaceDeleteUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateIndexUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
+import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.service.SpaceIndexValidator
 import org.springframework.stereotype.Service
@@ -12,9 +14,9 @@ import org.springframework.stereotype.Service
 @Service
 class SpaceCommandService(
     private val spaceManagementPort: SpaceManagementPort,
+    private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 ) : SpaceCreateUsecase, SpaceUpdateNameUsecase, SpaceDeleteUsecase, SpaceUpdateIndexUsecase {
 
-    private val spaceIndexValidator = SpaceIndexValidator()
 
     override fun create(command: SpaceCreateUsecase.Command) {
         spaceManagementPort.createSpace(
@@ -50,10 +52,16 @@ class SpaceCommandService(
     override fun update(command: SpaceUpdateIndexUsecase.Command) {
         val indexedSpaces = spaceManagementPort.getAllIndexedSpace(DomainId(command.userId))
         val changeIndexMap =command.orders.associateBy({ DomainId(it.spaceId) }, { it.index })
-        spaceIndexValidator.validate(
-            indexedSpaces = indexedSpaces,
-            validateIndex = changeIndexMap
-        )
+
+        try{
+            spaceIndexValidator.validate(
+                indexedSpaces = indexedSpaces,
+                validateIndex = changeIndexMap
+            )
+        }catch (e: DefaultException.InvalidArgumentException){
+            throw SpaceException.InvalidSpaceUpdateException()
+        }
+
         val updatedSpaces = indexedSpaces.map {
             it.updateIndex(changeIndexMap.getValue(it.id))
         }
