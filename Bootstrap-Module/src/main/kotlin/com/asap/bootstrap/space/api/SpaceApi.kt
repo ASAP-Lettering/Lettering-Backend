@@ -113,7 +113,8 @@ interface SpaceApi {
         ]
     )
     fun updateSpaceOrder(
-        @RequestBody request: UpdateSpaceOrderRequest
+        @RequestBody request: UpdateSpaceOrderRequest,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "여러 스페이스 삭제")

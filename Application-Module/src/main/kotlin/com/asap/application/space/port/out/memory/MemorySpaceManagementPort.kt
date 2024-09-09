@@ -105,6 +105,8 @@ class MemorySpaceManagementPort(
                     index = it.index,
                     templateType = it.templateType
                 )
+            }.sortedBy {
+                it.index
             }
     }
 
@@ -116,6 +118,21 @@ class MemorySpaceManagementPort(
         )
         spaces[space.id.value] = updatedSpaceEntity
         return space
+    }
+
+    override fun updateIndexes(userId: DomainId, orders: List<IndexedSpace>) {
+        val spaceEntities = spaces.filter {
+            it.value.userId == userId.value
+        }.values
+        val orderMap = orders.associateBy({it.id.value},{it.index})
+        spaceEntities.forEach {
+            val order = orderMap[it.id] ?: throw IllegalArgumentException("Space not found")
+            val updatedSpaceEntity = it.copy(
+                index = order,
+                updatedAt = LocalDateTime.now()
+            )
+            spaces[it.id] = updatedSpaceEntity
+        }
     }
 
     override fun deleteById(userId: DomainId, spaceId: DomainId) {

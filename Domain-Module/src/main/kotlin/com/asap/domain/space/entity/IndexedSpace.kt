@@ -13,4 +13,8 @@ data class IndexedSpace(
     fun isMain(): Boolean {
         return index == 0
     }
+
+    fun updateIndex(index: Int): IndexedSpace {
+        return this.copy(index = index)
+    }
 }

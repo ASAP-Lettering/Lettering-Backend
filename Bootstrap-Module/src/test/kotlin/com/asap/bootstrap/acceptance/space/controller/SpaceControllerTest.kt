@@ -5,6 +5,7 @@ import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.space.controller.SpaceController
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
+import com.asap.bootstrap.space.dto.UpdateSpaceOrderRequest
 import com.asap.security.jwt.JwtTestConfig
 import com.asap.security.jwt.TestJwtDataGenerator
 import io.kotest.matchers.string.haveLength
@@ -38,6 +39,9 @@ class SpaceControllerTest : AcceptanceSupporter() {
 
     @MockBean
     lateinit var spaceDeleteUsecase: SpaceDeleteUsecase
+
+    @MockBean
+    lateinit var spaceUpdateIndexUsecase: SpaceUpdateIndexUsecase
 
     @Autowired
     lateinit var testJwtDataGenerator: TestJwtDataGenerator
@@ -206,6 +210,28 @@ class SpaceControllerTest : AcceptanceSupporter() {
         val request = DeleteMultipleSpacesRequest(listOf("spaceId1", "spaceId2"))
         // when
         val response = mockMvc.delete("/api/v1/spaces") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun updateSpaceOrder() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request = UpdateSpaceOrderRequest(
+            orders = listOf(
+                UpdateSpaceOrderRequest.SpaceOrder(spaceId = "spaceId1", index = 0),
+                UpdateSpaceOrderRequest.SpaceOrder(spaceId = "spaceId2", index = 1)
+            )
+        )
+        // when
+        val response = mockMvc.put("/api/v1/spaces/order") {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(request)
             header("Authorization", "Bearer $accessToken")
