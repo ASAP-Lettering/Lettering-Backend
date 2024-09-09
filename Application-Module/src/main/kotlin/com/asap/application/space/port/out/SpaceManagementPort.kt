@@ -28,4 +28,15 @@ interface SpaceManagementPort {
 
     fun update(space: Space): Space
 
+
+    fun deleteById(
+        userId: DomainId,
+        spaceId: DomainId
+    )
+
+    fun deleteAllBySpaceIds(
+        userId: DomainId,
+        spaceIds: List<DomainId>
+    )
+
 }

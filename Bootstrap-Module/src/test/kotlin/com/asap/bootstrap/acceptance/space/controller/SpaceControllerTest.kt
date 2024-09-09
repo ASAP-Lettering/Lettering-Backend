@@ -1,12 +1,10 @@
 package com.asap.bootstrap.acceptance.space.controller
 
-import com.asap.application.space.port.`in`.MainSpaceGetUsecase
-import com.asap.application.space.port.`in`.SpaceCreateUsecase
-import com.asap.application.space.port.`in`.SpaceGetUsecase
-import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
+import com.asap.application.space.port.`in`.*
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.space.controller.SpaceController
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
+import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
 import com.asap.security.jwt.JwtTestConfig
 import com.asap.security.jwt.TestJwtDataGenerator
 import io.kotest.matchers.string.haveLength
@@ -17,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
@@ -36,6 +35,9 @@ class SpaceControllerTest : AcceptanceSupporter() {
 
     @MockBean
     lateinit var spaceGetUsecase: SpaceGetUsecase
+
+    @MockBean
+    lateinit var spaceDeleteUsecase: SpaceDeleteUsecase
 
     @Autowired
     lateinit var testJwtDataGenerator: TestJwtDataGenerator
@@ -177,6 +179,40 @@ class SpaceControllerTest : AcceptanceSupporter() {
                     }
                 }
             }
+        }
+    }
+
+
+    @Test
+    fun deleteSpace() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val spaceId = "spaceId"
+        // when
+        val response = mockMvc.delete("/api/v1/spaces/{spaceId}", spaceId) {
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun deleteSpaces() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request = DeleteMultipleSpacesRequest(listOf("spaceId1", "spaceId2"))
+        // when
+        val response = mockMvc.delete("/api/v1/spaces") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 

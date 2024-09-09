@@ -4,13 +4,16 @@ import com.asap.application.space.SpaceMockManager
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
+import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
 import com.asap.bootstrap.space.dto.UpdateSpaceNameRequest
 import com.asap.security.jwt.TestJwtDataGenerator
 import io.kotest.matchers.maps.haveValue
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
@@ -24,6 +27,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
     @Autowired
     lateinit var spaceMockManager: SpaceMockManager
+
     @Autowired
     lateinit var userMockManager: UserMockManager
 
@@ -95,12 +99,12 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Test
-    fun getSpaces(){
+    fun getSpaces() {
         // given
         val userId = UUID.randomUUID().toString()
         userMockManager.settingUser(userId)
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        for(i in 0..2)
+        for (i in 0..2)
             spaceMockManager.settingSpace(userId)
         // when
         val response = mockMvc.get("/api/v1/spaces") {
@@ -113,7 +117,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                 isArray()
                 isNotEmpty()
                 haveLength(3)
-                for(i in 0..2){
+                for (i in 0..2) {
                     jsonPath("$.spaces[$i].spaceId") {
                         exists()
                         isString()
@@ -140,6 +144,45 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                 }
             }
         }
+    }
+
+    @Test
+    fun deleteSpace() {
+        // given
+        val userId = UUID.randomUUID().toString()
+        userMockManager.settingUser(userId)
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val spaceId = spaceMockManager.settingSpace(userId)
+        // when
+        val response = mockMvc.delete("/api/v1/spaces/$spaceId") {
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+        spaceMockManager.getSpaceCount(userId) shouldBe 0
+    }
+
+    @Test
+    fun deleteSpaces() {
+        // given
+        val userId = UUID.randomUUID().toString()
+        userMockManager.settingUser(userId)
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
+        val request = DeleteMultipleSpacesRequest(spaceIds)
+        // when
+        val response = mockMvc.delete("/api/v1/spaces") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+        spaceMockManager.getSpaceCount(userId) shouldBe 0
     }
 
 }

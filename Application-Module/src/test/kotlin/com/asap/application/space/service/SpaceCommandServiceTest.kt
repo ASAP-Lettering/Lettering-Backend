@@ -1,6 +1,7 @@
 package com.asap.application.space.service
 
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
+import com.asap.application.space.port.`in`.SpaceDeleteUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.domain.common.DomainId
@@ -70,5 +71,43 @@ class SpaceCommandServiceTest:BehaviorSpec({
             }
         }
     }
+
+    given("스페이스 삭제 요청이 들어왔을 때") {
+        val spaceDeleteOneCommand = SpaceDeleteUsecase.DeleteOneCommand(
+            userId = "userId",
+            spaceId = "spaceId"
+        )
+        `when`("유저 아이디, 스페이스 아이디가 주어진다면") {
+            spaceCommandService.deleteOne(spaceDeleteOneCommand)
+            then("스페이스를 삭제한다") {
+                verify {
+                    spaceManagementPort.deleteById(
+                        userId = DomainId(spaceDeleteOneCommand.userId),
+                        spaceId = DomainId(spaceDeleteOneCommand.spaceId)
+                    )
+                }
+            }
+        }
+
+        val spaceDeleteAllCommand = SpaceDeleteUsecase.DeleteAllCommand(
+            userId = "userId",
+            spaceIds = listOf("spaceId1", "spaceId2")
+        )
+        `when`("여러 스페이스 아이디가 주어진다면") {
+            spaceCommandService.deleteAll(spaceDeleteAllCommand)
+            then("여러 스페이스를 삭제한다") {
+                verify {
+                    spaceManagementPort.deleteAllBySpaceIds(
+                        userId = DomainId(spaceDeleteAllCommand.userId),
+                        spaceIds = spaceDeleteAllCommand.spaceIds.map { DomainId(it) }
+                    )
+                }
+            }
+        }
+    }
+
+
+
+
 }) {
 }
