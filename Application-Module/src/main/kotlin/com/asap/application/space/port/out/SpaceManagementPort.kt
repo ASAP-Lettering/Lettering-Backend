@@ -28,6 +28,11 @@ interface SpaceManagementPort {
 
     fun update(space: Space): Space
 
+    fun updateIndexes(
+        userId: DomainId,
+        orders: List<IndexedSpace>
+    )
+
 
     fun deleteById(
         userId: DomainId,

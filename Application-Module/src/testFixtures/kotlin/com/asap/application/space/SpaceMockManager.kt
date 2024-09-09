@@ -15,4 +15,10 @@ class SpaceMockManager(
     fun getSpaceCount(userId: String): Int{
         return spaceManagementPort.getAllIndexedSpace(DomainId(userId)).size
     }
+
+    fun getSpaceIndexes(userId: String): List<Pair<String, Int>>{
+        return spaceManagementPort.getAllIndexedSpace(DomainId(userId)).map{
+            it.id.value to it.index
+        }
+    }
 }

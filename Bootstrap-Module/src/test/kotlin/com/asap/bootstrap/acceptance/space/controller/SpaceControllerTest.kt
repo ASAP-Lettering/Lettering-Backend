@@ -216,5 +216,20 @@ class SpaceControllerTest : AcceptanceSupporter() {
         }
     }
 
+    @Test
+    fun updateSpaceOrder() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        // when
+        val response = mockMvc.put("/api/v1/spaces/order") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
 
 }
