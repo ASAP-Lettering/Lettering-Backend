@@ -98,7 +98,8 @@ interface SpaceApi {
         ]
     )
     fun deleteSpace(
-        @PathVariable spaceId: String
+        @PathVariable spaceId: String,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "스페이스 순서 변경")
@@ -126,7 +127,8 @@ interface SpaceApi {
         ]
     )
     fun deleteSpaces(
-        @RequestBody request: DeleteMultipleSpacesRequest
+        @RequestBody request: DeleteMultipleSpacesRequest,
+        @AccessUser userId: String
     )
 
 

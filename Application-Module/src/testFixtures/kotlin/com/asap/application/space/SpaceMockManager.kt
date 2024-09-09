@@ -11,4 +11,8 @@ class SpaceMockManager(
     fun settingSpace(userId: String): String{
         return spaceManagementPort.createSpace(DomainId(userId), "spaceName", 0).id.value
     }
+
+    fun getSpaceCount(userId: String): Int{
+        return spaceManagementPort.getAllIndexedSpace(DomainId(userId)).size
+    }
 }

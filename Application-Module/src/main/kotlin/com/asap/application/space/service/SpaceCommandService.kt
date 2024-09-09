@@ -1,6 +1,7 @@
 package com.asap.application.space.service
 
 import com.asap.application.space.port.`in`.SpaceCreateUsecase
+import com.asap.application.space.port.`in`.SpaceDeleteUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.domain.common.DomainId
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class SpaceCommandService(
     private val spaceManagementPort: SpaceManagementPort,
-) : SpaceCreateUsecase, SpaceUpdateNameUsecase {
+) : SpaceCreateUsecase, SpaceUpdateNameUsecase, SpaceDeleteUsecase {
     override fun create(command: SpaceCreateUsecase.Command) {
         spaceManagementPort.createSpace(
             userId = DomainId(command.userId),
@@ -25,5 +26,19 @@ class SpaceCommandService(
         )
         val updatedSpace = space.updateName(command.name)
         spaceManagementPort.update(updatedSpace)
+    }
+
+    override fun deleteOne(command: SpaceDeleteUsecase.DeleteOneCommand) {
+        spaceManagementPort.deleteById(
+            userId = DomainId(command.userId),
+            spaceId = DomainId(command.spaceId)
+        )
+    }
+
+    override fun deleteAll(command: SpaceDeleteUsecase.DeleteAllCommand) {
+        spaceManagementPort.deleteAllBySpaceIds(
+            userId = DomainId(command.userId),
+            spaceIds = command.spaceIds.map { DomainId(it) }
+        )
     }
 }

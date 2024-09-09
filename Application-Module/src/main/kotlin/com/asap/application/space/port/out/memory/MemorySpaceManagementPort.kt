@@ -118,6 +118,23 @@ class MemorySpaceManagementPort(
         return space
     }
 
+    override fun deleteById(userId: DomainId, spaceId: DomainId) {
+        spaces.filter { it.value.userId == userId.value && it.value.id == spaceId.value }
+            .keys
+            .forEach {
+                spaces.remove(it)
+            }
+    }
+
+    override fun deleteAllBySpaceIds(userId: DomainId, spaceIds: List<DomainId>) {
+        val spaceIdValues = spaceIds.map { it.value }
+        spaces.filter { it.value.userId == userId.value && spaceIdValues.contains(it.value.id) }
+            .keys
+            .forEach {
+                spaces.remove(it)
+            }
+    }
+
 
     data class SpaceEntity(
         val id: String,
