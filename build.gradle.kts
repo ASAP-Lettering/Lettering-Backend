@@ -2,13 +2,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin(Plugins.JVM.module) version Plugins.JVM.version
 
-    id("org.springframework.boot") version "3.3.2"
-    id("io.spring.dependency-management") version "1.1.6"
+    id(Plugins.SPRING_BOOT.module) version Plugins.SPRING_BOOT.version
+    id(Plugins.SPRING_DEPENDENCY_MANAGEMENT.module) version Plugins.SPRING_DEPENDENCY_MANAGEMENT.version
 
-    kotlin("plugin.spring") version "1.9.24"
-    kotlin("plugin.jpa") version "1.9.24"
+    kotlin(Plugins.KOTLIN_SPRING.module) version Plugins.KOTLIN_SPRING.version
+    kotlin(Plugins.KOTLIN_JPA.module) version Plugins.KOTLIN_JPA.version
 
     // test fixtures
     `java-test-fixtures`
@@ -19,23 +19,21 @@ allprojects {
     group = "com.asap"
     version = ""
 
-    val javaVersion = "17"
-    val kotestVersion = "5.9.1"
-    val mockkVersion = "1.13.12"
+
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = Versions.JAVA_VERSION
+        targetCompatibility = Versions.JAVA_VERSION
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = javaVersion
+            jvmTarget = Versions.JAVA_VERSION
         }
     }
 
     tasks.withType<BootJar> {
-        enabled = project.name == "Bootstrap-Module"
+        enabled = project.name == Versions.ROOT_MODULE
     }
 
 
@@ -44,44 +42,29 @@ allprojects {
     }
 
     apply {
-        plugin("kotlin")
-        plugin("kotlin-spring")
-
-        plugin("org.jetbrains.kotlin.plugin.spring")
-        plugin("org.jetbrains.kotlin.plugin.jpa")
-
-        plugin("org.springframework.boot")
-        plugin("io.spring.dependency-management")
-
-
-        plugin("java-test-fixtures")
+        plugin(Plugins.JVM.id)
+        plugin(Plugins.KOTLIN_SPRING.id)
+        plugin(Plugins.KOTLIN_JPA.id)
+        plugin(Plugins.SPRING_BOOT.id)
+        plugin(Plugins.SPRING_DEPENDENCY_MANAGEMENT.id)
+        plugin(Plugins.TEST_FIXTURES.id)
     }
 
     dependencies {
-        implementation("org.springframework.boot:spring-boot-starter")
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-        // kotlin test
-        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-        testFixturesImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-
-        // spring boot test
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
-
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-        // kotest
-        testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
-        testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
-        testImplementation("io.kotest:kotest-property:$kotestVersion")
-
-        // mockk
-        testImplementation("io.mockk:mockk:${mockkVersion}")
-
-        // jackson
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        implementation(Dependencies.Spring.BOOT)
+        implementation(Dependencies.Kotlin.KOTLIN_REFLECT)
+        testImplementation(Dependencies.Spring.TEST)
+        testFixturesImplementation(Dependencies.Spring.TEST)
+        testRuntimeOnly(Dependencies.Junit.JUNIT_LAUNCHER)
+        testImplementation(Dependencies.Kotlin.KOTLIN_TEST_JUNIT5)
+        testFixturesImplementation(Dependencies.Kotlin.KOTLIN_TEST_JUNIT5)
+        testImplementation(Dependencies.Kotest.KOTEST_RUNNER)
+        testImplementation(Dependencies.Kotest.KOTEST_ASSERTIONS_CORE)
+        testImplementation(Dependencies.Kotest.KOTEST_PROPERTY)
+        testImplementation(Dependencies.Mockk.MOCKK)
+        implementation(Dependencies.Jackson.KOTLIN)
+        implementation(Dependencies.Jackson.JAVA_TIME)
+        implementation(Dependencies.Logger.KOTLIN_OSHAI)
     }
 
     kotlin {

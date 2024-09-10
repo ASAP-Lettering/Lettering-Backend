@@ -1,4 +1,4 @@
 dependencies{
-    implementation(project(":Domain-Module"))
-    implementation(project(":Common-Module"))
+    implementation(project(Modules.DOMAIN_MODULE))
+    implementation(project(Modules.COMMON_MODULE))
 }

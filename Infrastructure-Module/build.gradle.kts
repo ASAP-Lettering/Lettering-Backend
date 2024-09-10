@@ -1,7 +1,7 @@
 subprojects{
     dependencies{
-        implementation(project(":Common-Module"))
-        implementation(project(":Application-Module"))
-        implementation(project(":Domain-Module"))
+        implementation(project(Modules.COMMON_MODULE))
+        implementation(project(Modules.APPLICATION_MODULE))
+        implementation(project(Modules.DOMAIN_MODULE))
     }
 }
