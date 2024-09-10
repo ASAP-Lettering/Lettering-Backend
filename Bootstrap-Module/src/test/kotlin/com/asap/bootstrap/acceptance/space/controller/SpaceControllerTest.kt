@@ -7,11 +7,9 @@ import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
 import com.asap.bootstrap.space.dto.UpdateSpaceOrderRequest
 import com.asap.security.jwt.JwtTestConfig
-import com.asap.security.jwt.TestJwtDataGenerator
 import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
@@ -42,9 +40,6 @@ class SpaceControllerTest : AcceptanceSupporter() {
 
     @MockBean
     lateinit var spaceUpdateIndexUsecase: SpaceUpdateIndexUsecase
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
 
     @Test
     fun getMainSpaceId() {

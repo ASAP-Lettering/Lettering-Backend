@@ -12,7 +12,7 @@ class FileConverter {
             name = multipartFile.originalFilename!!,
             size = multipartFile.size,
             contentType = multipartFile.contentType!!,
-            inputStream = { multipartFile.bytes }
+            inputStream = multipartFile.inputStream
         )
     }
 }

@@ -3,6 +3,8 @@ spring:
     group:
       dev:
         - security
+        - aws
       local:
         - security-local
+        - aws-local
     active: local

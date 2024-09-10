@@ -13,4 +13,7 @@ dependencies{
     implementation(project(Modules.INFRASTRUCTURE_SECURITY_MODULE))
     testImplementation(testFixtures(project(Modules.INFRASTRUCTURE_SECURITY_MODULE)))
     testFixturesImplementation(testFixtures(project(Modules.INFRASTRUCTURE_SECURITY_MODULE)))
+
+    implementation(project(Modules.INFRASTRUCTURE_AWS_MODULE))
+    testFixturesImplementation(testFixtures(project(Modules.INFRASTRUCTURE_AWS_MODULE)))
 }

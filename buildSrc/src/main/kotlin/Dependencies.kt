@@ -8,6 +8,15 @@ object Dependencies {
         const val WEBFLUX = "org.springframework.boot:spring-boot-starter-webflux"
         const val REACTOR_TEST = "io.projectreactor:reactor-test"
         const val OPEN_API = "org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.OPEN_API}"
+
+        object AWS{
+            const val AWS = "io.awspring.cloud:spring-cloud-aws-dependencies:${Versions.SPRING_AWS}"
+            const val STARTER = "io.awspring.cloud:spring-cloud-aws-starter"
+            const val S3 = "io.awspring.cloud:spring-cloud-aws-starter-s3"
+        }
+
+
+
     }
 
 

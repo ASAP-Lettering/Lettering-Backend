@@ -14,4 +14,6 @@ object Versions {
     const val OPEN_API = "2.6.0"
 
     const val KOTLIN_OSHAI = "5.1.4"
+
+    const val SPRING_AWS = "3.0.0"
 }
