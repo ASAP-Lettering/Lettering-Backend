@@ -8,5 +8,7 @@ interface UserTokenManagementPort {
 
     fun saveUserToken(userToken: UserToken): UserToken
 
+    fun deleteUserToken(token: String)
+
 
 }

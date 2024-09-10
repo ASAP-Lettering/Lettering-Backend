@@ -15,4 +15,8 @@ class UserClaims {
         val userId: String
     )
 
+    data class Refresh(
+        val userId: String
+    )
+
 }

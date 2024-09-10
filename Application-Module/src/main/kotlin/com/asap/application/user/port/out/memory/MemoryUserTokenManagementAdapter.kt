@@ -21,4 +21,9 @@ class MemoryUserTokenManagementAdapter: UserTokenManagementPort {
         tokens.add(userToken.token)
         return userToken
     }
+
+    override fun deleteUserToken(token: String) {
+        tokens.remove(token)
+        userTokens.removeIf { it.token == token }
+    }
 }

@@ -56,6 +56,50 @@ class TestJwtDataGenerator(
         )
     }
 
+    fun generateRefreshToken(
+        userId: String = "userId",
+        issuedAt: Date = Date()
+    ): String {
+        return JwtProvider.createToken(
+            JwtPayload(
+                issuedAt = issuedAt,
+                issuer = UserJwtProperties.ISSUER,
+                subject = UserJwtProperties.SUBJECT,
+                expireTime = UserJwtProperties.REFRESH_TOKEN_EXPIRE_TIME,
+                claims = UserJwtClaims(
+                    userId = userId,
+                    tokenType = TokenType.REFRESH
+                )
+            ),
+            userJwtProperties.secret
+        )
+    }
+
+    fun generateExpiredToken(
+        tokenType: TokenType,
+        userId: String = "userId",
+    ): String{
+        return JwtProvider.createToken(
+            JwtPayload(
+                issuedAt = Date(System.currentTimeMillis() - tokenTypeExpireTime(tokenType)),
+                issuer = UserJwtProperties.ISSUER,
+                subject = UserJwtProperties.SUBJECT,
+                expireTime = 1,
+                claims = UserJwtClaims(
+                    userId = userId,
+                    tokenType = tokenType
+                )
+            ),
+            userJwtProperties.secret
+        )
+    }
+
+    private fun tokenTypeExpireTime(tokenType: TokenType): Long {
+        return when(tokenType) {
+            TokenType.ACCESS -> UserJwtProperties.ACCESS_TOKEN_EXPIRE_TIME
+            TokenType.REFRESH -> UserJwtProperties.REFRESH_TOKEN_EXPIRE_TIME
+        }
+    }
 
     fun generateInvalidToken(): String = "invalidToken"
 

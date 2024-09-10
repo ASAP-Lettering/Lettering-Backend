@@ -5,7 +5,7 @@ import com.asap.common.exception.BusinessException
 sealed class TokenException(
     codePrefix: String = CODE_PREFIX,
     errorCode: Int,
-    httpStatus: Int = 400,
+    httpStatus: Int = 401,
     message: String
 ): BusinessException(codePrefix, errorCode, httpStatus, message) {
 

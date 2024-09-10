@@ -7,6 +7,10 @@ class UserJwtClaims(
     val userId: String,
     val tokenType: TokenType
 ): JwtClaims {
+
+    fun equalsTokenType(tokenType: TokenType): Boolean {
+        return this.tokenType == tokenType
+    }
 }
 
 class UserRegisterJwtClaims(
