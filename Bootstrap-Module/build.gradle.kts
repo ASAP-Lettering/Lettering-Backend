@@ -1,17 +1,16 @@
 dependencies{
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation(Dependencies.Spring.WEB)
+    implementation(Dependencies.Spring.OPEN_API)
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
+    implementation(project(Modules.APPLICATION_MODULE))
+    testImplementation(testFixtures(project(Modules.APPLICATION_MODULE)))
 
-    implementation(project(":Application-Module"))
-    testImplementation(testFixtures(project(":Application-Module")))
+    implementation(project(Modules.COMMON_MODULE))
 
-    implementation(project(":Common-Module"))
-
-    implementation(project(":Infrastructure-Module:Client"))
-    testImplementation(testFixtures(project(":Infrastructure-Module:Client")))
-    implementation(project(":Infrastructure-Module:Security"))
-    testImplementation(testFixtures(project(":Infrastructure-Module:Security")))
-    testFixturesImplementation(testFixtures(project(":Infrastructure-Module:Security")))
+    implementation(project(Modules.INFRASTRUCTURE_CLIENT_MODULE))
+    testImplementation(testFixtures(project(Modules.INFRASTRUCTURE_CLIENT_MODULE)))
+    implementation(project(Modules.INFRASTRUCTURE_SECURITY_MODULE))
+    testImplementation(testFixtures(project(Modules.INFRASTRUCTURE_SECURITY_MODULE)))
+    testFixturesImplementation(testFixtures(project(Modules.INFRASTRUCTURE_SECURITY_MODULE)))
 }

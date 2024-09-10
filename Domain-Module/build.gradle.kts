@@ -1,5 +1,5 @@
 dependencies{
-    implementation("com.fasterxml.uuid:java-uuid-generator:5.1.0")
+    implementation(Dependencies.UUID.FASTER_XML)
 
-    implementation(project(":Common-Module"))
+    implementation(project(Modules.COMMON_MODULE))
 }

@@ -1,5 +1,5 @@
 dependencies{
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    testImplementation("io.projectreactor:reactor-test")
-    testFixturesImplementation("com.squareup.okhttp3:mockwebserver")
+    implementation(Dependencies.Spring.WEBFLUX)
+    testImplementation(Dependencies.Spring.REACTOR_TEST)
+    testFixturesImplementation(Dependencies.MockServer.MOCK_SERVER)
 }
