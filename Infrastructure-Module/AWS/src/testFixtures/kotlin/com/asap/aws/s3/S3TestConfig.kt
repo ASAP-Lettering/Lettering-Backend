@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
 
 @TestConfiguration
 class S3TestConfig {
@@ -26,6 +27,9 @@ class S3TestConfig {
 
     @MockBean
     lateinit var s3Template: S3Template
+
+    @MockBean
+    lateinit var s3Presigner: S3Presigner
 
 
 }
