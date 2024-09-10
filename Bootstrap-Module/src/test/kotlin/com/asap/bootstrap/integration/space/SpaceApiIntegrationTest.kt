@@ -37,8 +37,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun getMainSpaceId() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         spaceMockManager.settingSpace(userId)
         // when
@@ -60,8 +59,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun createSpace() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val request = CreateSpaceRequest(
             spaceName = "spaceName",
@@ -82,8 +80,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun updateSpaceName() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val request = UpdateSpaceNameRequest(
@@ -104,8 +101,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun getSpaces() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         for (i in 0..2)
             spaceMockManager.settingSpace(userId)
@@ -152,8 +148,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun deleteSpace() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         // when
@@ -170,8 +165,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun deleteSpaces() {
         // given
-        val userId = UUID.randomUUID().toString()
-        userMockManager.settingUser(userId)
+        val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
         val request = DeleteMultipleSpacesRequest(spaceIds)
@@ -195,8 +189,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("space의 순서를 업데이트 한다.")
         fun updateSpaceOrder() {
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)
@@ -219,8 +212,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("유효하지 않은 spaceId로 업데이트 요청시 400 에러를 반환한다.")
         fun updateSpaceOrder_with_invalid_spaceId() {
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)
@@ -244,8 +236,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("유효하지 않은 index로 업데이트 요청시 400 에러를 반환한다.")
         fun updateSpaceOrderFail_with_Invalid_Index(){
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)
@@ -269,8 +260,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("사용자의 space보다 많은 index로 업데이트 요청시 400 에러를 반환한다.")
         fun updateSpaceOrderFail_with_over_Index_exists_space(){
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)
@@ -293,8 +283,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("사용자의 space보다 적은 index로 업데이트 요청시 400 에러를 반환한다.")
         fun updateSpaceOrderFail_with_less_Index_exists_space(){
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)
@@ -317,8 +306,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("인덱스를 중복해서 요청하면 400 에러를 반환한다.")
         fun updateSpaceOrderFail_with_duplicate_Index(){
             // given
-            val userId = UUID.randomUUID().toString()
-            userMockManager.settingUser(userId)
+            val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceIndexes = (0..3).map {
                 val spaceId = spaceMockManager.settingSpace(userId)

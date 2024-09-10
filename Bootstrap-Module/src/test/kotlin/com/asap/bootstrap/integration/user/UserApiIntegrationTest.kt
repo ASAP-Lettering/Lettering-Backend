@@ -79,7 +79,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         }
         // then
         response.andExpect {
-            status { isBadRequest() }
+            status { isUnauthorized() }
             jsonPath("$.code"){
                 exists()
                 isString()
@@ -99,7 +99,7 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         }
         // then
         response.andExpect {
-            status { isBadRequest() }
+            status { isUnauthorized() }
             jsonPath("$.code"){
                 exists()
                 isString()

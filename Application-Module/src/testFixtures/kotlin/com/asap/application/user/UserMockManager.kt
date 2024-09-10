@@ -7,6 +7,7 @@ import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.vo.UserPermission
 import java.time.LocalDate
+import java.util.*
 
 
 class UserMockManager(
@@ -26,9 +27,9 @@ class UserMockManager(
     }
 
     fun settingUser(
-        userId: String = "userId",
-    ){
-        userManagementPort.saveUser(
+        userId: String = UUID.randomUUID().toString(),
+    ): String{
+        val user = userManagementPort.saveUser(
             User(
                 id = DomainId(userId),
                 username = "nickname",
@@ -37,6 +38,7 @@ class UserMockManager(
                 birthday = LocalDate.now()
             )
         )
+        return user.id.value
     }
 
 }

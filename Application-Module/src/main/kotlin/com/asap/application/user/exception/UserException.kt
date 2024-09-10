@@ -31,7 +31,8 @@ sealed class UserException(
         message: String = "사용자 권한이 없습니다."
     ): UserException(
         errorCode = 4,
-        message = message
+        message = message,
+        httpStatus = 401
     )
 
 

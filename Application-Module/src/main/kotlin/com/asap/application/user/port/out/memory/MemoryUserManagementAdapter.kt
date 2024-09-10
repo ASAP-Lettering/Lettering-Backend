@@ -1,5 +1,6 @@
 package com.asap.application.user.port.out.memory
 
+import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
@@ -21,5 +22,9 @@ class MemoryUserManagementAdapter: UserManagementPort {
 
     override fun getUser(userId: DomainId): User? {
         return users[userId]
+    }
+
+    override fun getUserNotNull(userId: DomainId): User {
+        return users[userId] ?: throw UserException.UserNotFoundException()
     }
 }

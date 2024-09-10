@@ -73,6 +73,16 @@ class UserTokenConvertAdapter(
         return JwtProvider.createToken(payload, userJwtProperties.secret)
     }
 
+    override fun resolveRefreshToken(token: String): UserClaims.Refresh {
+        val jwtPayload: JwtPayload<UserJwtClaims> = TokenType.REFRESH.resolveUserToken {
+            resolveToken(token, userJwtProperties.secret)
+        }
+        val jwtClaims = jwtPayload.claims
+        return UserClaims.Refresh(
+            userId = jwtClaims.userId
+        )
+    }
+
     private fun <T : JwtClaims> getDefaultPayload(
         jwtClaims: T,
         expireTime: Long
@@ -102,7 +112,7 @@ class UserTokenConvertAdapter(
     ): JwtPayload<UserJwtClaims> {
         return resolveToken {
             val jwtPayload = resolve()
-            if (jwtPayload.claims.tokenType != this) {
+            if (jwtPayload.claims.equalsTokenType(this).not()) {
                 throw TokenException.InvalidTokenException("요청 토큰 타입이 올바르지 않습니다.")
             }
             return@resolveToken jwtPayload
