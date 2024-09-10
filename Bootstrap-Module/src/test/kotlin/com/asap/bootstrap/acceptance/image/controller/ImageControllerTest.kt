@@ -5,10 +5,8 @@ import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.common.util.FileConverter
 import com.asap.bootstrap.image.controller.ImageController
 import com.asap.common.file.FileMetaData
-import com.asap.security.jwt.TestJwtDataGenerator
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
@@ -17,10 +15,6 @@ import org.springframework.test.web.servlet.multipart
 
 @WebMvcTest(ImageController::class)
 class ImageControllerTest : AcceptanceSupporter() {
-
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
 
     @MockBean
     lateinit var uploadImageUsecase: UploadImageUsecase
@@ -33,7 +27,7 @@ class ImageControllerTest : AcceptanceSupporter() {
         //given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         val mockFile = MockMultipartFile("image", "test.jpg", "image/jpeg", "test".toByteArray())
-        val mockFileMetaData = FileMetaData("test.jpg", 4, "image/jpeg") { "test".toByteArray() }
+        val mockFileMetaData = FileMetaData("test.jpg", 4, "image/jpeg", mockFile.inputStream)
         BDDMockito.given(fileConverter.convert(mockFile))
             .willReturn(mockFileMetaData)
         BDDMockito.given(

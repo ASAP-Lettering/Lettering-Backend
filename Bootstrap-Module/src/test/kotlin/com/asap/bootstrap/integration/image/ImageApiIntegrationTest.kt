@@ -40,6 +40,8 @@ class ImageApiIntegrationTest: IntegrationSupporter() {
                 isString()
                 isNotEmpty()
             }
+        }.andDo {
+            print()
         }
     }
 }
