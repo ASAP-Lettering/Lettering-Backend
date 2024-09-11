@@ -24,7 +24,7 @@ class LetterApiIntegrationTest: IntegrationSupporter() {
             draftId = "draftId"
         )
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         userMockManager.settingToken(accessToken)
         //when
         val response = mockMvc.post("/api/v1/letters/send") {

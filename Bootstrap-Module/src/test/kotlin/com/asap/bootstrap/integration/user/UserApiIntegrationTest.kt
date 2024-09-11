@@ -4,7 +4,6 @@ import com.asap.application.user.UserMockManager
 import com.asap.application.user.exception.UserException
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.user.dto.RegisterUserRequest
-import com.asap.security.jwt.TestJwtDataGenerator
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -13,10 +12,6 @@ import java.time.LocalDate
 
 
 class UserApiIntegrationTest: IntegrationSupporter() {
-
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
     @Autowired
     lateinit var userMockManager: UserMockManager
 

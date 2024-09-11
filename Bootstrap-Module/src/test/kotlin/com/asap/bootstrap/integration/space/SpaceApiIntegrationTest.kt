@@ -7,7 +7,6 @@ import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
 import com.asap.bootstrap.space.dto.UpdateSpaceNameRequest
 import com.asap.bootstrap.space.dto.UpdateSpaceOrderRequest
-import com.asap.security.jwt.TestJwtDataGenerator
 import io.kotest.matchers.maps.haveValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.haveLength
@@ -24,9 +23,6 @@ import java.util.*
 
 
 class SpaceApiIntegrationTest : IntegrationSupporter() {
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
 
     @Autowired
     lateinit var spaceMockManager: SpaceMockManager
