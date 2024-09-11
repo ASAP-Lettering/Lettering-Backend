@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service
 @Service
 class SpaceCommandService(
     private val spaceManagementPort: SpaceManagementPort,
-    private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 ) : SpaceCreateUsecase, SpaceUpdateNameUsecase, SpaceDeleteUsecase, SpaceUpdateIndexUsecase {
+
+    private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 
 
     override fun create(command: SpaceCreateUsecase.Command) {
