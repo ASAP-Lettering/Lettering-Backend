@@ -2,7 +2,6 @@ package com.asap.bootstrap.integration.image
 
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.security.jwt.TestJwtDataGenerator
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -10,9 +9,6 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.multipart
 
 class ImageApiIntegrationTest: IntegrationSupporter() {
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
 
     @Autowired
     lateinit var userMockManager: UserMockManager

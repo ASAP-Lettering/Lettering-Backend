@@ -6,11 +6,9 @@ import com.asap.application.space.port.`in`.SpaceDeleteUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateIndexUsecase
 import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
-import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.Space
-import com.asap.domain.space.service.SpaceIndexValidator
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
@@ -20,11 +18,9 @@ import io.mockk.verify
 class SpaceCommandServiceTest : BehaviorSpec({
 
     val spaceManagementPort = mockk<SpaceManagementPort>(relaxed = true)
-    val spaceIndexValidator = mockk<SpaceIndexValidator>(relaxed = true)
 
     val spaceCommandService = SpaceCommandService(
         spaceManagementPort,
-        spaceIndexValidator
     )
 
 
@@ -145,15 +141,6 @@ class SpaceCommandServiceTest : BehaviorSpec({
             spaceCommandService.update(spaceUpdateIndexCommand)
             then("스페이스 순서를 수정한다") {
                 verify {
-                    spaceIndexValidator.validate(
-                        indexedSpaces = indexedSpaces,
-                        validateIndex = mapOf(
-                            DomainId("spaceId1") to 1,
-                            DomainId("spaceId2") to 0
-                        )
-                    )
-                }
-                verify {
                     spaceManagementPort.updateIndexes(
                         userId = DomainId(spaceUpdateIndexCommand.userId),
                         orders = listOf(
@@ -166,20 +153,22 @@ class SpaceCommandServiceTest : BehaviorSpec({
         }
 
 
-        every {
-            spaceIndexValidator.validate(
-                indexedSpaces = indexedSpaces,
-                validateIndex = mapOf(
-                    DomainId("spaceId1") to 1,
-                    DomainId("spaceId2") to 0
-                )
+        val invalidCommand = SpaceUpdateIndexUsecase.Command(
+            userId = "userId",
+            orders = listOf(
+                SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId1", 1),
+                SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId2", 2),
+                SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId3", 3)
             )
-        } throws DefaultException.InvalidArgumentException()
+        )
+        every {
+            spaceManagementPort.getAllIndexedSpace(DomainId(invalidCommand.userId))
+        } returns indexedSpaces
         `when`("인덱스 검증과정에서 예외가 발생한다면") {
             then("스페이스 순서를 수정하지 않는다") {
                 shouldThrow<SpaceException.InvalidSpaceUpdateException> {
                     spaceCommandService.update(
-                        spaceUpdateIndexCommand
+                        invalidCommand
                     )
                 }
             }

@@ -6,7 +6,6 @@ import com.asap.bootstrap.auth.dto.ReissueRequest
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
 import com.asap.client.KakaoTestData
 import com.asap.client.MockServer
-import com.asap.security.jwt.TestJwtDataGenerator
 import com.asap.security.jwt.user.TokenType
 import org.junit.jupiter.api.Nested
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,9 +17,6 @@ class AuthApiIntegrationTest : IntegrationSupporter() {
 
     @Autowired
     lateinit var mockWebServer: MockServer
-
-    @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
 
     @Autowired
     lateinit var userMockManager: UserMockManager
