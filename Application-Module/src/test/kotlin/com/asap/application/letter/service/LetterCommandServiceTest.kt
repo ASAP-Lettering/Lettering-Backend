@@ -1,6 +1,7 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
+import com.asap.application.letter.port.`in`.AddLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
@@ -124,6 +125,35 @@ class LetterCommandServiceTest : BehaviorSpec({
                     this.isNotBlank()
                     this.isNotEmpty()
                 }
+            }
+        }
+    }
+
+
+    given("검증된 편지를 추가할 때") {
+        val letterId = "letter-id"
+        val command = AddLetterUsecase.Command.VerifyLetter(letterId, "user-id")
+        val sendLetter = SendLetter(
+            id = DomainId(letterId),
+            receiverName = "receiver-name",
+            content = "content",
+            images = emptyList(),
+            templateType = 1,
+            senderId = DomainId("sender-id"),
+            letterCode = "letter-code"
+        )
+        every {
+            mockSendLetterManagementPort.getExpiredLetterNotNull(
+                any(), any(DomainId::class)
+            )
+        } returns sendLetter
+        `when`("해당 편지가 아직 받지 않은 상태라면") {
+            letterCommandService.addVerifiedLetter(command)
+            then("독립 편지로 저장된다.") {
+                verify {
+                    mockIndependentLetterManagementPort.save(any())
+                }
+                verify { mockSendLetterManagementPort.remove(sendLetter.id) }
             }
         }
     }
