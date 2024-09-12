@@ -17,8 +17,35 @@ interface LetterApi {
 
     @Operation(summary = "편지 열람 가능 검증")
     @PutMapping("/verify")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 열람 가능 검증 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = LetterVerifyResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = """
+                    LETTER-001 :편지가 존재하지 않음
+                """
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = """
+                    LETTER-002 :해당 사용자는 편지 열람 권한이 없음
+                """
+            )
+        ]
+    )
     fun verifyLetter(
-        @RequestBody request: LetterVerifyRequest
+        @RequestBody request: LetterVerifyRequest,
+        @AccessUser userId: String
     ): LetterVerifyResponse
 
 
