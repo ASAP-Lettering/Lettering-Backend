@@ -28,11 +28,12 @@ class UserMockManager(
 
     fun settingUser(
         userId: String = UUID.randomUUID().toString(),
+        username: String = "nickname",
     ): String{
         val user = userManagementPort.saveUser(
             User(
                 id = DomainId(userId),
-                username = "nickname",
+                username = username,
                 profileImage = "profileImage",
                 permission = UserPermission(true, true, true),
                 birthday = LocalDate.now()

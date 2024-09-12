@@ -11,4 +11,8 @@ data class SendLetter(
     val senderId: DomainId,
     val letterCode: String
 ) {
+
+    fun isSameReceiver(receiverName: () -> String): Boolean {
+        return this.receiverName == receiverName()
+    }
 }

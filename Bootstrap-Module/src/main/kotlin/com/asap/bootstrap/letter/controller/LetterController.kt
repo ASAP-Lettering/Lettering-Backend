@@ -1,16 +1,29 @@
 package com.asap.bootstrap.letter.controller
 
 import com.asap.application.letter.port.`in`.SendLetterUsecase
+import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.bootstrap.letter.api.LetterApi
 import com.asap.bootstrap.letter.dto.*
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class LetterController(
-    private val sendLetterUsecase: SendLetterUsecase
+    private val sendLetterUsecase: SendLetterUsecase,
+    private val verifyLetterAccessibleUsecase: VerifyLetterAccessibleUsecase
 ) : LetterApi {
-    override fun verifyLetter(request: LetterVerifyRequest): LetterVerifyResponse {
-        TODO("Not yet implemented")
+    override fun verifyLetter(
+        request: LetterVerifyRequest,
+        userId: String
+    ): LetterVerifyResponse {
+        val response = verifyLetterAccessibleUsecase.verify(
+            VerifyLetterAccessibleUsecase.Command(
+                letterCode = request.letterCode,
+                userId = userId
+            )
+        )
+        return LetterVerifyResponse(
+            letterId = response.letterId
+        )
     }
 
     override fun getReceiveLetter(letterId: String): ReceiveLetterInfoResponse {
