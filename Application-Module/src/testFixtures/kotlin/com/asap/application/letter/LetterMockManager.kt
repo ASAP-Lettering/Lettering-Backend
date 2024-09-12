@@ -32,20 +32,24 @@ class LetterMockManager(
     fun generateMockExpiredSendLetter(
         receiverName: String,
         receiverId: String,
-    ): String{
+        senderId: String = DomainId.generate().value
+    ): Map<String, Any>{
         val sendLetter = SendLetter(
             receiverName = receiverName,
             content = "content",
             images = listOf("image1", "image2"),
             templateType = 1,
-            senderId = DomainId.generate(),
+            senderId = DomainId(senderId),
             letterCode = letterCodeGenerator.generateCode(
                 content = "content",
-                ownerId = DomainId.generate().value
+                ownerId = DomainId(senderId).value
             )
         )
         sendLetterManagementPort.save(sendLetter)
         sendLetterManagementPort.expireLetter(DomainId(receiverId), sendLetter.id)
-        return sendLetter.letterCode
+        return mapOf(
+            "letterCode" to sendLetter.letterCode,
+            "letterId" to sendLetter.id.value
+        )
     }
 }

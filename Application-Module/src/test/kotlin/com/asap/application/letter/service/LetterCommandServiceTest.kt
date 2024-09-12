@@ -72,7 +72,7 @@ class LetterCommandServiceTest:BehaviorSpec({
             permission = UserPermission(true,true,true),
                 birthday = LocalDate.now()
         )
-        every { mockSendLetterManagementPort.verifiedLetter(any(), any()) } returns false
+        every { mockSendLetterManagementPort.verifiedLetter(any(), letterCode) } returns false
         every { mockSendLetterManagementPort.getLetterByCodeNotNull(any()) } returns sendLetter
         every { mockUserManagementPort.getUserNotNull(any()) } returns mockUser
         `when`("이전에 열람한 적이 없고, 수신자 이름과 같다면"){
@@ -112,8 +112,8 @@ class LetterCommandServiceTest:BehaviorSpec({
             }
         }
 
-        every { mockSendLetterManagementPort.verifiedLetter(any(), any()) } returns true
-        every { mockSendLetterManagementPort.getExpiredLetterNotNull(any(), any()) } returns sendLetter
+        every { mockSendLetterManagementPort.verifiedLetter(any(), letterCode) } returns true
+        every { mockSendLetterManagementPort.getExpiredLetterNotNull(any(), letterCode) } returns sendLetter
         `when`("이전에 열람한 적이 있는 사용자라면"){
             val response = letterCommandService.verify(verifyCommand)
             then("편지 코드가 검증되고, 편지 ID가 반환되어야 한다"){

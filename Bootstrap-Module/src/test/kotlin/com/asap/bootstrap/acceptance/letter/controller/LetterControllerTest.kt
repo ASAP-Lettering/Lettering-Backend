@@ -1,5 +1,6 @@
 package com.asap.bootstrap.acceptance.letter.controller
 
+import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.bootstrap.AcceptanceSupporter
@@ -11,8 +12,10 @@ import org.mockito.BDDMockito
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
+import java.time.LocalDate
 
 @WebMvcTest(LetterController::class)
 class LetterControllerTest: AcceptanceSupporter() {
@@ -22,6 +25,9 @@ class LetterControllerTest: AcceptanceSupporter() {
 
     @MockBean
     lateinit var sendLetterUsecase: SendLetterUsecase
+
+    @MockBean
+    lateinit var getVerifiedLetterUsecase: GetVerifiedLetterUsecase
 
 
     @Test
@@ -90,6 +96,60 @@ class LetterControllerTest: AcceptanceSupporter() {
                 exists()
                 isString()
                 isNotEmpty()
+            }
+        }
+    }
+
+
+    @Test
+    fun getVerifiedLetter() {
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val verifiedLetterInfoResponse = GetVerifiedLetterUsecase.Response(
+            senderName = "sendName",
+            content = "content",
+            sendDate = LocalDate.now(),
+            templateType = 1,
+            images = listOf("images")
+        )
+        BDDMockito.given(
+            getVerifiedLetterUsecase.receive(
+                GetVerifiedLetterUsecase.Query(
+                    letterId = "letterId",
+                    userId = "userId"
+                )
+            )
+        ).willReturn(verifiedLetterInfoResponse)
+        //when
+        val response = mockMvc.get("/api/v1/letters/{letterId}/verify", "letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.senderName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.content") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.date") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.images") {
+                exists()
+                isArray()
             }
         }
     }
