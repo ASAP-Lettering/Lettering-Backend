@@ -3,8 +3,10 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
+import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
 import com.asap.bootstrap.letter.dto.LetterVerifyRequest
 import com.asap.bootstrap.letter.dto.SendLetterRequest
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -187,7 +189,8 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterId = letterMockManager.generateMockExpiredSendLetter("username", userId, senderId)["letterId"] as String
+            val letterId =
+                letterMockManager.generateMockExpiredSendLetter("username", userId, senderId)["letterId"] as String
             //when
             val response = mockMvc.get("/api/v1/letters/$letterId/verify") {
                 contentType = MediaType.APPLICATION_JSON
@@ -233,6 +236,54 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //when
             val response = mockMvc.get("/api/v1/letters/$letterId/verify") {
                 contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+            //then
+            response.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.code") {
+                    value("LETTER-001")
+                }
+            }
+        }
+    }
+
+
+    @Nested
+    inner class AddVerifiedLetter {
+        @Test
+        @DisplayName("편지 열람 완료 처리 성공")
+        fun addVerifiedLetter() {
+            //given
+            val userId = userMockManager.settingUser(username = "username")
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val letterId = letterMockManager.generateMockExpiredSendLetter("username", userId)["letterId"] as String
+            val request = AddVerifiedLetterRequest(letterId)
+            //when
+            val response = mockMvc.post("/api/v1/letters/verify/receive") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+            //then
+            response.andExpect {
+                status { isOk() }
+            }
+            letterMockManager.isExistVerifiedLetter(letterId, userId) shouldBe false
+        }
+
+        @Test
+        @DisplayName("편지 열람 완료 처리 실패")
+        fun addVerifiedLetter_With_InvalidLetterId() {
+            //given
+            val userId = userMockManager.settingUser(username = "username")
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val letterId = "invalidLetterId"
+            val request = AddVerifiedLetterRequest(letterId)
+            //when
+            val response = mockMvc.post("/api/v1/letters/verify/receive") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
             //then

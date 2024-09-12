@@ -100,9 +100,30 @@ interface LetterApi {
 
 
     @Operation(summary = "편지 수령 처리")
-    @PostMapping("/receive/indirect")
-    fun addReceiveLetter(
-        @RequestBody request: AddIndirectLetterRequest
+    @PostMapping("/verify/receive")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 수령 처리 성공",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = """
+                    LETTER-001 :편지가 존재하지 않음
+                """,
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun addVerifiedLetter(
+        @RequestBody request: AddVerifiedLetterRequest,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "실물 편지 내용 추가")

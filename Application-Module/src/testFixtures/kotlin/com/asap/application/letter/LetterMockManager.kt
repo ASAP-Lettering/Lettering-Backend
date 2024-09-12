@@ -52,4 +52,16 @@ class LetterMockManager(
             "letterId" to sendLetter.id.value
         )
     }
+
+    fun isExistVerifiedLetter(
+        letterId: String,
+        userId: String
+    ): Boolean{
+        return try{
+            sendLetterManagementPort.getExpiredLetterNotNull(DomainId(userId), DomainId(letterId))
+            true
+        }catch (e: Exception){
+            return false
+        }
+    }
 }

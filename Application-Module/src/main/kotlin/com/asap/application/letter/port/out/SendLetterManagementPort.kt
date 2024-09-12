@@ -48,9 +48,8 @@ interface SendLetterManagementPort {
         letterCode: String
     ): Boolean
 
-    fun verifiedLetter(
-        receiverId: DomainId,
+    fun remove(
         letterId: DomainId
-    ): Boolean
+    )
 
 }
