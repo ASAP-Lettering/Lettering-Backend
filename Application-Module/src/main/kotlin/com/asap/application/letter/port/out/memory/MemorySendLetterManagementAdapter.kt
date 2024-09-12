@@ -51,8 +51,8 @@ class MemorySendLetterManagementAdapter(
             ?: false
     }
 
-    override fun verifiedLetter(receiverId: DomainId, letterId: DomainId): Boolean {
-        TODO("Not yet implemented")
+    override fun remove(letterId: DomainId) {
+        sendLetters.removeIf { it.id == letterId.value }
     }
 
     private fun matchingNotExpired(query: SendLetterEntity.() -> Boolean): SendLetterEntity? {

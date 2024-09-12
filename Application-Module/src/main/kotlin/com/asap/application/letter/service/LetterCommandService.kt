@@ -1,11 +1,14 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
+import com.asap.application.letter.port.`in`.AddLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
+import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
 import org.springframework.stereotype.Service
@@ -13,8 +16,9 @@ import org.springframework.stereotype.Service
 @Service
 class LetterCommandService(
     private val sendLetterManagementPort: SendLetterManagementPort,
-    private val userManagementPort: UserManagementPort
-) : SendLetterUsecase, VerifyLetterAccessibleUsecase {
+    private val independentLetterManagementPort: IndependentLetterManagementPort,
+    private val userManagementPort: UserManagementPort,
+) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase {
 
     private val letterCodeGenerator = LetterCodeGenerator()
 
@@ -59,5 +63,22 @@ class LetterCommandService(
             )
             return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
         } ?: throw LetterException.InvalidLetterAccessException()
+    }
+
+    override fun addVerifiedLetter(command: AddLetterUsecase.Command.VerifyLetter) {
+        val sendLetter = sendLetterManagementPort.getExpiredLetterNotNull(
+            receiverId = DomainId(command.userId),
+            letterId = DomainId(command.letterId)
+        )
+        val independentLetter = IndependentLetter(
+            senderId = sendLetter.senderId,
+            receiverId = DomainId(command.userId),
+            content = sendLetter.content,
+            images = sendLetter.images,
+            templateType = sendLetter.templateType,
+            receiveDate = sendLetter.createdDate
+        )
+        independentLetterManagementPort.save(independentLetter)
+        sendLetterManagementPort.remove(sendLetter.id)
     }
 }

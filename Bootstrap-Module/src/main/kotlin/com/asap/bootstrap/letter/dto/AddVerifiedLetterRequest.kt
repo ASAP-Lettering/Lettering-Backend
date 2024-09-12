@@ -1,6 +1,6 @@
 package com.asap.bootstrap.letter.dto
 
-data class AddIndirectLetterRequest(
+data class AddVerifiedLetterRequest(
     val letterId: String
 ) {
 }

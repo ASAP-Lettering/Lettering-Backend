@@ -100,9 +100,10 @@ interface LetterApi {
 
 
     @Operation(summary = "편지 수령 처리")
-    @PostMapping("/receive/indirect")
-    fun addReceiveLetter(
-        @RequestBody request: AddIndirectLetterRequest
+    @PostMapping("/verify/receive")
+    fun addVerifiedLetter(
+        @RequestBody request: AddVerifiedLetterRequest,
+        @AccessUser userId: String
     )
 
     @Operation(summary = "실물 편지 내용 추가")

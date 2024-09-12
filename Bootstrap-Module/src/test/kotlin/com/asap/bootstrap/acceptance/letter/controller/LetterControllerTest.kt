@@ -1,10 +1,12 @@
 package com.asap.bootstrap.acceptance.letter.controller
 
+import com.asap.application.letter.port.`in`.AddLetterUsecase
 import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.letter.controller.LetterController
+import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
 import com.asap.bootstrap.letter.dto.LetterVerifyRequest
 import com.asap.bootstrap.letter.dto.SendLetterRequest
 import org.junit.jupiter.api.Test
@@ -28,6 +30,9 @@ class LetterControllerTest: AcceptanceSupporter() {
 
     @MockBean
     lateinit var getVerifiedLetterUsecase: GetVerifiedLetterUsecase
+
+    @MockBean
+    lateinit var addLetterUsecase: AddLetterUsecase
 
 
     @Test
@@ -151,6 +156,25 @@ class LetterControllerTest: AcceptanceSupporter() {
                 exists()
                 isArray()
             }
+        }
+    }
+
+    @Test
+    fun addReceiveLetter() {
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request = AddVerifiedLetterRequest(
+            letterId = "letterId"
+        )
+        //when
+        val response = mockMvc.post("/api/v1/letters/verify/receive") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }
