@@ -6,6 +6,7 @@ import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.SendLetter
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 @Primary
@@ -30,7 +31,12 @@ class MemorySendLetterManagementAdapter(
     }
 
     override fun getExpiredLetterNotNull(receiverId: DomainId, letterCode: String): SendLetter {
-        return matching { (this.letterCode == letterCode) and (this.receiverId == receiverId.value) }?.toSendLetter()
+        return matchingExpired { (this.letterCode == letterCode) and (this.receiverId == receiverId.value) }?.toSendLetter()
+            ?: throw LetterException.SendLetterNotFoundException()
+    }
+
+    override fun getExpiredLetterNotNull(receiverId: DomainId, letterId: DomainId): SendLetter {
+        return matchingExpired { (this.id == letterId.value) and (this.receiverId == receiverId.value) }?.toSendLetter()
             ?: throw LetterException.SendLetterNotFoundException()
     }
 
@@ -45,8 +51,16 @@ class MemorySendLetterManagementAdapter(
             ?: false
     }
 
+    override fun verifiedLetter(receiverId: DomainId, letterId: DomainId): Boolean {
+        TODO("Not yet implemented")
+    }
+
     private fun matchingNotExpired(query: SendLetterEntity.() -> Boolean): SendLetterEntity? {
         return matching { this.isExpired.not() and query() }
+    }
+
+    private fun matchingExpired(query: SendLetterEntity.() -> Boolean): SendLetterEntity? {
+        return matching { this.isExpired and query() }
     }
 
     private fun matching(query: SendLetterEntity.() -> Boolean): SendLetterEntity? {
@@ -63,7 +77,8 @@ class MemorySendLetterManagementAdapter(
         val senderId: String,
         val letterCode: String,
         var isExpired: Boolean,
-        var receiverId: String
+        var receiverId: String,
+        val createdAt: LocalDateTime
     ) {
         fun toSendLetter(): SendLetter {
             return SendLetter(
@@ -73,7 +88,8 @@ class MemorySendLetterManagementAdapter(
                 images = images,
                 templateType = templateType,
                 senderId = DomainId(senderId),
-                letterCode = letterCode
+                letterCode = letterCode,
+                createdAt = createdAt
             )
         }
 
@@ -88,7 +104,8 @@ class MemorySendLetterManagementAdapter(
                     senderId = sendLetter.senderId.value,
                     letterCode = sendLetter.letterCode,
                     isExpired = false,
-                    receiverId = ""
+                    receiverId = "",
+                    createdAt = sendLetter.createdAt
                 )
             }
         }

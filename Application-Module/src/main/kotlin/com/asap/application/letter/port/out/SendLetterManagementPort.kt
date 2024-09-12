@@ -32,6 +32,11 @@ interface SendLetterManagementPort {
         letterCode: String
     ): SendLetter
 
+    fun getExpiredLetterNotNull(
+        receiverId: DomainId,
+        letterId: DomainId
+    ): SendLetter
+
 
     fun expireLetter(
         receiverId: DomainId,
@@ -41,6 +46,11 @@ interface SendLetterManagementPort {
     fun verifiedLetter(
         receiverId: DomainId,
         letterCode: String
+    ): Boolean
+
+    fun verifiedLetter(
+        receiverId: DomainId,
+        letterId: DomainId
     ): Boolean
 
 }

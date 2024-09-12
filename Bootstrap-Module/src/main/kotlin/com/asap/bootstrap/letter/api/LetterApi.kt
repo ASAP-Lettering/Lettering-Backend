@@ -1,5 +1,6 @@
 package com.asap.bootstrap.letter.api
 
+import com.asap.bootstrap.common.exception.ExceptionResponse
 import com.asap.bootstrap.common.security.annotation.AccessUser
 import com.asap.bootstrap.letter.dto.*
 import io.swagger.v3.oas.annotations.Operation
@@ -33,13 +34,25 @@ interface LetterApi {
                 responseCode = "400",
                 description = """
                     LETTER-001 :편지가 존재하지 않음
-                """
+                """,
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class)
+                    )
+                ]
             ),
             ApiResponse(
                 responseCode = "403",
                 description = """
                     LETTER-002 :해당 사용자는 편지 열람 권한이 없음
-                """
+                """,
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class)
+                    )
+                ]
             )
         ]
     )
@@ -54,9 +67,36 @@ interface LetterApi {
      */
     @Operation(summary = "검증된 편지 열람")
     @GetMapping("/{letterId}/verify")
-    fun getReceiveLetter(
-        @PathVariable letterId: String
-    ): ReceiveLetterInfoResponse
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 열람 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = VerifiedLetterInfoResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = """
+                    LETTER-001 :편지가 존재하지 않음
+                """,
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun getVerifiedLetter(
+        @PathVariable letterId: String,
+        @AccessUser userId: String
+    ): VerifiedLetterInfoResponse
 
 
     @Operation(summary = "편지 수령 처리")

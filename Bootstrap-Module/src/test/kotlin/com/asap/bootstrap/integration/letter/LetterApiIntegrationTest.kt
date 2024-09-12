@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 
@@ -30,7 +31,6 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
             val letterCode = letterMockManager.generateMockSendLetter("username")
             val request = LetterVerifyRequest(letterCode)
             //when
@@ -56,7 +56,6 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
             val request = LetterVerifyRequest("invalidLetterCode")
             //when
             val response = mockMvc.put("/api/v1/letters/verify") {
@@ -79,7 +78,6 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
             val letterCode = letterMockManager.generateMockSendLetter("otherUsername")
             val request = LetterVerifyRequest(letterCode)
             //when
@@ -103,8 +101,8 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
-            val letterCode = letterMockManager.generateMockExpiredSendLetter("username", "otherUserId")
+            val letterCode =
+                letterMockManager.generateMockExpiredSendLetter("username", "otherUserId")["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             //when
             val response = mockMvc.put("/api/v1/letters/verify") {
@@ -127,8 +125,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
-            val letterCode = letterMockManager.generateMockExpiredSendLetter("username", userId)
+            val letterCode = letterMockManager.generateMockExpiredSendLetter("username", userId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             //when
             val response = mockMvc.put("/api/v1/letters/verify") {
@@ -163,7 +160,6 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         )
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        userMockManager.settingToken(accessToken)
         //when
         val response = mockMvc.post("/api/v1/letters/send") {
             contentType = MediaType.APPLICATION_JSON
@@ -177,6 +173,74 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 exists()
                 isString()
                 isNotEmpty()
+            }
+        }
+    }
+
+    @Nested
+    inner class GetVerifiedLetter {
+
+        @Test
+        @DisplayName("이전에 검증 완료한 편지 열람 성공")
+        fun getVerifiedLetter() {
+            //given
+            val userId = userMockManager.settingUser(username = "username")
+            val senderId = userMockManager.settingUser(username = "senderUsername")
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val letterId = letterMockManager.generateMockExpiredSendLetter("username", userId, senderId)["letterId"] as String
+            //when
+            val response = mockMvc.get("/api/v1/letters/$letterId/verify") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+            //then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.content") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.date") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.templateType") {
+                    exists()
+                    isNumber()
+                }
+                jsonPath("$.images") {
+                    exists()
+                    isArray()
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("이전에 검증 완료한 편지가 없음")
+        fun getVerifiedLetter_With_InvalidLetterId() {
+            //given
+            val userId = userMockManager.settingUser(username = "username")
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            userMockManager.settingToken(accessToken)
+            val letterId = "invalidLetterId"
+            //when
+            val response = mockMvc.get("/api/v1/letters/$letterId/verify") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+            //then
+            response.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.code") {
+                    value("LETTER-001")
+                }
             }
         }
     }
