@@ -1,9 +1,6 @@
 package com.asap.bootstrap.acceptance.letter.controller
 
-import com.asap.application.letter.port.`in`.AddLetterUsecase
-import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
-import com.asap.application.letter.port.`in`.SendLetterUsecase
-import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.letter.controller.LetterController
 import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
@@ -33,6 +30,9 @@ class LetterControllerTest: AcceptanceSupporter() {
 
     @MockBean
     lateinit var addLetterUsecase: AddLetterUsecase
+
+    @MockBean
+    lateinit var getIndependentLettersUsecase: GetIndependentLettersUsecase
 
 
     @Test
@@ -118,7 +118,7 @@ class LetterControllerTest: AcceptanceSupporter() {
             images = listOf("images")
         )
         BDDMockito.given(
-            getVerifiedLetterUsecase.receive(
+            getVerifiedLetterUsecase.get(
                 GetVerifiedLetterUsecase.Query(
                     letterId = "letterId",
                     userId = "userId"
@@ -175,6 +175,55 @@ class LetterControllerTest: AcceptanceSupporter() {
         //then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+
+    @Test
+    fun getIndependentLetters() {
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val letterInfo = GetIndependentLettersUsecase.LetterInfo(
+            letterId = "letterId",
+            senderName = "senderName",
+            isNew = true
+        )
+        val response = GetIndependentLettersUsecase.Response(
+            letters = listOf(letterInfo)
+        )
+        BDDMockito.given(
+            getIndependentLettersUsecase.get(
+                GetIndependentLettersUsecase.Query(
+                    userId = "userId"
+                )
+            )
+        ).willReturn(response)
+        //when
+        val result = mockMvc.get("/api/v1/letters/independent") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                jsonPath("$.content[0].letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.content[0].senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.content[0].isNew") {
+                    exists()
+                    isBoolean()
+                }
+            }
         }
     }
 }

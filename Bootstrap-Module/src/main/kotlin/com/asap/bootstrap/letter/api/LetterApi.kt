@@ -3,6 +3,7 @@ package com.asap.bootstrap.letter.api
 import com.asap.bootstrap.common.exception.ExceptionResponse
 import com.asap.bootstrap.common.security.annotation.AccessUser
 import com.asap.bootstrap.letter.dto.*
+import com.asap.common.page.SliceResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -135,9 +136,8 @@ interface LetterApi {
 
     @GetMapping("/independent")
     fun getIndependentLetters(
-        @RequestParam page: Int,
-        @RequestParam size: Int
-    )
+        @AccessUser userId: String,
+    ): SliceResponse<GetIndependentLetterSimpleInfo>
 
 
     @GetMapping("/{letterId}")

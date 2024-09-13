@@ -295,4 +295,47 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             }
         }
     }
+
+
+    @Test
+    fun getIndependentLetters() {
+        //given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter = letterMockManager.generateMockIndependentLetter(
+            senderId = senderId,
+            receiverId = receiverId
+        )
+        val letterId = independentLetter["letterId"] as String
+        //when
+        val result = mockMvc.get("/api/v1/letters/independent") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                jsonPath("$.content[0].letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value(letterId)
+                }
+                jsonPath("$.content[0].senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value("senderUsername")
+                }
+                jsonPath("$.content[0].isNew") {
+                    exists()
+                    isBoolean()
+                }
+            }
+        }
+    }
 }

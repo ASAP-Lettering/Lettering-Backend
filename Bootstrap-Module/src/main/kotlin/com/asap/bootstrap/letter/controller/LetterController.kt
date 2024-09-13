@@ -1,11 +1,9 @@
 package com.asap.bootstrap.letter.controller
 
-import com.asap.application.letter.port.`in`.AddLetterUsecase
-import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
-import com.asap.application.letter.port.`in`.SendLetterUsecase
-import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.letter.api.LetterApi
 import com.asap.bootstrap.letter.dto.*
+import com.asap.common.page.SliceResponse
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -13,7 +11,8 @@ class LetterController(
     private val sendLetterUsecase: SendLetterUsecase,
     private val verifyLetterAccessibleUsecase: VerifyLetterAccessibleUsecase,
     private val getVerifiedLetterUsecase: GetVerifiedLetterUsecase,
-    private val addLetterUsecase: AddLetterUsecase
+    private val addLetterUsecase: AddLetterUsecase,
+    private val getIndependentLettersUsecase: GetIndependentLettersUsecase
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -34,7 +33,7 @@ class LetterController(
         letterId: String,
         userId: String
     ): VerifiedLetterInfoResponse {
-        val response = getVerifiedLetterUsecase.receive(
+        val response = getVerifiedLetterUsecase.get(
             GetVerifiedLetterUsecase.Query(
                 userId = userId,
                 letterId = letterId
@@ -65,8 +64,26 @@ class LetterController(
         TODO("Not yet implemented")
     }
 
-    override fun getIndependentLetters(page: Int, size: Int) {
-        TODO("Not yet implemented")
+    override fun getIndependentLetters(
+        userId: String
+    ): SliceResponse<GetIndependentLetterSimpleInfo> {
+        val response = getIndependentLettersUsecase.get(
+            GetIndependentLettersUsecase.Query(
+                userId = userId
+            )
+        )
+        return SliceResponse.of(
+            content = response.letters.map {
+                GetIndependentLetterSimpleInfo(
+                    letterId = it.letterId,
+                    senderName = it.senderName,
+                    isNew = it.isNew
+                )
+            },
+            size = response.letters.size,
+            number = 0,
+            hasNext = false
+        )
     }
 
     override fun getLetter(letterId: String) {
