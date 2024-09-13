@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 interface GetVerifiedLetterUsecase {
 
-    fun receive(
+    fun get(
         query: Query
     ): Response
 

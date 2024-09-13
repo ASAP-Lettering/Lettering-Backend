@@ -3,6 +3,7 @@ package com.asap.bootstrap.letter.api
 import com.asap.bootstrap.common.exception.ExceptionResponse
 import com.asap.bootstrap.common.security.annotation.AccessUser
 import com.asap.bootstrap.letter.dto.*
+import com.asap.common.page.SliceResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -127,17 +128,31 @@ interface LetterApi {
     )
 
     @Operation(summary = "실물 편지 내용 추가")
-    @PostMapping("/receive/direct")
+    @PostMapping("/physical/receive")
     fun addAnonymousLetter(
-        @RequestBody request: AddDirectLetterRequest
+        @RequestBody request: AddPhysicalLetterRequest
     )
 
 
+    @Operation(summary = "궤도 편지 목록 조회")
     @GetMapping("/independent")
-    fun getIndependentLetters(
-        @RequestParam page: Int,
-        @RequestParam size: Int
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "궤도 편지 목록 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = SliceResponse::class)
+                    )
+                ]
+            )
+        ]
     )
+    fun getIndependentLetters(
+        @AccessUser userId: String,
+    ): SliceResponse<GetIndependentLetterSimpleInfo>
 
 
     @GetMapping("/{letterId}")
