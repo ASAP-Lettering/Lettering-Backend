@@ -128,13 +128,28 @@ interface LetterApi {
     )
 
     @Operation(summary = "실물 편지 내용 추가")
-    @PostMapping("/receive/direct")
+    @PostMapping("/physical/receive")
     fun addAnonymousLetter(
-        @RequestBody request: AddDirectLetterRequest
+        @RequestBody request: AddPhysicalLetterRequest
     )
 
 
+    @Operation(summary = "궤도 편지 목록 조회")
     @GetMapping("/independent")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "궤도 편지 목록 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = SliceResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun getIndependentLetters(
         @AccessUser userId: String,
     ): SliceResponse<GetIndependentLetterSimpleInfo>

@@ -1,12 +1,11 @@
 package com.asap.bootstrap.letter.dto
 
-import org.springframework.web.multipart.MultipartRequest
 import java.time.LocalDate
 
-class AddDirectLetterRequest(
+class AddPhysicalLetterRequest(
     val sender: String,
     val content: String,
-    val images: List<MultipartRequest>,
+    val images: List<String>,
     val receiveDate: LocalDate,
     val templateType: Int
 ) {

@@ -60,7 +60,7 @@ class LetterController(
         )
     }
 
-    override fun addAnonymousLetter(request: AddDirectLetterRequest) {
+    override fun addAnonymousLetter(request: AddPhysicalLetterRequest) {
         TODO("Not yet implemented")
     }
 
