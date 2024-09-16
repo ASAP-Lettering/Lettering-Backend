@@ -83,22 +83,23 @@ allprojects {
         useJUnitPlatform()
     }
 
-
     jacoco{
         toolVersion = "0.8.7"
     }
+}
 
-    tasks.testCodeCoverageReport{
-        reports{
-            xml.required = true
-            xml.outputLocation = rootProject.layout.buildDirectory.file("reports/jacoco/jacoco.xml")
 
-            html.required = true
-            html.outputLocation = rootProject.layout.buildDirectory.dir("reports/jacoco")
-        }
+tasks.testCodeCoverageReport{
+    reports{
+        xml.required = true
     }
 }
 
+dependencies{
+    allprojects.forEach {
+        add("jacocoAggregation", project(it.path))
+    }
+}
 
 
 sonar{
@@ -108,6 +109,6 @@ sonar{
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.java.coveragePlugin", "jacoco")
         property("sonar.coverage.jacoco.xmlReportPaths",
-            rootProject.layout.buildDirectory.file("reports/jacoco/jacoco.xml"))
+            rootProject.layout.buildDirectory.file("reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"))
     }
 }
