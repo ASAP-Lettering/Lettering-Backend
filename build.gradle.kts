@@ -12,14 +12,16 @@ plugins {
 
     // test fixtures
     `java-test-fixtures`
+
+    id("jacoco")
+    id("jacoco-report-aggregation")
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 
 allprojects {
     group = "com.asap"
     version = ""
-
-
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = Versions.JAVA_VERSION
@@ -48,6 +50,10 @@ allprojects {
         plugin(Plugins.SPRING_BOOT.id)
         plugin(Plugins.SPRING_DEPENDENCY_MANAGEMENT.id)
         plugin(Plugins.TEST_FIXTURES.id)
+
+        plugin("jacoco")
+        plugin("jacoco-report-aggregation")
+        plugin("org.sonarqube")
     }
 
     dependencies {
@@ -77,4 +83,31 @@ allprojects {
         useJUnitPlatform()
     }
 
+
+    jacoco{
+        toolVersion = "0.8.7"
+    }
+
+    tasks.testCodeCoverageReport{
+        reports{
+            xml.required = true
+            xml.outputLocation = rootProject.layout.buildDirectory.file("reports/jacoco/jacoco.xml")
+
+            html.required = true
+            html.outputLocation = rootProject.layout.buildDirectory.dir("reports/jacoco")
+        }
+    }
+}
+
+
+
+sonar{
+    properties{
+        property("sonar.projectKey", "ASAP-Lettering_Lettering-Backend")
+        property("sonar.organization", "asap-lettering")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.coverage.jacoco.xmlReportPaths",
+            rootProject.layout.buildDirectory.file("reports/jacoco/jacoco.xml"))
+    }
 }
