@@ -41,7 +41,7 @@ jobs:
 
       - name: Reporting Code Coverage
         id: jacoco
-        uses: madrapps/jacoco-report@1.7.0
+        uses: madrapps/jacoco-report@v1.7.0
         with:
           path: |
             ${{github.workspace}}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
