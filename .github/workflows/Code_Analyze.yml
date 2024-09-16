@@ -6,6 +6,10 @@ on:
       - main
 
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -42,6 +46,7 @@ jobs:
       - name: Reporting Code Coverage
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.0
+
         with:
           paths: |
             ${{github.workspace}}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
