@@ -1,10 +1,14 @@
 name: Code Analyze
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   analyze:
@@ -38,3 +42,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           ./gradlew clean test testCodeCoverageReport sonar
+
+      - name: Reporting Code Coverage
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.0
+
+        with:
+          paths: |
+            ${{github.workspace}}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 40
+          title: Code Coverage Report
+          update-comment: true
