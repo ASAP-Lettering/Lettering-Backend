@@ -48,4 +48,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 40
+          title: Code Coverage Report
           update-comment: true
