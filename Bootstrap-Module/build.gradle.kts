@@ -16,4 +16,7 @@ dependencies{
 
     implementation(project(Modules.INFRASTRUCTURE_AWS_MODULE))
     testFixturesImplementation(testFixtures(project(Modules.INFRASTRUCTURE_AWS_MODULE)))
+
+    implementation(project(Modules.INFRASTRUCTURE_PERSISTENCE_MODULE))
+    testFixturesImplementation(testFixtures(project(Modules.INFRASTRUCTURE_PERSISTENCE_MODULE)))
 }

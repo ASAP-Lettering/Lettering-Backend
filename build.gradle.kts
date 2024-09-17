@@ -46,7 +46,6 @@ allprojects {
     apply {
         plugin(Plugins.JVM.id)
         plugin(Plugins.KOTLIN_SPRING.id)
-        plugin(Plugins.KOTLIN_JPA.id)
         plugin(Plugins.SPRING_BOOT.id)
         plugin(Plugins.SPRING_DEPENDENCY_MANAGEMENT.id)
         plugin(Plugins.TEST_FIXTURES.id)

@@ -12,7 +12,8 @@ class LetterController(
     private val verifyLetterAccessibleUsecase: VerifyLetterAccessibleUsecase,
     private val getVerifiedLetterUsecase: GetVerifiedLetterUsecase,
     private val addLetterUsecase: AddLetterUsecase,
-    private val getIndependentLettersUsecase: GetIndependentLettersUsecase
+    private val getIndependentLettersUsecase: GetIndependentLettersUsecase,
+    private val getSpaceLetterDetailUsecase: GetSpaceLetterDetailUsecase
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -97,17 +98,47 @@ class LetterController(
         )
     }
 
-    override fun getLetter(letterId: String) {
+    override fun getLetterDetail(
+        letterId: String,
+        userId: String
+    ): GetLetterDetailResponse {
+        val response = getSpaceLetterDetailUsecase.get(
+            GetSpaceLetterDetailUsecase.Query(
+                letterId = letterId,
+                userId = userId
+            )
+        )
+        return GetLetterDetailResponse(
+            senderName = response.senderName,
+            spaceName = response.spaceName,
+            letterCount = response.letterCount,
+            content = response.content,
+            sendDate = response.sendDate,
+            images = response.images,
+            templateType = response.templateType,
+            prevLetter = response.prevLetter?.let {
+                GetLetterDetailResponse.NearbyLetter(
+                    letterId = it.letterId,
+                    senderName = it.senderName
+                )
+            },
+            nextLetter = response.nextLetter?.let {
+                GetLetterDetailResponse.NearbyLetter(
+                    letterId = it.letterId,
+                    senderName = it.senderName
+                )
+            }
+        )
+    }
+
+    override fun updateLetter(letterId: String, request: ModifyLetterRequest, userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun updateLetter(letterId: String) {
+    override fun deleteLetter(letterId: String, userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteLetter(letterId: String) {
-        TODO("Not yet implemented")
-    }
 
     override fun sendLetter(request: SendLetterRequest, userId: String): SendLetterResponse {
         val response = sendLetterUsecase.send(

@@ -164,18 +164,22 @@ interface LetterApi {
     ): SliceResponse<GetIndependentLetterSimpleInfo>
 
     @GetMapping("/{letterId}")
-    fun getLetter(
-        @PathVariable letterId: String
-    )
+    fun getLetterDetail(
+        @PathVariable letterId: String,
+        @AccessUser userId: String
+    ): GetLetterDetailResponse
 
     @PutMapping("/{letterId}")
     fun updateLetter(
         @PathVariable letterId: String,
+        @RequestBody request: ModifyLetterRequest,
+        @AccessUser userId: String,
     )
 
     @DeleteMapping("/{letterId}")
     fun deleteLetter(
-        @PathVariable letterId: String
+        @PathVariable letterId: String,
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "편지 쓰기")

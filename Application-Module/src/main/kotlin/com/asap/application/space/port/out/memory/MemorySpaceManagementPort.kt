@@ -83,7 +83,7 @@ class MemorySpaceManagementPort(
         return space
     }
 
-    override fun getSpace(userId: DomainId, spaceId: DomainId): Space {
+    override fun getSpaceNotNull(userId: DomainId, spaceId: DomainId): Space {
         val spaceEntity = spaces[spaceId.value] ?: throw IllegalArgumentException("Space not found")
         return Space(
             id = DomainId(spaceEntity.id),

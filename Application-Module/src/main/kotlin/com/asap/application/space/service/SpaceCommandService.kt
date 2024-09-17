@@ -28,7 +28,7 @@ class SpaceCommandService(
     }
 
     override fun update(command: SpaceUpdateNameUsecase.Command) {
-        val space = spaceManagementPort.getSpace(
+        val space = spaceManagementPort.getSpaceNotNull(
             userId = DomainId(command.userId),
             spaceId = DomainId(command.spaceId)
         )

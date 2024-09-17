@@ -69,10 +69,54 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
         return toSpaceLetterEntity(receiveLetter)
     }
 
-    override fun getSpaceLetterByIdNotNull(id: DomainId): SpaceLetter {
+    override fun getSpaceLetterNotNull(id: DomainId): SpaceLetter {
         return receiveLetters[id.value]?.let {
             toSpaceLetterEntity(it)
         } ?: throw LetterException.ReceiveLetterNotFoundException()
+    }
+
+    override fun getSpaceLetterNotNull(id: DomainId, userId: DomainId): SpaceLetter {
+        return receiveLetters[id.value]?.let {
+            if (it.receiverId != userId.value) {
+                throw DefaultException.InvalidStateException()
+            }
+            toSpaceLetterEntity(it)
+        } ?: throw LetterException.ReceiveLetterNotFoundException()
+    }
+
+    override fun getNearbyLetter(
+        spaceId: DomainId,
+        userId: DomainId,
+        letterId: DomainId
+    ): Pair<SpaceLetter?, SpaceLetter?> {
+        val letters = receiveLetters
+            .filter { it.value.spaceId == spaceId.value }
+            .filter { it.value.receiverId == userId.value }
+            .keys
+            .sortedBy { receiveLetters[it]!!.createdAt }
+        val index = letters.indexOf(letterId.value)
+        val prev = if (index > 0) {
+            receiveLetters[letters[index - 1]]?.let {
+                toSpaceLetterEntity(it)
+            }
+        } else {
+            null
+        }
+        val next = if (index < letters.size - 1) {
+            receiveLetters[letters[index + 1]]?.let {
+                toSpaceLetterEntity(it)
+            }
+        } else {
+            null
+        }
+        return Pair(prev, next)
+    }
+
+    override fun countLetterBySpaceId(spaceId: DomainId): Long {
+        return receiveLetters
+            .filter { it.value.spaceId == spaceId.value }
+            .count()
+            .toLong()
     }
 
     override fun getAllBySpaceId(spaceId: DomainId, userId: DomainId, pageRequest: PageRequest): Page<SpaceLetter> {
