@@ -5,6 +5,8 @@ import com.asap.bootstrap.letter.dto.GetSpaceLettersResponse
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import com.asap.common.page.PageResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.web.bind.annotation.*
@@ -12,7 +14,22 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/spaces")
 interface SpaceLetterApi {
 
+    @Operation(summary = "행성 편지 목록 조회")
     @GetMapping("/{spaceId}/letters")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "행성 편지 목록 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = PageResponse::class)
+                    )
+                ]
+            ),
+        ]
+    )
     fun getAllSpaceLetters(
         @RequestParam page: Int,
         @RequestParam size: Int,
