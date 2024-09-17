@@ -85,29 +85,18 @@ class LetterQueryServiceTest:BehaviorSpec({
                 content = "content",
                 receiveDate = LocalDate.now(),
                 images = listOf("image1", "image2"),
-                templateType = 1
-            )
-        )
-        val mockSenders = listOf(
-            User(
-                id = mockLetters[0].senderId,
-                username = "sender-name",
-                profileImage = "profile-image",
-                permission = UserPermission(true, true, true),
-                birthday = null
+                templateType = 1,
+                senderName = "sender-name"
             )
         )
         every {
             mockIndependentLetterManagementPort.getAllByReceiverId(DomainId(query.userId))
         } returns mockLetters
-        every {
-            mockUserManagementPort.getUserNotNull(mockSenders[0].id)
-        } returns mockSenders[0]
         `when`("편지가 존재하면"){
             val response = letterQueryService.get(query)
             then("편지 정보를 가져와야 한다"){
                 response.letters[0].letterId shouldBe mockLetters[0].id.value
-                response.letters[0].senderName shouldBe mockSenders[0].username
+                response.letters[0].senderName shouldBe mockLetters[0].senderName
                 response.letters[0].isNew shouldBe mockLetters[0].isNew
             }
         }

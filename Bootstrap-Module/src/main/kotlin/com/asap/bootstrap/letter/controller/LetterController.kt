@@ -60,8 +60,19 @@ class LetterController(
         )
     }
 
-    override fun addAnonymousLetter(request: AddPhysicalLetterRequest) {
-        TODO("Not yet implemented")
+    override fun addPhysicalLetter(
+        request: AddPhysicalLetterRequest,
+        userId: String
+    ) {
+        addLetterUsecase.addPhysicalLetter(
+            AddLetterUsecase.Command.AddPhysicalLetter(
+                senderName = request.senderName,
+                content = request.content,
+                images = request.images,
+                templateType = request.templateType,
+                userId = userId
+            )
+        )
     }
 
     override fun getIndependentLetters(
