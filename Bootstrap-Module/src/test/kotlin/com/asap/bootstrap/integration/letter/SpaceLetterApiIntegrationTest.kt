@@ -43,4 +43,26 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
             status { isOk() }
         }
     }
+
+    @Test
+    fun moveLetterToIndependentLetter() {
+        //given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceLetterId = letterMockManager.generateMockSpaceLetter(
+            receiverId = userId,
+            senderName = "senderName",
+            spaceId = spaceId
+        )["letterId"] as String
+        //when
+        val response = mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
 }

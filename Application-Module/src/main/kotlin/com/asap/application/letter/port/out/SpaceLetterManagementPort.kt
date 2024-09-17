@@ -15,4 +15,6 @@ interface SpaceLetterManagementPort {
         userId: DomainId
     ): SpaceLetter
 
+    fun getSpaceLetterByIdNotNull(id: DomainId): SpaceLetter
+
 }

@@ -12,6 +12,7 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
@@ -210,12 +211,45 @@ class LetterCommandServiceTest : BehaviorSpec({
             isNew = true
         )
         every {
-            mockIndependentLetterManagementPort.getByIdNotNull(DomainId("letter-id"))
+            mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id"))
         } returns independentLetter
         `when`("편지를 이동하면"){
             letterCommandService.moveToSpace(command)
             then("편지가 이동되어야 한다"){
                 verify { mockSpaceLetterManagementPort.saveByIndependentLetter(independentLetter, DomainId("space-id"), DomainId("user-id")) }
+            }
+        }
+    }
+
+
+    given("무소속 편지로 이동할 때"){
+        val command = MoveLetterUsecase.Command.ToIndependent(
+            letterId = "letter-id",
+            userId = "user-id"
+        )
+        val spaceLetter = SpaceLetter(
+            id = DomainId("letter-id"),
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1
+            ),
+            sender = SenderInfo(
+                senderName = "sender-name"
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId("user-id")
+            ),
+            receiveDate = LocalDate.now(),
+            spaceId = DomainId("space-id")
+        )
+        every {
+            mockSpaceLetterManagementPort.getSpaceLetterByIdNotNull(DomainId("letter-id"))
+        } returns spaceLetter
+        `when`("편지를 이동하면"){
+            letterCommandService.moveToIndependent(command)
+            then("편지가 이동되어야 한다"){
+                verify { mockIndependentLetterManagementPort.saveBySpaceLetter(spaceLetter, DomainId("user-id")) }
             }
         }
     }
