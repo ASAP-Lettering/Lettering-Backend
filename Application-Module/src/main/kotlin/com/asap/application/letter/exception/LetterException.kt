@@ -24,6 +24,13 @@ sealed class LetterException(
         httpStatus = 403
     )
 
+    class ReceiveLetterNotFoundException(
+        message: String = "존재하지 않는 편지입니다."
+    ): LetterException(
+        errorCode = 3,
+        message = message
+    )
+
     companion object {
         const val CODE_PREFIX = "LETTER"
         const val DEFAULT_ERROR_MESSAGE = "편지 관련된 예외가 발생했습니다."

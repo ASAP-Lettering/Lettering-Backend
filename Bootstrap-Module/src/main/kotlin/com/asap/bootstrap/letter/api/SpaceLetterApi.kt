@@ -1,5 +1,7 @@
 package com.asap.bootstrap.letter.api
 
+import com.asap.bootstrap.common.security.annotation.AccessUser
+import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/api/v1/spaces")
@@ -14,8 +16,10 @@ interface SpaceLetterApi {
 
 
     @PutMapping("/letters/{letterId}")
-    fun moveLetter(
-        @PathVariable letterId: String
+    fun moveLetterToSpace(
+        @PathVariable letterId: String,
+        @RequestBody request: MoveLetterToSpaceRequest,
+        @AccessUser userId: String
     )
 
 

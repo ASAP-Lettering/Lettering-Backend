@@ -4,6 +4,7 @@ import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.vo.LetterContent
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -84,9 +85,11 @@ class MemorySendLetterManagementAdapter(
             return SendLetter(
                 id = DomainId(id),
                 receiverName = receiverName,
-                content = content,
-                images = images,
-                templateType = templateType,
+                content = LetterContent(
+                    content = content,
+                    images = images,
+                    templateType = templateType
+                ),
                 senderId = DomainId(senderId),
                 letterCode = letterCode,
                 createdAt = createdAt
@@ -98,9 +101,9 @@ class MemorySendLetterManagementAdapter(
                 return SendLetterEntity(
                     id = sendLetter.id.value,
                     receiverName = sendLetter.receiverName,
-                    content = sendLetter.content,
-                    images = sendLetter.images,
-                    templateType = sendLetter.templateType,
+                    content = sendLetter.content.content,
+                    images = sendLetter.content.images,
+                    templateType = sendLetter.content.templateType,
                     senderId = sendLetter.senderId.value,
                     letterCode = sendLetter.letterCode,
                     isExpired = false,

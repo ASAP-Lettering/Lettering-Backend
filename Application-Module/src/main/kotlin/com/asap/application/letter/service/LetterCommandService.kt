@@ -2,15 +2,20 @@ package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.`in`.AddLetterUsecase
+import com.asap.application.letter.port.`in`.MoveLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
+import com.asap.domain.letter.vo.LetterContent
+import com.asap.domain.letter.vo.ReceiverInfo
+import com.asap.domain.letter.vo.SenderInfo
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -18,8 +23,9 @@ import java.time.LocalDate
 class LetterCommandService(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
+    private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
-) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase {
+) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase, MoveLetterUsecase {
 
     private val letterCodeGenerator = LetterCodeGenerator()
 
@@ -27,9 +33,11 @@ class LetterCommandService(
     override fun send(command: SendLetterUsecase.Command): SendLetterUsecase.Response {
         val sendLetter = SendLetter(
             receiverName = command.receiverName,
-            content = command.content,
-            images = command.images,
-            templateType = command.templateType,
+            content = LetterContent(
+                content = command.content,
+                templateType = command.templateType,
+                images = command.images
+            ),
             senderId = DomainId(command.userId),
             letterCode = letterCodeGenerator.generateCode(
                 content = command.content,
@@ -72,13 +80,15 @@ class LetterCommandService(
             letterId = DomainId(command.letterId)
         )
         val independentLetter = IndependentLetter(
-            senderId = sendLetter.senderId,
-            receiverId = DomainId(command.userId),
+            sender = SenderInfo(
+                senderId = sendLetter.senderId,
+                senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId(command.userId)
+            ),
             content = sendLetter.content,
-            images = sendLetter.images,
-            templateType = sendLetter.templateType,
             receiveDate = sendLetter.createdDate,
-            senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username
         )
         independentLetterManagementPort.save(independentLetter)
         sendLetterManagementPort.remove(sendLetter.id)
@@ -86,13 +96,28 @@ class LetterCommandService(
 
     override fun addPhysicalLetter(command: AddLetterUsecase.Command.AddPhysicalLetter) {
         val independentLetter = IndependentLetter(
-            senderName = command.senderName,
-            receiverId = DomainId(command.userId),
-            content = command.content,
-            images = command.images,
-            templateType = command.templateType,
+            sender = SenderInfo(
+                senderName = command.senderName
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId(command.userId)
+            ),
+            content = LetterContent(
+                content = command.content,
+                templateType = command.templateType,
+                images = command.images
+            ),
             receiveDate = LocalDate.now(),
         )
         independentLetterManagementPort.save(independentLetter)
+    }
+
+    override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
+        val independentLetter = independentLetterManagementPort.getByIdNotNull(DomainId(command.letterId))
+        spaceLetterManagementPort.saveByIndependentLetter(
+            independentLetter,
+            DomainId(command.spaceId),
+            DomainId(command.userId)
+        )
     }
 }

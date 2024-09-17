@@ -6,6 +6,9 @@ import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
+import com.asap.domain.letter.vo.LetterContent
+import com.asap.domain.letter.vo.ReceiverInfo
+import com.asap.domain.letter.vo.SenderInfo
 import java.time.LocalDate
 
 class LetterMockManager(
@@ -20,9 +23,11 @@ class LetterMockManager(
     ): String{
         val sendLetter = SendLetter(
             receiverName = receiverName,
-            content = "content",
-            images = listOf("image1", "image2"),
-            templateType = 1,
+            content = LetterContent(
+                content = "content",
+                templateType = 1,
+                images = listOf("image1", "image2")
+            ),
             senderId = DomainId.generate(),
             letterCode = letterCodeGenerator.generateCode(
                 content = "content",
@@ -40,9 +45,11 @@ class LetterMockManager(
     ): Map<String, Any>{
         val sendLetter = SendLetter(
             receiverName = receiverName,
-            content = "content",
-            images = listOf("image1", "image2"),
-            templateType = 1,
+            content = LetterContent(
+                content = "content",
+                templateType = 1,
+                images = listOf("image1", "image2")
+            ),
             senderId = DomainId(senderId),
             letterCode = letterCodeGenerator.generateCode(
                 content = "content",
@@ -70,19 +77,25 @@ class LetterMockManager(
     }
 
     fun generateMockIndependentLetter(
-        senderId: String,
+        senderId: String? = null,
         receiverId: String,
         senderName: String
     ): Map<String, Any>{
         val independentLetter = IndependentLetter(
-            senderId = DomainId(senderId),
-            receiverId = DomainId(receiverId),
-            content = "content",
+            sender = SenderInfo(
+                senderId = senderId?.let { DomainId(it) },
+                senderName = senderName
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId(receiverId)
+            ),
+            content = LetterContent(
+                content = "content",
+                templateType = 1,
+                images = listOf("image1", "image2")
+            ),
             receiveDate = LocalDate.now(),
-            templateType = 1,
-            images = listOf("image1", "image2"),
             isNew = true,
-            senderName = senderName
         )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(

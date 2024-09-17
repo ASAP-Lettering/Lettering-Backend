@@ -8,4 +8,6 @@ interface IndependentLetterManagementPort {
     fun save(letter: IndependentLetter)
 
     fun getAllByReceiverId(receiverId: DomainId): List<IndependentLetter>
+
+    fun getByIdNotNull(id: DomainId): IndependentLetter
 }

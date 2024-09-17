@@ -1,16 +1,15 @@
 package com.asap.domain.letter.entity
 
 import com.asap.domain.common.DomainId
+import com.asap.domain.letter.vo.LetterContent
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class SendLetter(
     val id: DomainId = DomainId.generate(),
-    val receiverName: String,
-    val content: String,
-    val images: List<String>,
-    val templateType: Int,
+    val content: LetterContent,
     val senderId: DomainId,
+    val receiverName: String,
     val letterCode: String,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {

@@ -2,13 +2,19 @@ package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.`in`.AddLetterUsecase
+import com.asap.application.letter.port.`in`.MoveLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
+import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.vo.LetterContent
+import com.asap.domain.letter.vo.ReceiverInfo
+import com.asap.domain.letter.vo.SenderInfo
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.vo.UserPermission
 import io.kotest.assertions.throwables.shouldThrow
@@ -25,10 +31,12 @@ class LetterCommandServiceTest : BehaviorSpec({
     val mockSendLetterManagementPort = mockk<SendLetterManagementPort>(relaxed = true)
     val mockIndependentLetterManagementPort = mockk<IndependentLetterManagementPort>(relaxed = true)
     val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
+    val mockSpaceLetterManagementPort = mockk<SpaceLetterManagementPort>(relaxed = true)
 
     val letterCommandService = LetterCommandService(
         mockSendLetterManagementPort,
         mockIndependentLetterManagementPort,
+        mockSpaceLetterManagementPort,
         mockUserManagementPort
     )
 
@@ -63,9 +71,11 @@ class LetterCommandServiceTest : BehaviorSpec({
         )
         val sendLetter = SendLetter(
             receiverName = "receiver-name",
-            content = "content",
-            images = emptyList(),
-            templateType = 1,
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1,
+            ),
             senderId = mockk(),
             letterCode = letterCode
         )
@@ -136,9 +146,11 @@ class LetterCommandServiceTest : BehaviorSpec({
         val sendLetter = SendLetter(
             id = DomainId(letterId),
             receiverName = "receiver-name",
-            content = "content",
-            images = emptyList(),
-            templateType = 1,
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1
+            ),
             senderId = DomainId("sender-id"),
             letterCode = "letter-code"
         )
@@ -171,6 +183,39 @@ class LetterCommandServiceTest : BehaviorSpec({
             letterCommandService.addPhysicalLetter(command)
             then("편지가 저장되어야 한다") {
                 verify { mockSendLetterManagementPort.save(any()) }
+            }
+        }
+    }
+
+    given("행성으로 편지를 이동할 때"){
+        val command = MoveLetterUsecase.Command.ToSpace(
+            letterId = "letter-id",
+            userId = "user-id",
+            spaceId = "space-id"
+        )
+        val independentLetter = IndependentLetter(
+            id = DomainId("letter-id"),
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1
+            ),
+            sender = SenderInfo(
+                senderName = "sender-name"
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId("user-id")
+            ),
+            receiveDate = LocalDate.now(),
+            isNew = true
+        )
+        every {
+            mockIndependentLetterManagementPort.getByIdNotNull(DomainId("letter-id"))
+        } returns independentLetter
+        `when`("편지를 이동하면"){
+            letterCommandService.moveToSpace(command)
+            then("편지가 이동되어야 한다"){
+                verify { mockSpaceLetterManagementPort.saveByIndependentLetter(independentLetter, DomainId("space-id"), DomainId("user-id")) }
             }
         }
     }
