@@ -1,7 +1,9 @@
 package com.asap.bootstrap.letter.api
 
 import com.asap.bootstrap.common.security.annotation.AccessUser
+import com.asap.bootstrap.letter.dto.GetSpaceLettersResponse
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
+import com.asap.common.page.PageResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -11,11 +13,12 @@ import org.springframework.web.bind.annotation.*
 interface SpaceLetterApi {
 
     @GetMapping("/{spaceId}/letters")
-    fun getSpaceLetters(
+    fun getAllSpaceLetters(
         @RequestParam page: Int,
         @RequestParam size: Int,
-        @PathVariable spaceId: String
-    )
+        @PathVariable spaceId: String,
+        @AccessUser userId: String
+    ): PageResponse<GetSpaceLettersResponse>
 
 
     @Operation(summary = "궤도 편지 행성으로 이동")
@@ -37,6 +40,14 @@ interface SpaceLetterApi {
 
     @Operation(summary = "행성 편지 독립 편지로 이동")
     @PutMapping("/letters/{letterId}/independent")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 이동 성공"
+            ),
+        ]
+    )
     fun moveLetterToIndependentLetter(
         @PathVariable letterId: String,
         @AccessUser userId: String

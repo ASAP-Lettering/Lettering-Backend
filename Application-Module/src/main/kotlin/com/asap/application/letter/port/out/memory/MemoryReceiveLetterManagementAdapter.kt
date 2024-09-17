@@ -4,6 +4,8 @@ import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.common.exception.DefaultException
+import com.asap.common.page.Page
+import com.asap.common.page.PageRequest
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SpaceLetter
@@ -41,7 +43,7 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
 
     override fun saveBySpaceLetter(letter: SpaceLetter, userId: DomainId): IndependentLetter {
         val receiveLetter = receiveLetters[letter.id.value] ?: throw LetterException.ReceiveLetterNotFoundException()
-        if(receiveLetter.receiverId != userId.value) {
+        if (receiveLetter.receiverId != userId.value) {
             throw DefaultException.InvalidStateException()
         }
         receiveLetter.spaceId = null
@@ -59,7 +61,7 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
         userId: DomainId
     ): SpaceLetter {
         val receiveLetter = receiveLetters[letter.id.value] ?: throw LetterException.ReceiveLetterNotFoundException()
-        if(receiveLetter.receiverId != userId.value) {
+        if (receiveLetter.receiverId != userId.value) {
             throw DefaultException.InvalidStateException()
         }
         receiveLetter.spaceId = spaceId.value
@@ -71,6 +73,32 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
         return receiveLetters[id.value]?.let {
             toSpaceLetterEntity(it)
         } ?: throw LetterException.ReceiveLetterNotFoundException()
+    }
+
+    override fun getAllBySpaceId(spaceId: DomainId, userId: DomainId, pageRequest: PageRequest): Page<SpaceLetter> {
+        val letters = receiveLetters
+            .filter { it.value.spaceId == spaceId.value }
+            .filter { it.value.receiverId == userId.value }
+            .keys
+            .sortedBy { receiveLetters[it]!!.createdAt }
+            .subList(
+                pageRequest.page * pageRequest.size,
+                (pageRequest.page + 1) * pageRequest.size
+            )
+            .map {
+                toSpaceLetterEntity(receiveLetters[it]!!)
+            }
+        val total = receiveLetters
+            .filter { it.value.spaceId == spaceId.value }
+            .filter { it.value.receiverId == userId.value }
+            .count()
+        return Page.of(
+            content = letters,
+            totalElements = total.toLong(),
+            totalPages = total / pageRequest.size + 1,
+            size = letters.size,
+            page = pageRequest.page
+        )
     }
 
 

@@ -4,6 +4,7 @@ import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
 import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
@@ -24,11 +25,13 @@ class LetterQueryServiceTest : BehaviorSpec({
     val mockSendLetterManagementPort = mockk<SendLetterManagementPort>(relaxed = true)
     val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
     val mockIndependentLetterManagementPort = mockk<IndependentLetterManagementPort>(relaxed = true)
+    val mockSpaceLetterManagementPort = mockk<SpaceLetterManagementPort>(relaxed = true)
 
     val letterQueryService = LetterQueryService(
         mockSendLetterManagementPort,
         mockUserManagementPort,
-        mockIndependentLetterManagementPort
+        mockIndependentLetterManagementPort,
+        mockSpaceLetterManagementPort
     )
 
 

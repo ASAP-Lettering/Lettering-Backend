@@ -133,6 +133,7 @@ class LetterMockManager(
         )
         return mapOf(
             "letterId" to spaceLetter.id.value,
+            "senderName" to senderName
         )
     }
 }
