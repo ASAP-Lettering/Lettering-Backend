@@ -83,4 +83,51 @@ class SpaceQueryServiceTest : BehaviorSpec({
             }
         }
     }
+
+
+    given("행성 편지를 모두 조회 요청이 들어왔을 때") {
+        val indexedSpaces = listOf(
+            IndexedSpace(
+                id = DomainId.generate(),
+                name = "name",
+                index = 0,
+                userId = DomainId("userId"),
+                templateType = 1
+            ),
+            IndexedSpace(
+                id = DomainId.generate(),
+                name = "name",
+                index = 1,
+                userId = DomainId("userId"),
+                templateType = 1
+            ),
+            IndexedSpace(
+                id = DomainId.generate(),
+                name = "name",
+                index = 2,
+                userId = DomainId("userId"),
+                templateType = 1
+            )
+        )
+        val indexedSpaceMap = indexedSpaces.associateBy { it.id }
+        val query = SpaceGetUsecase.GetAllQuery(
+            userId = "userId"
+        )
+        every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
+        `when`("유저 아이디가 주어진다면") {
+            val response = spaceQueryService.getAll(query)
+            then("모든 스페이스를 반환한다") {
+                response.spaces.size shouldBe indexedSpaces.size
+                response.spaces.forEach{ spaceDetail ->
+                    val indexedSpace = indexedSpaceMap[DomainId(spaceDetail.spaceId)]
+                    indexedSpace.shouldNotBeNull {
+                        this.id shouldBe DomainId(spaceDetail.spaceId)
+                        this.name shouldBe spaceDetail.spaceName
+                        this.index shouldBe spaceDetail.spaceIndex
+                        this.userId shouldBe DomainId(query.userId)
+                    }
+                }
+            }
+        }
+    }
 })
