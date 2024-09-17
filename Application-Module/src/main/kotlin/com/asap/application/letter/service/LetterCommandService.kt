@@ -7,6 +7,7 @@ import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
@@ -22,6 +23,7 @@ import java.time.LocalDate
 class LetterCommandService(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
+    private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
 ) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase, MoveLetterUsecase {
 
@@ -111,6 +113,10 @@ class LetterCommandService(
     }
 
     override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
-
+        val independentLetter = independentLetterManagementPort.getByIdNotNull(DomainId(command.letterId))
+        spaceLetterManagementPort.saveByIndependentLetter(
+            independentLetter,
+            DomainId(command.spaceId)
+        )
     }
 }
