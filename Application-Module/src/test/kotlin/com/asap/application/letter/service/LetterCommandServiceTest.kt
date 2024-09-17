@@ -9,6 +9,7 @@ import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.vo.UserPermission
 import io.kotest.assertions.throwables.shouldThrow
@@ -63,9 +64,11 @@ class LetterCommandServiceTest : BehaviorSpec({
         )
         val sendLetter = SendLetter(
             receiverName = "receiver-name",
-            content = "content",
-            images = emptyList(),
-            templateType = 1,
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1,
+            ),
             senderId = mockk(),
             letterCode = letterCode
         )
@@ -136,9 +139,11 @@ class LetterCommandServiceTest : BehaviorSpec({
         val sendLetter = SendLetter(
             id = DomainId(letterId),
             receiverName = "receiver-name",
-            content = "content",
-            images = emptyList(),
-            templateType = 1,
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1
+            ),
             senderId = DomainId("sender-id"),
             letterCode = "letter-code"
         )

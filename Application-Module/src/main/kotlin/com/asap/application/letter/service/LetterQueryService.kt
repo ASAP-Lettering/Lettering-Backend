@@ -23,10 +23,10 @@ class LetterQueryService(
             val sender = userManagementPort.getUserNotNull(it.senderId)
             return GetVerifiedLetterUsecase.Response(
                 senderName = sender.username,
-                content = it.content,
+                content = it.content.content,
                 sendDate = it.createdDate,
-                templateType = it.templateType,
-                images = it.images
+                templateType = it.content.templateType,
+                images = it.content.images
             )
         }
     }
@@ -37,7 +37,7 @@ class LetterQueryService(
             letters = letters.map {
                 GetIndependentLettersUsecase.LetterInfo(
                     letterId = it.id.value,
-                    senderName = it.senderName,
+                    senderName = it.sender.senderName,
                     isNew = it.isNew
                 )
             }
