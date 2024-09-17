@@ -116,7 +116,8 @@ class LetterCommandService(
         val independentLetter = independentLetterManagementPort.getByIdNotNull(DomainId(command.letterId))
         spaceLetterManagementPort.saveByIndependentLetter(
             independentLetter,
-            DomainId(command.spaceId)
+            DomainId(command.spaceId),
+            DomainId(command.userId)
         )
     }
 }

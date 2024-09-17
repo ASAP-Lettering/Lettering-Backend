@@ -215,7 +215,7 @@ class LetterCommandServiceTest : BehaviorSpec({
         `when`("편지를 이동하면"){
             letterCommandService.moveToSpace(command)
             then("편지가 이동되어야 한다"){
-                verify { mockSpaceLetterManagementPort.saveByIndependentLetter(independentLetter, DomainId("space-id")) }
+                verify { mockSpaceLetterManagementPort.saveByIndependentLetter(independentLetter, DomainId("space-id"), DomainId("user-id")) }
             }
         }
     }
