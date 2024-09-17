@@ -2,9 +2,11 @@ package com.asap.application.letter
 
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
@@ -13,7 +15,8 @@ import java.time.LocalDate
 
 class LetterMockManager(
     private val sendLetterManagementPort: SendLetterManagementPort,
-    private val independentLetterManagementPort: IndependentLetterManagementPort
+    private val independentLetterManagementPort: IndependentLetterManagementPort,
+    private val spaceLetterManagementPort: SpaceLetterManagementPort
 ) {
 
     private val letterCodeGenerator = LetterCodeGenerator()
@@ -100,6 +103,36 @@ class LetterMockManager(
         independentLetterManagementPort.save(independentLetter)
         return mapOf(
             "letterId" to independentLetter.id.value,
+        )
+    }
+
+    fun generateMockSpaceLetter(
+        senderId: String? = null,
+        receiverId: String,
+        senderName: String,
+        spaceId: String
+    ): Map<String, Any> {
+        val spaceLetter = SpaceLetter(
+            sender = SenderInfo(
+                senderId = senderId?.let { DomainId(it) },
+                senderName = senderName
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId(receiverId)
+            ),
+            content = LetterContent(
+                content = "content",
+                templateType = 1,
+                images = listOf("image1", "image2")
+            ),
+            spaceId = DomainId(spaceId),
+            receiveDate = LocalDate.now(),
+        )
+        spaceLetterManagementPort.save(
+            spaceLetter
+        )
+        return mapOf(
+            "letterId" to spaceLetter.id.value,
         )
     }
 }

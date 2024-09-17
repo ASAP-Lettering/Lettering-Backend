@@ -113,10 +113,18 @@ class LetterCommandService(
     }
 
     override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
-        val independentLetter = independentLetterManagementPort.getByIdNotNull(DomainId(command.letterId))
+        val independentLetter = independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
         spaceLetterManagementPort.saveByIndependentLetter(
             independentLetter,
             DomainId(command.spaceId),
+            DomainId(command.userId)
+        )
+    }
+
+    override fun moveToIndependent(command: MoveLetterUsecase.Command.ToIndependent) {
+        val spaceLetter = spaceLetterManagementPort.getSpaceLetterByIdNotNull(DomainId(command.letterId))
+        independentLetterManagementPort.saveBySpaceLetter(
+            spaceLetter,
             DomainId(command.userId)
         )
     }

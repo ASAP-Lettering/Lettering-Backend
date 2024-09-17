@@ -15,9 +15,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
-class MemoryReceiveLetterManagementAdapter(
-
-) : IndependentLetterManagementPort, SpaceLetterManagementPort {
+class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, SpaceLetterManagementPort {
 
     private val receiveLetters = mutableMapOf<String, ReceiveLetter>()
 
@@ -35,10 +33,20 @@ class MemoryReceiveLetterManagementAdapter(
             }
     }
 
-    override fun getByIdNotNull(id: DomainId): IndependentLetter {
+    override fun getIndependentLetterByIdNotNull(id: DomainId): IndependentLetter {
         return receiveLetters[id.value]?.let {
             toIndependentLetterEntity(it)
         } ?: throw LetterException.ReceiveLetterNotFoundException()
+    }
+
+    override fun saveBySpaceLetter(letter: SpaceLetter, userId: DomainId): IndependentLetter {
+        val receiveLetter = receiveLetters[letter.id.value] ?: throw LetterException.ReceiveLetterNotFoundException()
+        if(receiveLetter.receiverId != userId.value) {
+            throw DefaultException.InvalidStateException()
+        }
+        receiveLetter.spaceId = null
+        receiveLetter.movedAt = LocalDateTime.now()
+        return toIndependentLetterEntity(receiveLetter)
     }
 
     override fun save(letter: SpaceLetter) {
@@ -57,6 +65,12 @@ class MemoryReceiveLetterManagementAdapter(
         receiveLetter.spaceId = spaceId.value
         receiveLetter.movedAt = LocalDateTime.now()
         return toSpaceLetterEntity(receiveLetter)
+    }
+
+    override fun getSpaceLetterByIdNotNull(id: DomainId): SpaceLetter {
+        return receiveLetters[id.value]?.let {
+            toSpaceLetterEntity(it)
+        } ?: throw LetterException.ReceiveLetterNotFoundException()
     }
 
 

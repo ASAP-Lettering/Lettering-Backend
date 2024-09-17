@@ -163,7 +163,6 @@ interface LetterApi {
         @AccessUser userId: String,
     ): SliceResponse<GetIndependentLetterSimpleInfo>
 
-
     @GetMapping("/{letterId}")
     fun getLetter(
         @PathVariable letterId: String

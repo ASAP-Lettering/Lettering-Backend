@@ -32,8 +32,14 @@ class SpaceLetterController(
     }
 
     override fun moveLetterToIndependentLetter(
-        letterId: String
+        letterId: String,
+        userId: String
     ) {
-        throw UnsupportedOperationException("Not implemented yet")
+        moveLetterUsecase.moveToIndependent(
+            command = MoveLetterUsecase.Command.ToIndependent(
+                letterId = letterId,
+                userId = userId
+            )
+        )
     }
 }

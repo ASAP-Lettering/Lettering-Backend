@@ -33,4 +33,20 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
             status { isOk() }
         }
     }
+
+    @Test
+    fun moveLetterToIndependentLetter() {
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val letterId = "letterId"
+        //when
+        val response = mockMvc.put("/api/v1/spaces/letters/$letterId/independent") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
 }
