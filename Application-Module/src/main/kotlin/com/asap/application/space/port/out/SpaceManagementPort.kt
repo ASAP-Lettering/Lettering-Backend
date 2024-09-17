@@ -11,7 +11,7 @@ interface SpaceManagementPort {
         userId: DomainId
     ): MainSpace
 
-    fun getSpace(
+    fun getSpaceNotNull(
         userId: DomainId,
         spaceId: DomainId
     ): Space

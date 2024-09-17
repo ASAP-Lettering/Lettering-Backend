@@ -1,11 +1,13 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
+import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
 import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
+import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.common.page.PageRequest
 import com.asap.domain.common.DomainId
@@ -16,8 +18,9 @@ class LetterQueryService(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val userManagementPort: UserManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
-    private val spaceLetterManagementPort: SpaceLetterManagementPort
-) : GetVerifiedLetterUsecase, GetIndependentLettersUsecase, GetSpaceLettersUsecase {
+    private val spaceLetterManagementPort: SpaceLetterManagementPort,
+    private val spaceManagementPort: SpaceManagementPort
+) : GetVerifiedLetterUsecase, GetIndependentLettersUsecase, GetSpaceLettersUsecase, GetSpaceLetterDetailUsecase {
 
     override fun get(query: GetVerifiedLetterUsecase.Query): GetVerifiedLetterUsecase.Response {
         sendLetterManagementPort.getExpiredLetterNotNull(
@@ -68,6 +71,42 @@ class LetterQueryService(
             page = letters.page,
             size = letters.size,
             totalPages = letters.totalPages
+        )
+    }
+
+    override fun get(query: GetSpaceLetterDetailUsecase.Query): GetSpaceLetterDetailUsecase.Response {
+        val spaceLetter =
+            spaceLetterManagementPort.getSpaceLetterNotNull(DomainId(query.letterId), DomainId(query.userId))
+        val space = spaceManagementPort.getSpaceNotNull(
+            spaceLetter.receiver.receiverId,
+            spaceLetter.spaceId
+        )
+        val letterCount = spaceLetterManagementPort.countLetterBySpaceId(spaceLetter.spaceId)
+        val (prevLetter, nextLetter) = spaceLetterManagementPort.getNearbyLetter(
+            spaceId = spaceLetter.spaceId,
+            userId = spaceLetter.receiver.receiverId,
+            letterId = spaceLetter.id
+        )
+        return GetSpaceLetterDetailUsecase.Response(
+            senderName = spaceLetter.sender.senderName,
+            spaceName = space.name,
+            letterCount = letterCount,
+            content = spaceLetter.content.content,
+            sendDate = spaceLetter.receiveDate,
+            images = spaceLetter.content.images,
+            templateType = spaceLetter.content.templateType,
+            prevLetter = prevLetter?.let {
+                GetSpaceLetterDetailUsecase.NearbyLetter(
+                    letterId = it.id.value,
+                    senderName = it.sender.senderName
+                )
+            },
+            nextLetter = nextLetter?.let {
+                GetSpaceLetterDetailUsecase.NearbyLetter(
+                    letterId = it.id.value,
+                    senderName = it.sender.senderName
+                )
+            }
         )
     }
 }

@@ -244,7 +244,7 @@ class LetterCommandServiceTest : BehaviorSpec({
             spaceId = DomainId("space-id")
         )
         every {
-            mockSpaceLetterManagementPort.getSpaceLetterByIdNotNull(DomainId("letter-id"))
+            mockSpaceLetterManagementPort.getSpaceLetterNotNull(DomainId("letter-id"))
         } returns spaceLetter
         `when`("편지를 이동하면"){
             letterCommandService.moveToIndependent(command)

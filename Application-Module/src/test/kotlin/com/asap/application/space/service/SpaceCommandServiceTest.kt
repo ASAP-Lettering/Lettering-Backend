@@ -57,7 +57,7 @@ class SpaceCommandServiceTest : BehaviorSpec({
             templateType = 1
         )
         every {
-            spaceManagementPort.getSpace(
+            spaceManagementPort.getSpaceNotNull(
                 userId = DomainId(spaceUpdateNameCommand.userId),
                 spaceId = DomainId(spaceUpdateNameCommand.spaceId)
             )
@@ -66,7 +66,7 @@ class SpaceCommandServiceTest : BehaviorSpec({
             spaceCommandService.update(spaceUpdateNameCommand)
             then("스페이스 이름을 변경한다") {
                 verify {
-                    spaceManagementPort.getSpace(
+                    spaceManagementPort.getSpaceNotNull(
                         userId = DomainId(spaceUpdateNameCommand.userId),
                         spaceId = DomainId(spaceUpdateNameCommand.spaceId)
                     )

@@ -17,7 +17,13 @@ interface SpaceLetterManagementPort {
         userId: DomainId
     ): SpaceLetter
 
-    fun getSpaceLetterByIdNotNull(id: DomainId): SpaceLetter
+    fun getSpaceLetterNotNull(id: DomainId): SpaceLetter
+
+    fun getSpaceLetterNotNull(id: DomainId, userId: DomainId): SpaceLetter
+
+    fun getNearbyLetter(spaceId: DomainId, userId: DomainId, letterId: DomainId): Pair<SpaceLetter?, SpaceLetter?>
+
+    fun countLetterBySpaceId(spaceId: DomainId): Long
 
 
     fun getAllBySpaceId(spaceId: DomainId, userId: DomainId, pageRequest: PageRequest): Page<SpaceLetter>
