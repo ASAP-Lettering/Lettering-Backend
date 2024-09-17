@@ -11,7 +11,8 @@ interface SpaceLetterManagementPort {
 
     fun saveByIndependentLetter(
         letter: IndependentLetter,
-        spaceId: DomainId
+        spaceId: DomainId,
+        userId: DomainId
     ): SpaceLetter
 
 }

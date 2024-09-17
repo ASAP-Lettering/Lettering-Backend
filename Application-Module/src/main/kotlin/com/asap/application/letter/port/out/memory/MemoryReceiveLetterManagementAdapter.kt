@@ -45,8 +45,15 @@ class MemoryReceiveLetterManagementAdapter(
         receiveLetters[letter.id.value] = fromDomain(letter)
     }
 
-    override fun saveByIndependentLetter(letter: IndependentLetter, spaceId: DomainId): SpaceLetter {
+    override fun saveByIndependentLetter(
+        letter: IndependentLetter,
+        spaceId: DomainId,
+        userId: DomainId
+    ): SpaceLetter {
         val receiveLetter = receiveLetters[letter.id.value] ?: throw LetterException.ReceiveLetterNotFoundException()
+        if(receiveLetter.receiverId != userId.value) {
+            throw DefaultException.InvalidStateException()
+        }
         receiveLetter.spaceId = spaceId.value
         receiveLetter.movedAt = LocalDateTime.now()
         return toSpaceLetterEntity(receiveLetter)
