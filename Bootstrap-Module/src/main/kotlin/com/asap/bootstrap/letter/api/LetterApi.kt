@@ -129,8 +129,17 @@ interface LetterApi {
 
     @Operation(summary = "실물 편지 내용 추가")
     @PostMapping("/physical/receive")
-    fun addAnonymousLetter(
-        @RequestBody request: AddPhysicalLetterRequest
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "실물 편지 내용 추가 성공",
+            )
+        ]
+    )
+    fun addPhysicalLetter(
+        @RequestBody request: AddPhysicalLetterRequest,
+        @AccessUser userId: String
     )
 
 

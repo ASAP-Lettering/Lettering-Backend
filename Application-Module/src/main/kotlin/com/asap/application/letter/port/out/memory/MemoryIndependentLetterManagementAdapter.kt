@@ -25,7 +25,8 @@ class MemoryIndependentLetterManagementAdapter(
 
     data class IndependentLetterEntity(
         val id: String,
-        val senderId: String,
+        val senderId: String?,
+        val senderName: String,
         val receiverId: String,
         val content: String,
         val createdDate: LocalDate,
@@ -37,13 +38,14 @@ class MemoryIndependentLetterManagementAdapter(
         fun toDomain(): IndependentLetter {
             return IndependentLetter(
                 id = DomainId(id),
-                senderId = DomainId(senderId),
+                senderId = this.senderId?.let { DomainId(it) },
                 receiverId = DomainId(receiverId),
                 content = content,
                 receiveDate = createdDate,
                 templateType = templateType,
                 images = images,
-                isNew = isNew
+                isNew = isNew,
+                senderName = senderName
             )
         }
 
@@ -51,13 +53,14 @@ class MemoryIndependentLetterManagementAdapter(
             fun fromDomain(letter: IndependentLetter): IndependentLetterEntity {
                 return IndependentLetterEntity(
                     id = letter.id.value,
-                    senderId = letter.senderId.value,
+                    senderId = letter.senderId?.value,
                     receiverId = letter.receiverId.value,
                     content = letter.content,
                     createdDate = letter.receiveDate,
                     templateType = letter.templateType,
                     images = letter.images,
-                    isNew = letter.isNew
+                    isNew = letter.isNew,
+                    senderName = letter.senderName
                 )
             }
         }

@@ -37,7 +37,7 @@ class LetterQueryService(
             letters = letters.map {
                 GetIndependentLettersUsecase.LetterInfo(
                     letterId = it.id.value,
-                    senderName = userManagementPort.getUserNotNull(it.senderId).username, // TODO: N+1 문제발생함(해결 필요)
+                    senderName = it.senderName,
                     isNew = it.isNew
                 )
             }

@@ -71,7 +71,8 @@ class LetterMockManager(
 
     fun generateMockIndependentLetter(
         senderId: String,
-        receiverId: String
+        receiverId: String,
+        senderName: String
     ): Map<String, Any>{
         val independentLetter = IndependentLetter(
             senderId = DomainId(senderId),
@@ -80,7 +81,8 @@ class LetterMockManager(
             receiveDate = LocalDate.now(),
             templateType = 1,
             images = listOf("image1", "image2"),
-            isNew = true
+            isNew = true,
+            senderName = senderName
         )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(

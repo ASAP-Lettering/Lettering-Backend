@@ -8,7 +8,8 @@ data class IndependentLetter(
     val content: String,
     val images: List<String>,
     val templateType: Int,
-    val senderId: DomainId,
+    val senderId: DomainId? = null,
+    val senderName: String,
     val receiverId: DomainId,
     val receiveDate: LocalDate,
     val isNew: Boolean = true

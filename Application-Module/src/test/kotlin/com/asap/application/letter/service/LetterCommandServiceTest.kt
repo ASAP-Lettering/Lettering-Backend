@@ -157,5 +157,24 @@ class LetterCommandServiceTest : BehaviorSpec({
             }
         }
     }
+
+
+    given("실물 편지를 추가할 때") {
+        val command = AddLetterUsecase.Command.AddPhysicalLetter(
+            senderName = "sender-name",
+            content = "content",
+            images = emptyList(),
+            templateType = 1,
+            userId = "user-id"
+        )
+        `when`("편지를 추가하면") {
+            letterCommandService.addPhysicalLetter(command)
+            then("편지가 저장되어야 한다") {
+                verify { mockSendLetterManagementPort.save(any()) }
+            }
+        }
+    }
+
+
 }) {
 }

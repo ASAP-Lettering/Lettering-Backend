@@ -3,6 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
+import com.asap.bootstrap.letter.dto.AddPhysicalLetterRequest
 import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
 import com.asap.bootstrap.letter.dto.LetterVerifyRequest
 import com.asap.bootstrap.letter.dto.SendLetterRequest
@@ -256,8 +257,13 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         fun addVerifiedLetter() {
             //given
             val userId = userMockManager.settingUser(username = "username")
+            val senderId = userMockManager.settingUser(username = "senderUsername")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterId = letterMockManager.generateMockExpiredSendLetter("username", userId)["letterId"] as String
+            val letterId = letterMockManager.generateMockExpiredSendLetter(
+                receiverName = "username",
+                receiverId = userId,
+                senderId = senderId
+            )["letterId"] as String
             val request = AddVerifiedLetterRequest(letterId)
             //when
             val response = mockMvc.post("/api/v1/letters/verify/receive") {
@@ -305,7 +311,8 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
         val independentLetter = letterMockManager.generateMockIndependentLetter(
             senderId = senderId,
-            receiverId = receiverId
+            receiverId = receiverId,
+            senderName = "senderUsername"
         )
         val letterId = independentLetter["letterId"] as String
         //when
@@ -336,6 +343,29 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                     isBoolean()
                 }
             }
+        }
+    }
+
+    @Test
+    fun addPhysicalLetter() {
+        //given
+        val request = AddPhysicalLetterRequest(
+            senderName = "senderName",
+            content = "content",
+            images = listOf("images"),
+            templateType = 1
+        )
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        //when
+        val response = mockMvc.post("/api/v1/letters/physical/receive") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

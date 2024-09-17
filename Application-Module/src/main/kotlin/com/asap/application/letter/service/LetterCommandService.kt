@@ -12,6 +12,7 @@ import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class LetterCommandService(
@@ -76,9 +77,22 @@ class LetterCommandService(
             content = sendLetter.content,
             images = sendLetter.images,
             templateType = sendLetter.templateType,
-            receiveDate = sendLetter.createdDate
+            receiveDate = sendLetter.createdDate,
+            senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username
         )
         independentLetterManagementPort.save(independentLetter)
         sendLetterManagementPort.remove(sendLetter.id)
+    }
+
+    override fun addPhysicalLetter(command: AddLetterUsecase.Command.AddPhysicalLetter) {
+        val independentLetter = IndependentLetter(
+            senderName = command.senderName,
+            receiverId = DomainId(command.userId),
+            content = command.content,
+            images = command.images,
+            templateType = command.templateType,
+            receiveDate = LocalDate.now(),
+        )
+        independentLetterManagementPort.save(independentLetter)
     }
 }

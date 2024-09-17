@@ -3,6 +3,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.letter.controller.LetterController
+import com.asap.bootstrap.letter.dto.AddPhysicalLetterRequest
 import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
 import com.asap.bootstrap.letter.dto.LetterVerifyRequest
 import com.asap.bootstrap.letter.dto.SendLetterRequest
@@ -224,6 +225,29 @@ class LetterControllerTest: AcceptanceSupporter() {
                     isBoolean()
                 }
             }
+        }
+    }
+
+
+    @Test
+    fun addPhysicalLetter() {
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request = AddPhysicalLetterRequest(
+            senderName = "senderName",
+            content = "content",
+            images = listOf("images"),
+            templateType = 1
+        )
+        //when
+        val response = mockMvc.post("/api/v1/letters/physical/receive") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }
