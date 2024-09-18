@@ -10,8 +10,11 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 
+
+@Tag(name = "SpaceLetter", description = "SpaceLetter API")
 @RequestMapping("/api/v1/spaces")
 interface SpaceLetterApi {
 
@@ -72,13 +75,38 @@ interface SpaceLetterApi {
     )
 
 
+    @Operation(summary = "행성 편지 상세 조회")
     @GetMapping("/letters/{letterId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 상세 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GetSpaceLetterDetailResponse::class)
+                    )
+                ]
+            ),
+        ]
+    )
     fun getSpaceLetterDetail(
         @PathVariable letterId: String,
         @AccessUser userId: String
     ): GetSpaceLetterDetailResponse
 
+
+    @Operation(summary = "행성 편지 삭제")
     @DeleteMapping("/letters/{letterId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 삭제 성공"
+            ),
+        ]
+    )
     fun deleteSpaceLetter(
         @PathVariable letterId: String,
         @AccessUser userId: String,
