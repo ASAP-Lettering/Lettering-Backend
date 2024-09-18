@@ -69,12 +69,6 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
         return toSpaceLetterEntity(receiveLetter)
     }
 
-    override fun getSpaceLetterNotNull(id: DomainId): SpaceLetter {
-        return receiveLetters[id.value]?.let {
-            toSpaceLetterEntity(it)
-        } ?: throw LetterException.ReceiveLetterNotFoundException()
-    }
-
     override fun getSpaceLetterNotNull(id: DomainId, userId: DomainId): SpaceLetter {
         return receiveLetters[id.value]?.let {
             if (it.receiverId != userId.value) {
@@ -143,6 +137,16 @@ class MemoryReceiveLetterManagementAdapter : IndependentLetterManagementPort, Sp
             size = letters.size,
             page = pageRequest.page
         )
+    }
+
+    override fun delete(letter: SpaceLetter) {
+        receiveLetters.filter { it.value.spaceId == letter.spaceId.value }
+            .filter { it.value.receiverId == letter.receiver.receiverId.value }
+            .filter { it.value.id == letter.id.value }
+            .keys
+            .forEach {
+                receiveLetters.remove(it)
+            }
     }
 
 

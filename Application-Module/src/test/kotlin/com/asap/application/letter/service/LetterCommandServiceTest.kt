@@ -1,10 +1,7 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
-import com.asap.application.letter.port.`in`.AddLetterUsecase
-import com.asap.application.letter.port.`in`.MoveLetterUsecase
-import com.asap.application.letter.port.`in`.SendLetterUsecase
-import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
@@ -21,6 +18,7 @@ import com.asap.domain.user.vo.UserPermission
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -188,7 +186,7 @@ class LetterCommandServiceTest : BehaviorSpec({
         }
     }
 
-    given("행성으로 편지를 이동할 때"){
+    given("행성으로 편지를 이동할 때") {
         val command = MoveLetterUsecase.Command.ToSpace(
             letterId = "letter-id",
             userId = "user-id",
@@ -213,16 +211,22 @@ class LetterCommandServiceTest : BehaviorSpec({
         every {
             mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id"))
         } returns independentLetter
-        `when`("편지를 이동하면"){
+        `when`("편지를 이동하면") {
             letterCommandService.moveToSpace(command)
-            then("편지가 이동되어야 한다"){
-                verify { mockSpaceLetterManagementPort.saveByIndependentLetter(independentLetter, DomainId("space-id"), DomainId("user-id")) }
+            then("편지가 이동되어야 한다") {
+                verify {
+                    mockSpaceLetterManagementPort.saveByIndependentLetter(
+                        independentLetter,
+                        DomainId("space-id"),
+                        DomainId("user-id")
+                    )
+                }
             }
         }
     }
 
 
-    given("무소속 편지로 이동할 때"){
+    given("무소속 편지로 이동할 때") {
         val command = MoveLetterUsecase.Command.ToIndependent(
             letterId = "letter-id",
             userId = "user-id"
@@ -244,12 +248,71 @@ class LetterCommandServiceTest : BehaviorSpec({
             spaceId = DomainId("space-id")
         )
         every {
-            mockSpaceLetterManagementPort.getSpaceLetterNotNull(DomainId("letter-id"))
+            mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId("letter-id"),
+                DomainId("user-id")
+            )
         } returns spaceLetter
-        `when`("편지를 이동하면"){
+        `when`("편지를 이동하면") {
             letterCommandService.moveToIndependent(command)
-            then("편지가 이동되어야 한다"){
+            then("편지가 이동되어야 한다") {
                 verify { mockIndependentLetterManagementPort.saveBySpaceLetter(spaceLetter, DomainId("user-id")) }
+            }
+        }
+    }
+
+
+    given("행성 내의 편지 삭제 요청이 들어올 떄") {
+        val command = RemoveLetterUsecase.Command.SpaceLetter(
+            letterId = "letter-id",
+            userId = "user-id"
+        )
+        val spaceLetter = SpaceLetter(
+            id = DomainId("letter-id"),
+            content = LetterContent(
+                "content",
+                images = emptyList(),
+                templateType = 1
+            ),
+            sender = SenderInfo(
+                senderName = "sender-name"
+            ),
+            receiver = ReceiverInfo(
+                receiverId = DomainId("user-id")
+            ),
+            receiveDate = LocalDate.now(),
+            spaceId = DomainId("space-id")
+        )
+        every {
+            mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId("letter-id"),
+                DomainId("user-id")
+            )
+        } returns spaceLetter
+        `when`("편지를 삭제하면") {
+            letterCommandService.removeSpaceLetter(command)
+            then("편지가 삭제되어야 한다") {
+                verify { mockSpaceLetterManagementPort.delete(spaceLetter) }
+            }
+        }
+
+        clearMocks(mockSpaceLetterManagementPort)
+        every {
+            mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId("letter-id"),
+                DomainId("user-id")
+            )
+        } throws LetterException.ReceiveLetterNotFoundException()
+        `when`("편지가 존재하지 않으면") {
+            then("예외가 발생해야 한다") {
+                shouldThrow<LetterException.ReceiveLetterNotFoundException> {
+                    letterCommandService.removeSpaceLetter(command)
+                }.apply {
+                    verify(exactly = 0) {
+                        mockSpaceLetterManagementPort.delete(any())
+                    }
+                }
+
             }
         }
     }

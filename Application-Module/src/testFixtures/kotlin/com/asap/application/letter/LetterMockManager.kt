@@ -23,7 +23,7 @@ class LetterMockManager(
 
     fun generateMockSendLetter(
         receiverName: String,
-    ): String{
+    ): String {
         val sendLetter = SendLetter(
             receiverName = receiverName,
             content = LetterContent(
@@ -45,7 +45,7 @@ class LetterMockManager(
         receiverName: String,
         receiverId: String,
         senderId: String = DomainId.generate().value
-    ): Map<String, Any>{
+    ): Map<String, Any> {
         val sendLetter = SendLetter(
             receiverName = receiverName,
             content = LetterContent(
@@ -70,11 +70,11 @@ class LetterMockManager(
     fun isExistVerifiedLetter(
         letterId: String,
         userId: String
-    ): Boolean{
-        return try{
+    ): Boolean {
+        return try {
             sendLetterManagementPort.getExpiredLetterNotNull(DomainId(userId), DomainId(letterId))
             true
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return false
         }
     }
@@ -83,7 +83,7 @@ class LetterMockManager(
         senderId: String? = null,
         receiverId: String,
         senderName: String
-    ): Map<String, Any>{
+    ): Map<String, Any> {
         val independentLetter = IndependentLetter(
             sender = SenderInfo(
                 senderId = senderId?.let { DomainId(it) },
@@ -135,5 +135,18 @@ class LetterMockManager(
             "letterId" to spaceLetter.id.value,
             "senderName" to senderName
         )
+    }
+
+
+    fun isExistSpaceLetter(
+        letterId: String,
+        userId: String
+    ): Boolean {
+        return try {
+            spaceLetterManagementPort.getSpaceLetterNotNull(DomainId(letterId), DomainId(userId))
+            true
+        } catch (e: Exception) {
+            return false
+        }
     }
 }

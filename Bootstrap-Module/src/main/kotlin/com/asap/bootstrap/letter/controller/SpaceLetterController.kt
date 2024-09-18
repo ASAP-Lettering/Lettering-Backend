@@ -1,8 +1,11 @@
 package com.asap.bootstrap.letter.controller
 
+import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
 import com.asap.application.letter.port.`in`.MoveLetterUsecase
+import com.asap.application.letter.port.`in`.RemoveLetterUsecase
 import com.asap.bootstrap.letter.api.SpaceLetterApi
+import com.asap.bootstrap.letter.dto.GetSpaceLetterDetailResponse
 import com.asap.bootstrap.letter.dto.GetSpaceLettersResponse
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import com.asap.common.page.PageResponse
@@ -11,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class SpaceLetterController(
     private val moveLetterUsecase: MoveLetterUsecase,
-    private val getSpaceLettersUsecase: GetSpaceLettersUsecase
+    private val getSpaceLettersUsecase: GetSpaceLettersUsecase,
+    private val getSpaceLetterDetailUsecase: GetSpaceLetterDetailUsecase,
+    private val removeLetterUsecase: RemoveLetterUsecase
 ): SpaceLetterApi {
     override fun getAllSpaceLetters(
         page: Int,
@@ -66,4 +71,48 @@ class SpaceLetterController(
             )
         )
     }
+
+
+    override fun getSpaceLetterDetail(
+        letterId: String,
+        userId: String
+    ): GetSpaceLetterDetailResponse {
+        val response = getSpaceLetterDetailUsecase.get(
+            GetSpaceLetterDetailUsecase.Query(
+                letterId = letterId,
+                userId = userId
+            )
+        )
+        return GetSpaceLetterDetailResponse(
+            senderName = response.senderName,
+            spaceName = response.spaceName,
+            letterCount = response.letterCount,
+            content = response.content,
+            sendDate = response.sendDate,
+            images = response.images,
+            templateType = response.templateType,
+            prevLetter = response.prevLetter?.let {
+                GetSpaceLetterDetailResponse.NearbyLetter(
+                    letterId = it.letterId,
+                    senderName = it.senderName
+                )
+            },
+            nextLetter = response.nextLetter?.let {
+                GetSpaceLetterDetailResponse.NearbyLetter(
+                    letterId = it.letterId,
+                    senderName = it.senderName
+                )
+            }
+        )
+    }
+
+    override fun deleteSpaceLetter(letterId: String, userId: String) {
+        removeLetterUsecase.removeSpaceLetter(
+            command = RemoveLetterUsecase.Command.SpaceLetter(
+                letterId = letterId,
+                userId = userId
+            )
+        )
+    }
+
 }

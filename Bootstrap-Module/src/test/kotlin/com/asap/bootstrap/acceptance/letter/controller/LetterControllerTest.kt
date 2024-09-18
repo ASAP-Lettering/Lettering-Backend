@@ -35,8 +35,7 @@ class LetterControllerTest: AcceptanceSupporter() {
     @MockBean
     lateinit var getIndependentLettersUsecase: GetIndependentLettersUsecase
 
-    @MockBean
-    lateinit var getSpaceLetterDetailUsecase: GetSpaceLetterDetailUsecase
+
 
 
     @Test
@@ -255,95 +254,5 @@ class LetterControllerTest: AcceptanceSupporter() {
     }
 
 
-    @Test
-    fun getLetterDetail(){
-        //given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
-        val details = GetSpaceLetterDetailUsecase.Response(
-            senderName = "senderName",
-            spaceName = "spaceName",
-            letterCount = 1,
-            content = "content",
-            sendDate = LocalDate.now(),
-            images = listOf("images"),
-            templateType = 1,
-            prevLetter = GetSpaceLetterDetailUsecase.NearbyLetter("prevLetterId", "prevSenderName"),
-            nextLetter = GetSpaceLetterDetailUsecase.NearbyLetter("nextLetterId", "nextSenderName")
-        )
-        BDDMockito.given(
-            getSpaceLetterDetailUsecase.get(
-                GetSpaceLetterDetailUsecase.Query(
-                    letterId = "letterId",
-                    userId = "userId"
-                )
-            )
-        ).willReturn(details)
-        //when
-        val response = mockMvc.get("/api/v1/letters/{letterId}", "letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
-        response.andExpect {
-            status { isOk() }
-            jsonPath("$.senderName") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.spaceName") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.letterCount") {
-                exists()
-                isNumber()
-            }
-            jsonPath("$.content") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.sendDate") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.templateType") {
-                exists()
-                isNumber()
-            }
-            jsonPath("$.images") {
-                exists()
-                isArray()
-            }
-            jsonPath("$.prevLetter") {
-                exists()
-                jsonPath("$.prevLetter.letterId") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-                jsonPath("$.prevLetter.senderName") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-            }
-            jsonPath("$.nextLetter") {
-                exists()
-                jsonPath("$.nextLetter.letterId") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-                jsonPath("$.nextLetter.senderName") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-            }
-        }
-    }
+
 }
