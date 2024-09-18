@@ -5,6 +5,8 @@ import com.asap.application.space.SpaceMockManager
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -114,6 +116,95 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
             }
             jsonPath("$.page"){
                 isNumber()
+            }
+        }
+    }
+
+
+
+    @Nested
+    inner class GetSpaceLetterDetail {
+        @Test
+        @DisplayName("편지 상세 조회 성공")
+        fun getSpaceLetterDetail() {
+            //given
+            val userId = userMockManager.settingUser(username = "username")
+            val senderId = userMockManager.settingUser(username = "senderUsername")
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId)
+            val letters = (0..3).map {
+                letterMockManager.generateMockSpaceLetter(
+                    senderId = senderId,
+                    receiverId = userId,
+                    spaceId = spaceId,
+                    senderName = "senderUsername"
+                )
+            }
+            val letterId = letters[1]["letterId"] as String
+            //when
+            val response = mockMvc.get("/api/v1/spaces/letters/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+            //then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.spaceName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.letterCount") {
+                    exists()
+                    isNumber()
+                }
+                jsonPath("$.content") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.sendDate") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.images") {
+                    exists()
+                    isArray()
+                }
+                jsonPath("$.templateType") {
+                    exists()
+                    isNumber()
+                }
+                jsonPath("$.prevLetter") {
+                    exists()
+                    jsonPath("$.prevLetter.letterId") {
+                        exists()
+                        isString()
+                        value(letters[0]["letterId"] as String)
+                    }
+                    jsonPath("$.prevLetter.senderName") {
+                        exists()
+                        isString()
+                    }
+                }
+                jsonPath("$.nextLetter") {
+                    exists()
+                    jsonPath("$.nextLetter.letterId") {
+                        exists()
+                        isString()
+                        value(letters[2]["letterId"] as String)
+                    }
+                    jsonPath("$.nextLetter.senderName") {
+                        exists()
+                        isString()
+                    }
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.asap.bootstrap.letter.api
 
 import com.asap.bootstrap.common.security.annotation.AccessUser
+import com.asap.bootstrap.letter.dto.GetSpaceLetterDetailResponse
 import com.asap.bootstrap.letter.dto.GetSpaceLettersResponse
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import com.asap.common.page.PageResponse
@@ -69,4 +70,14 @@ interface SpaceLetterApi {
         @PathVariable letterId: String,
         @AccessUser userId: String
     )
+
+
+    @GetMapping("/letters/{letterId}")
+    fun getSpaceLetterDetail(
+        @PathVariable letterId: String,
+        @AccessUser userId: String
+    ): GetSpaceLetterDetailResponse
+
+
+
 }

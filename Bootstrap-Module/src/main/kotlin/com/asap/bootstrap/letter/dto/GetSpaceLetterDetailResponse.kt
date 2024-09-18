@@ -2,7 +2,7 @@ package com.asap.bootstrap.letter.dto
 
 import java.time.LocalDate
 
-data class GetLetterDetailResponse(
+data class GetSpaceLetterDetailResponse(
     val senderName: String,
     val spaceName: String,
     val letterCount: Long,
