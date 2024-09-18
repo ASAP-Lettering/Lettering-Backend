@@ -104,4 +104,8 @@ class SpaceLetterController(
         )
     }
 
+    override fun deleteSpaceLetter(letterId: String, userId: String) {
+
+    }
+
 }

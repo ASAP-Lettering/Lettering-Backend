@@ -11,6 +11,7 @@ import org.mockito.BDDMockito
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.put
 import java.time.LocalDate
@@ -198,6 +199,23 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
                     isNotEmpty()
                 }
             }
+        }
+    }
+
+
+    @Test
+    fun deleteSpaceLetter(){
+        //given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val letterId = "letterId"
+        //when
+        val response = mockMvc.delete("/api/v1/spaces/letters/$letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

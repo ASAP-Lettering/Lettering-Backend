@@ -78,6 +78,10 @@ interface SpaceLetterApi {
         @AccessUser userId: String
     ): GetSpaceLetterDetailResponse
 
-
+    @DeleteMapping("/letters/{letterId}")
+    fun deleteSpaceLetter(
+        @PathVariable letterId: String,
+        @AccessUser userId: String,
+    )
 
 }

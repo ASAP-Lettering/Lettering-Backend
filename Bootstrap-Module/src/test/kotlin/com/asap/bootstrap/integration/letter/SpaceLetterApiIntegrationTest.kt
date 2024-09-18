@@ -5,11 +5,13 @@ import com.asap.application.space.SpaceMockManager
 import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.put
 
@@ -207,5 +209,29 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
                 }
             }
         }
+    }
+
+    @Test
+    fun deleteSpaceLetter(){
+        //given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceLetter = letterMockManager.generateMockSpaceLetter(
+            receiverId = userId,
+            senderName = "senderName",
+            spaceId = spaceId
+        )
+        val letterId = spaceLetter["letterId"] as String
+        //when
+        val response = mockMvc.delete("/api/v1/spaces/letters/$letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        //then
+        response.andExpect {
+            status { isOk() }
+        }
+        letterMockManager.isExistSpaceLetter(letterId, userId) shouldBe false
     }
 }

@@ -170,12 +170,6 @@ interface LetterApi {
         @AccessUser userId: String,
     )
 
-    @DeleteMapping("/{letterId}")
-    fun deleteLetter(
-        @PathVariable letterId: String,
-        @AccessUser userId: String,
-    )
-
     @Operation(summary = "편지 쓰기")
     @PostMapping("/send")
     @ApiResponses(

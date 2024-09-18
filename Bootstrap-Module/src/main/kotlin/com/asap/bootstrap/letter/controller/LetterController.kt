@@ -101,10 +101,6 @@ class LetterController(
         TODO("Not yet implemented")
     }
 
-    override fun deleteLetter(letterId: String, userId: String) {
-        TODO("Not yet implemented")
-    }
-
 
     override fun sendLetter(request: SendLetterRequest, userId: String): SendLetterResponse {
         val response = sendLetterUsecase.send(
