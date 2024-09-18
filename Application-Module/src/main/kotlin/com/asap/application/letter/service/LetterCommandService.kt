@@ -1,10 +1,7 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.exception.LetterException
-import com.asap.application.letter.port.`in`.AddLetterUsecase
-import com.asap.application.letter.port.`in`.MoveLetterUsecase
-import com.asap.application.letter.port.`in`.SendLetterUsecase
-import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
@@ -25,7 +22,7 @@ class LetterCommandService(
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
-) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase, MoveLetterUsecase {
+) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase, MoveLetterUsecase, RemoveLetterUsecase {
 
     private val letterCodeGenerator = LetterCodeGenerator()
 
@@ -122,10 +119,21 @@ class LetterCommandService(
     }
 
     override fun moveToIndependent(command: MoveLetterUsecase.Command.ToIndependent) {
-        val spaceLetter = spaceLetterManagementPort.getSpaceLetterNotNull(DomainId(command.letterId))
-        independentLetterManagementPort.saveBySpaceLetter(
-            spaceLetter,
+        val spaceLetter = spaceLetterManagementPort.getSpaceLetterNotNull(
+            DomainId(command.letterId),
             DomainId(command.userId)
         )
+        independentLetterManagementPort.saveBySpaceLetter(
+            spaceLetter,
+            spaceLetter.receiver.receiverId
+        )
+    }
+
+    override fun removeSpaceLetter(command: RemoveLetterUsecase.Command.SpaceLetter) {
+        val spaceLetter = spaceLetterManagementPort.getSpaceLetterNotNull(
+            DomainId(command.letterId),
+            DomainId(command.userId)
+        )
+        spaceLetterManagementPort.delete(spaceLetter)
     }
 }

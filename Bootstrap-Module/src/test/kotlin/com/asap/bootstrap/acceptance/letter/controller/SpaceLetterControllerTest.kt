@@ -3,6 +3,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
 import com.asap.application.letter.port.`in`.MoveLetterUsecase
+import com.asap.application.letter.port.`in`.RemoveLetterUsecase
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.letter.controller.SpaceLetterController
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
@@ -27,6 +28,9 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
 
     @MockBean
     lateinit var getSpaceLetterDetailUsecase: GetSpaceLetterDetailUsecase
+
+    @MockBean
+    lateinit var removeLetterUsecase: RemoveLetterUsecase
 
     @Test
     fun moveLetterToSpace() {

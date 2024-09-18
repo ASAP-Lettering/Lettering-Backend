@@ -215,7 +215,7 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
     fun deleteSpaceLetter(){
         //given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val spaceLetter = letterMockManager.generateMockSpaceLetter(
             receiverId = userId,
