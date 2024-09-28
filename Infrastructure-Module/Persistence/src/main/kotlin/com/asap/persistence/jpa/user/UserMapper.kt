@@ -18,7 +18,7 @@ object UserMapper {
             username = user.username,
             profileImage = user.profileImage,
             birthday = user.birthday,
-            userPermissionEntity =
+            userPermission =
                 UserPermissionEntity(
                     servicePermission = user.permission.servicePermission,
                     privatePermission = user.permission.privatePermission,
@@ -33,9 +33,9 @@ object UserMapper {
             profileImage = userEntity.profileImage,
             permission =
                 UserPermission(
-                    servicePermission = userEntity.userPermissionEntity.servicePermission,
-                    privatePermission = userEntity.userPermissionEntity.privatePermission,
-                    marketingPermission = userEntity.userPermissionEntity.marketingPermission,
+                    servicePermission = userEntity.userPermission.servicePermission,
+                    privatePermission = userEntity.userPermission.privatePermission,
+                    marketingPermission = userEntity.userPermission.marketingPermission,
                 ),
             birthday = userEntity.birthday,
         )

@@ -5,11 +5,12 @@ import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
+@Table(name = "user")
 class UserEntity(
     id: String,
     username: String,
     profileImage: String,
-    userPermissionEntity: UserPermissionEntity,
+    userPermission: UserPermissionEntity,
     birthday: LocalDate?,
 ) : AggregateRoot<UserEntity>(id) {
     @Column(nullable = false)
@@ -18,9 +19,8 @@ class UserEntity(
     @Column(nullable = false)
     val profileImage: String = profileImage
 
-    @OneToOne(targetEntity = UserPermissionEntity::class, cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(nullable = false, name = "user_permission_id")
-    val userPermissionEntity: UserPermissionEntity = userPermissionEntity
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    val userPermission: UserPermissionEntity = userPermission
 
     val birthday: LocalDate? = birthday
 }

@@ -1,16 +1,13 @@
 package com.asap.persistence.jpa.user.entity
 
 import com.asap.persistence.jpa.common.AggregateRoot
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Index
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(
+    name = "user_auth",
     indexes = [
         Index(name = "idx_social_id_index", columnList = "socialId"),
-        Index(name = "fk_user_id_index", columnList = "userId"),
     ],
 )
 class UserAuthEntity(
@@ -21,6 +18,10 @@ class UserAuthEntity(
 ) : AggregateRoot<UserAuthEntity>(id) {
     @Column(nullable = false)
     val userId: String = userId
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    lateinit var user: UserEntity
 
     @Column(nullable = false)
     val socialId: String = socialId

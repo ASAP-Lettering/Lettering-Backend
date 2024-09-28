@@ -9,3 +9,10 @@ spring:
     hibernate:
       ddl-auto: none
 
+
+  flyway:
+    baseline-version: 1
+    baseline-on-migrate: true
+    enabled: true
+    locations: classpath:db
+
