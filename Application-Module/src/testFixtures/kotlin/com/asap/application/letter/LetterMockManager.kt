@@ -16,63 +16,66 @@ import java.time.LocalDate
 class LetterMockManager(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
-    private val spaceLetterManagementPort: SpaceLetterManagementPort
+    private val spaceLetterManagementPort: SpaceLetterManagementPort,
 ) {
-
     private val letterCodeGenerator = LetterCodeGenerator()
 
-    fun generateMockSendLetter(
-        receiverName: String,
-    ): String {
-        val sendLetter = SendLetter(
-            receiverName = receiverName,
-            content = LetterContent(
-                content = "content",
-                templateType = 1,
-                images = listOf("image1", "image2")
-            ),
-            senderId = DomainId.generate(),
-            letterCode = letterCodeGenerator.generateCode(
-                content = "content",
-                ownerId = DomainId.generate().value
+    fun generateMockSendLetter(receiverName: String): String {
+        val sendLetter =
+            SendLetter(
+                receiverName = receiverName,
+                content =
+                    LetterContent(
+                        content = "content",
+                        templateType = 1,
+                        images = listOf("image1", "image2"),
+                    ),
+                senderId = DomainId.generate(),
+                letterCode =
+                    letterCodeGenerator.generateCode(
+                        content = "content",
+                        ownerId = DomainId.generate().value,
+                    ),
             )
-        )
         sendLetterManagementPort.save(sendLetter)
         return sendLetter.letterCode
     }
 
-    fun generateMockExpiredSendLetter(
+    fun generateMockReadLetter(
         receiverName: String,
         receiverId: String,
-        senderId: String = DomainId.generate().value
+        senderId: String = DomainId.generate().value,
     ): Map<String, Any> {
-        val sendLetter = SendLetter(
-            receiverName = receiverName,
-            content = LetterContent(
-                content = "content",
-                templateType = 1,
-                images = listOf("image1", "image2")
-            ),
-            senderId = DomainId(senderId),
-            letterCode = letterCodeGenerator.generateCode(
-                content = "content",
-                ownerId = DomainId(senderId).value
+        val sendLetter =
+            SendLetter(
+                receiverName = receiverName,
+                content =
+                    LetterContent(
+                        content = "content",
+                        templateType = 1,
+                        images = listOf("image1", "image2"),
+                    ),
+                senderId = DomainId(senderId),
+                letterCode =
+                    letterCodeGenerator.generateCode(
+                        content = "content",
+                        ownerId = DomainId(senderId).value,
+                    ),
             )
-        )
-        sendLetterManagementPort.save(sendLetter)
-        sendLetterManagementPort.expireLetter(DomainId(receiverId), sendLetter.id)
+        val readLetter = sendLetter.readLetter(DomainId(receiverId))
+        sendLetterManagementPort.save(readLetter)
         return mapOf(
             "letterCode" to sendLetter.letterCode,
-            "letterId" to sendLetter.id.value
+            "letterId" to sendLetter.id.value,
         )
     }
 
     fun isExistVerifiedLetter(
         letterId: String,
-        userId: String
+        userId: String,
     ): Boolean {
         return try {
-            sendLetterManagementPort.getExpiredLetterNotNull(DomainId(userId), DomainId(letterId))
+            sendLetterManagementPort.getReadLetterNotNull(DomainId(userId), DomainId(letterId))
             true
         } catch (e: Exception) {
             return false
@@ -82,24 +85,28 @@ class LetterMockManager(
     fun generateMockIndependentLetter(
         senderId: String? = null,
         receiverId: String,
-        senderName: String
+        senderName: String,
     ): Map<String, Any> {
-        val independentLetter = IndependentLetter(
-            sender = SenderInfo(
-                senderId = senderId?.let { DomainId(it) },
-                senderName = senderName
-            ),
-            receiver = ReceiverInfo(
-                receiverId = DomainId(receiverId)
-            ),
-            content = LetterContent(
-                content = "content",
-                templateType = 1,
-                images = listOf("image1", "image2")
-            ),
-            receiveDate = LocalDate.now(),
-            isNew = true,
-        )
+        val independentLetter =
+            IndependentLetter(
+                sender =
+                    SenderInfo(
+                        senderId = senderId?.let { DomainId(it) },
+                        senderName = senderName,
+                    ),
+                receiver =
+                    ReceiverInfo(
+                        receiverId = DomainId(receiverId),
+                    ),
+                content =
+                    LetterContent(
+                        content = "content",
+                        templateType = 1,
+                        images = listOf("image1", "image2"),
+                    ),
+                receiveDate = LocalDate.now(),
+                isNew = true,
+            )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(
             "letterId" to independentLetter.id.value,
@@ -110,37 +117,40 @@ class LetterMockManager(
         senderId: String? = null,
         receiverId: String,
         senderName: String,
-        spaceId: String
+        spaceId: String,
     ): Map<String, Any> {
-        val spaceLetter = SpaceLetter(
-            sender = SenderInfo(
-                senderId = senderId?.let { DomainId(it) },
-                senderName = senderName
-            ),
-            receiver = ReceiverInfo(
-                receiverId = DomainId(receiverId)
-            ),
-            content = LetterContent(
-                content = "content",
-                templateType = 1,
-                images = listOf("image1", "image2")
-            ),
-            spaceId = DomainId(spaceId),
-            receiveDate = LocalDate.now(),
-        )
+        val spaceLetter =
+            SpaceLetter(
+                sender =
+                    SenderInfo(
+                        senderId = senderId?.let { DomainId(it) },
+                        senderName = senderName,
+                    ),
+                receiver =
+                    ReceiverInfo(
+                        receiverId = DomainId(receiverId),
+                    ),
+                content =
+                    LetterContent(
+                        content = "content",
+                        templateType = 1,
+                        images = listOf("image1", "image2"),
+                    ),
+                spaceId = DomainId(spaceId),
+                receiveDate = LocalDate.now(),
+            )
         spaceLetterManagementPort.save(
-            spaceLetter
+            spaceLetter,
         )
         return mapOf(
             "letterId" to spaceLetter.id.value,
-            "senderName" to senderName
+            "senderName" to senderName,
         )
     }
 
-
     fun isExistSpaceLetter(
         letterId: String,
-        userId: String
+        userId: String,
     ): Boolean {
         return try {
             spaceLetterManagementPort.getSpaceLetterNotNull(DomainId(letterId), DomainId(userId))

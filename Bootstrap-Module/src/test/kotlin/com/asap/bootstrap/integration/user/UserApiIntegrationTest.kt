@@ -1,20 +1,14 @@
 package com.asap.bootstrap.integration.user
 
-import com.asap.application.user.UserMockManager
 import com.asap.application.user.exception.UserException
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.user.dto.RegisterUserRequest
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.post
 import java.time.LocalDate
 
-
-class UserApiIntegrationTest: IntegrationSupporter() {
-    @Autowired
-    lateinit var userMockManager: UserMockManager
-
+class UserApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun registerUserSuccessTest() {
         // given
@@ -22,10 +16,11 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         userMockManager.settingToken(registerToken)
         val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -45,16 +40,19 @@ class UserApiIntegrationTest: IntegrationSupporter() {
     @Test
     fun registerUserInvalidTest_with_DuplicateUser() {
         // given
-        val duplicateRegisterToken = testJwtDataGenerator.generateRegisterToken(
-            socialId = "duplicate",
-        )
+        val duplicateRegisterToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(duplicateRegisterToken)
         val request = RegisterUserRequest(duplicateRegisterToken, true, true, true, LocalDate.now(), "realName")
-        // when
-        val response = mockMvc.post("/api/v1/users") {
+        mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(request)
         }
+        // when
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
         // then
         response.andExpect {
             status { isBadRequest() }
@@ -68,14 +66,15 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         userMockManager.settingToken(registerToken)
         val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
         // then
         response.andExpect {
             status { isUnauthorized() }
-            jsonPath("$.code"){
+            jsonPath("$.code") {
                 exists()
                 isString()
             }
@@ -88,14 +87,15 @@ class UserApiIntegrationTest: IntegrationSupporter() {
         val registerToken = testJwtDataGenerator.generateInvalidToken()
         val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
         // then
         response.andExpect {
             status { isUnauthorized() }
-            jsonPath("$.code"){
+            jsonPath("$.code") {
                 exists()
                 isString()
                 value(UserException.UserPermissionDeniedException().code)
@@ -105,16 +105,17 @@ class UserApiIntegrationTest: IntegrationSupporter() {
 
     @Test
     fun registerUserInvalidTest_with_InvalidServicePermission() {
-        //given
+        // given
         val registerToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(registerToken)
         val request = RegisterUserRequest(registerToken, false, true, true, LocalDate.now(), "realName")
-        //when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
-        //then
+        // when
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+        // then
         response.andExpect {
             status { isBadRequest() }
         }
@@ -122,16 +123,17 @@ class UserApiIntegrationTest: IntegrationSupporter() {
 
     @Test
     fun registerUserInvalidTest_with_InvalidPrivatePermission() {
-        //given
+        // given
         val registerToken = testJwtDataGenerator.generateRegisterToken()
         userMockManager.settingToken(registerToken)
         val request = RegisterUserRequest(registerToken, true, false, true, LocalDate.now(), "realName")
-        //when
-        val response = mockMvc.post("/api/v1/users") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
-        //then
+        // when
+        val response =
+            mockMvc.post("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+        // then
         response.andExpect {
             status { isBadRequest() }
         }

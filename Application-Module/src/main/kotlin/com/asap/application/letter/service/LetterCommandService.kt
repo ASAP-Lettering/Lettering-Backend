@@ -14,33 +14,40 @@ import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Service
+@Transactional
 class LetterCommandService(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
-) : SendLetterUsecase, VerifyLetterAccessibleUsecase, AddLetterUsecase, MoveLetterUsecase, RemoveLetterUsecase {
-
+) : SendLetterUsecase,
+    VerifyLetterAccessibleUsecase,
+    AddLetterUsecase,
+    MoveLetterUsecase,
+    RemoveLetterUsecase {
     private val letterCodeGenerator = LetterCodeGenerator()
 
-
     override fun send(command: SendLetterUsecase.Command): SendLetterUsecase.Response {
-        val sendLetter = SendLetter(
-            receiverName = command.receiverName,
-            content = LetterContent(
-                content = command.content,
-                templateType = command.templateType,
-                images = command.images
-            ),
-            senderId = DomainId(command.userId),
-            letterCode = letterCodeGenerator.generateCode(
-                content = command.content,
-                ownerId = command.userId
+        val sendLetter =
+            SendLetter(
+                receiverName = command.receiverName,
+                content =
+                    LetterContent(
+                        content = command.content,
+                        templateType = command.templateType,
+                        images = command.images,
+                    ),
+                senderId = DomainId(command.userId),
+                letterCode =
+                    letterCodeGenerator.generateCode(
+                        content = command.content,
+                        ownerId = command.userId,
+                    ),
             )
-        )
         sendLetterManagementPort.save(sendLetter)
 
         command.draftId?.let {
@@ -52,88 +59,102 @@ class LetterCommandService(
 
     override fun verify(command: VerifyLetterAccessibleUsecase.Command): VerifyLetterAccessibleUsecase.Response {
         if (sendLetterManagementPort.verifiedLetter(DomainId(command.userId), command.letterCode)) {
-            val sendLetter = sendLetterManagementPort.getExpiredLetterNotNull(
-                receiverId = DomainId(command.userId),
-                command.letterCode
-            )
+            val sendLetter =
+                sendLetterManagementPort.getReadLetterNotNull(
+                    receiverId = DomainId(command.userId),
+                    command.letterCode,
+                )
             return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
         }
 
         val sendLetter = sendLetterManagementPort.getLetterByCodeNotNull(command.letterCode)
-        sendLetter.isSameReceiver {
-            userManagementPort.getUserNotNull(DomainId(command.userId)).username
-        }.takeIf { it }?.let {
-            sendLetterManagementPort.expireLetter(
-                receiverId = DomainId(command.userId),
-                letterId = sendLetter.id
-            )
-            return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
-        } ?: throw LetterException.InvalidLetterAccessException()
+        sendLetter
+            .isSameReceiver {
+                userManagementPort.getUserNotNull(DomainId(command.userId)).username
+            }.takeIf { it }
+            ?.let {
+                val readLetter = sendLetter.readLetter(DomainId(command.userId))
+                sendLetterManagementPort.save(readLetter)
+                return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
+            } ?: throw LetterException.InvalidLetterAccessException()
     }
 
     override fun addVerifiedLetter(command: AddLetterUsecase.Command.VerifyLetter) {
-        val sendLetter = sendLetterManagementPort.getExpiredLetterNotNull(
-            receiverId = DomainId(command.userId),
-            letterId = DomainId(command.letterId)
-        )
-        val independentLetter = IndependentLetter(
-            sender = SenderInfo(
-                senderId = sendLetter.senderId,
-                senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username
-            ),
-            receiver = ReceiverInfo(
-                receiverId = DomainId(command.userId)
-            ),
-            content = sendLetter.content,
-            receiveDate = sendLetter.createdDate,
-        )
+        val sendLetter =
+            sendLetterManagementPort.getReadLetterNotNull(
+                receiverId = DomainId(command.userId),
+                letterId = DomainId(command.letterId),
+            )
+        val independentLetter =
+            IndependentLetter(
+                sender =
+                    SenderInfo(
+                        senderId = sendLetter.senderId,
+                        senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username,
+                    ),
+                receiver =
+                    ReceiverInfo(
+                        receiverId = DomainId(command.userId),
+                    ),
+                content = sendLetter.content,
+                receiveDate = sendLetter.createdDate,
+            )
+        val receivedLetter = sendLetter.receiveLetter()
+
+        sendLetterManagementPort.save(receivedLetter)
         independentLetterManagementPort.save(independentLetter)
-        sendLetterManagementPort.remove(sendLetter.id)
     }
 
     override fun addPhysicalLetter(command: AddLetterUsecase.Command.AddPhysicalLetter) {
-        val independentLetter = IndependentLetter(
-            sender = SenderInfo(
-                senderName = command.senderName
-            ),
-            receiver = ReceiverInfo(
-                receiverId = DomainId(command.userId)
-            ),
-            content = LetterContent(
-                content = command.content,
-                templateType = command.templateType,
-                images = command.images
-            ),
-            receiveDate = LocalDate.now(),
-        )
+        val independentLetter =
+            IndependentLetter(
+                sender =
+                    SenderInfo(
+                        senderName = command.senderName,
+                    ),
+                receiver =
+                    ReceiverInfo(
+                        receiverId = DomainId(command.userId),
+                    ),
+                content =
+                    LetterContent(
+                        content = command.content,
+                        templateType = command.templateType,
+                        images = command.images,
+                    ),
+                receiveDate = LocalDate.now(),
+            )
         independentLetterManagementPort.save(independentLetter)
     }
 
     override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
-        val independentLetter = independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
+        val independentLetter =
+            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
         spaceLetterManagementPort.saveByIndependentLetter(
             independentLetter,
             DomainId(command.spaceId),
-            DomainId(command.userId)
+            DomainId(command.userId),
         )
     }
 
     override fun moveToIndependent(command: MoveLetterUsecase.Command.ToIndependent) {
-        val spaceLetter = spaceLetterManagementPort.getSpaceLetterNotNull(
-            DomainId(command.letterId),
-            DomainId(command.userId)
-        )
+        val spaceLetter =
+            spaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId(command.letterId),
+                DomainId(command.userId),
+            )
         independentLetterManagementPort.saveBySpaceLetter(
             spaceLetter,
-            spaceLetter.receiver.receiverId
+            spaceLetter.receiver.receiverId,
         )
     }
 
     override fun removeSpaceLetter(command: RemoveLetterUsecase.Command.SpaceLetter) {
-        val spaceLetter = spaceLetterManagementPort.getSpaceLetterNotNull(
-            DomainId(command.letterId),
-            DomainId(command.userId)
-        )
+        val spaceLetter =
+            spaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId(command.letterId),
+                DomainId(command.userId),
+            )
         spaceLetterManagementPort.delete(spaceLetter)
     }
 }

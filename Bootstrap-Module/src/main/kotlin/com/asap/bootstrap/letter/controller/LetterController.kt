@@ -12,57 +12,59 @@ class LetterController(
     private val verifyLetterAccessibleUsecase: VerifyLetterAccessibleUsecase,
     private val getVerifiedLetterUsecase: GetVerifiedLetterUsecase,
     private val addLetterUsecase: AddLetterUsecase,
-    private val getIndependentLettersUsecase: GetIndependentLettersUsecase
+    private val getIndependentLettersUsecase: GetIndependentLettersUsecase,
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
-        userId: String
+        userId: String,
     ): LetterVerifyResponse {
-        val response = verifyLetterAccessibleUsecase.verify(
-            VerifyLetterAccessibleUsecase.Command(
-                letterCode = request.letterCode,
-                userId = userId
+        val response =
+            verifyLetterAccessibleUsecase.verify(
+                VerifyLetterAccessibleUsecase.Command(
+                    letterCode = request.letterCode,
+                    userId = userId,
+                ),
             )
-        )
         return LetterVerifyResponse(
-            letterId = response.letterId
+            letterId = response.letterId,
         )
     }
 
     override fun getVerifiedLetter(
         letterId: String,
-        userId: String
+        userId: String,
     ): VerifiedLetterInfoResponse {
-        val response = getVerifiedLetterUsecase.get(
-            GetVerifiedLetterUsecase.Query(
-                userId = userId,
-                letterId = letterId
+        val response =
+            getVerifiedLetterUsecase.get(
+                GetVerifiedLetterUsecase.Query(
+                    userId = userId,
+                    letterId = letterId,
+                ),
             )
-        )
         return VerifiedLetterInfoResponse(
             senderName = response.senderName,
             content = response.content,
             date = response.sendDate,
             templateType = response.templateType,
-            images = response.images
+            images = response.images,
         )
     }
 
     override fun addVerifiedLetter(
         request: AddVerifiedLetterRequest,
-        userId: String
+        userId: String,
     ) {
         addLetterUsecase.addVerifiedLetter(
             AddLetterUsecase.Command.VerifyLetter(
                 letterId = request.letterId,
-                userId = userId
-            )
+                userId = userId,
+            ),
         )
     }
 
     override fun addPhysicalLetter(
         request: AddPhysicalLetterRequest,
-        userId: String
+        userId: String,
     ) {
         addLetterUsecase.addPhysicalLetter(
             AddLetterUsecase.Command.AddPhysicalLetter(
@@ -70,51 +72,58 @@ class LetterController(
                 content = request.content,
                 images = request.images,
                 templateType = request.templateType,
-                userId = userId
-            )
+                userId = userId,
+            ),
         )
     }
 
-    override fun getIndependentLetters(
-        userId: String
-    ): SliceResponse<GetIndependentLetterSimpleInfo> {
-        val response = getIndependentLettersUsecase.get(
-            GetIndependentLettersUsecase.Query(
-                userId = userId
+    override fun getIndependentLetters(userId: String): SliceResponse<GetIndependentLetterSimpleInfo> {
+        val response =
+            getIndependentLettersUsecase.get(
+                GetIndependentLettersUsecase.Query(
+                    userId = userId,
+                ),
             )
-        )
         return SliceResponse.of(
-            content = response.letters.map {
-                GetIndependentLetterSimpleInfo(
-                    letterId = it.letterId,
-                    senderName = it.senderName,
-                    isNew = it.isNew
-                )
-            },
+            content =
+                response.letters.map {
+                    GetIndependentLetterSimpleInfo(
+                        letterId = it.letterId,
+                        senderName = it.senderName,
+                        isNew = it.isNew,
+                    )
+                },
             size = response.letters.size,
             number = 0,
-            hasNext = false
+            hasNext = false,
         )
     }
 
-    override fun updateLetter(letterId: String, request: ModifyLetterRequest, userId: String) {
+    override fun updateLetter(
+        letterId: String,
+        request: ModifyLetterRequest,
+        userId: String,
+    ) {
         TODO("Not yet implemented")
     }
 
-
-    override fun sendLetter(request: SendLetterRequest, userId: String): SendLetterResponse {
-        val response = sendLetterUsecase.send(
-            SendLetterUsecase.Command(
-                receiverName = request.receiverName,
-                content = request.content,
-                images = request.images,
-                templateType = request.templateType,
-                draftId = request.draftId,
-                userId = userId
+    override fun sendLetter(
+        request: SendLetterRequest,
+        userId: String,
+    ): SendLetterResponse {
+        val response =
+            sendLetterUsecase.send(
+                SendLetterUsecase.Command(
+                    receiverName = request.receiverName,
+                    content = request.content,
+                    images = request.images,
+                    templateType = request.templateType,
+                    draftId = request.draftId,
+                    userId = userId,
+                ),
             )
-        )
         return SendLetterResponse(
-            letterCode = response.letterCode
+            letterCode = response.letterCode,
         )
     }
 }

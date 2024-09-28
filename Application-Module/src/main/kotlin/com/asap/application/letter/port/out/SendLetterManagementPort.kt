@@ -5,51 +5,33 @@ import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.SendLetter
 
 interface SendLetterManagementPort {
-
-    fun save(
-        sendLetter: SendLetter
-    )
+    fun save(sendLetter: SendLetter)
 
     @Throws(
-        LetterException.SendLetterNotFoundException::class
+        LetterException.SendLetterNotFoundException::class,
     )
-    fun getLetterNotNull(
-        letterId: DomainId
-    ): SendLetter
+    fun getLetterNotNull(letterId: DomainId): SendLetter
 
     @Throws(
-        LetterException.SendLetterNotFoundException::class
+        LetterException.SendLetterNotFoundException::class,
     )
-    fun getLetterByCodeNotNull(
-        letterCode: String
-    ): SendLetter
+    fun getLetterByCodeNotNull(letterCode: String): SendLetter
 
     @Throws(
-        LetterException.SendLetterNotFoundException::class
+        LetterException.SendLetterNotFoundException::class,
     )
-    fun getExpiredLetterNotNull(
+    fun getReadLetterNotNull(
         receiverId: DomainId,
-        letterCode: String
+        letterCode: String,
     ): SendLetter
 
-    fun getExpiredLetterNotNull(
+    fun getReadLetterNotNull(
         receiverId: DomainId,
-        letterId: DomainId
+        letterId: DomainId,
     ): SendLetter
-
-
-    fun expireLetter(
-        receiverId: DomainId,
-        letterId: DomainId
-    )
 
     fun verifiedLetter(
         receiverId: DomainId,
-        letterCode: String
+        letterCode: String,
     ): Boolean
-
-    fun remove(
-        letterId: DomainId
-    )
-
 }

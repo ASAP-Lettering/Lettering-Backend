@@ -7,6 +7,5 @@ data class UserAuth(
     val id: DomainId = DomainId.generate(),
     val userId: DomainId,
     val socialId: String,
-    val socialLoginProvider: SocialLoginProvider
-) {
-}
+    val socialLoginProvider: SocialLoginProvider,
+)

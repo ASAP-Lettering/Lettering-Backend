@@ -2,7 +2,6 @@ package com.asap.bootstrap.integration.letter
 
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
-import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import io.kotest.matchers.shouldBe
@@ -15,11 +14,7 @@ import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.put
 
-class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
-
-    @Autowired
-    lateinit var userMockManager: UserMockManager
-
+class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     @Autowired
     lateinit var spaceMockManager: SpaceMockManager
 
@@ -28,22 +23,24 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
 
     @Test
     fun moveLetterToSpace() {
-        //given
+        // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
-        val independentLetterId = letterMockManager.generateMockIndependentLetter(
-            receiverId = userId,
-            senderName = "senderName",
-        )["letterId"] as String
+        val independentLetterId =
+            letterMockManager.generateMockIndependentLetter(
+                receiverId = userId,
+                senderName = "senderName",
+            )["letterId"] as String
         val request = MoveLetterToSpaceRequest(spaceId)
-        //when
-        val response = mockMvc.put("/api/v1/spaces/letters/$independentLetterId") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$independentLetterId") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }
@@ -51,104 +48,108 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
 
     @Test
     fun moveLetterToIndependentLetter() {
-        //given
+        // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
-        val spaceLetterId = letterMockManager.generateMockSpaceLetter(
-            receiverId = userId,
-            senderName = "senderName",
-            spaceId = spaceId
-        )["letterId"] as String
-        //when
-        val response = mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        val spaceLetterId =
+            letterMockManager.generateMockSpaceLetter(
+                receiverId = userId,
+                senderName = "senderName",
+                spaceId = spaceId,
+            )["letterId"] as String
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }
     }
-
 
     @Test
     fun getAllSpaceLetters() {
-        //given
+        // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
-        val letterIds = (0..30).map{
-            val letter = letterMockManager.generateMockSpaceLetter(
-                receiverId = userId,
-                senderName = "senderName$it",
-                spaceId = spaceId
-            )
-            return@map letter["letterId"] as String to letter["senderName"] as String
-        }
-        val page=1
-        val size=10
-        //when
-        val response = mockMvc.get("/api/v1/spaces/$spaceId/letters?page=$page&size=$size") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        val letterIds =
+            (0..30).map {
+                val letter =
+                    letterMockManager.generateMockSpaceLetter(
+                        receiverId = userId,
+                        senderName = "senderName$it",
+                        spaceId = spaceId,
+                    )
+                return@map letter["letterId"] as String to letter["senderName"] as String
+            }
+        val page = 1
+        val size = 10
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces/$spaceId/letters?page=$page&size=$size") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
-            jsonPath("$.content"){
+            jsonPath("$.content") {
                 isArray()
-                (0..9).forEachIndexed{ index, _ ->
-                    jsonPath("$.content[$index].senderName"){
-                        value(letterIds[index+page*size].second)
+                (0..9).forEachIndexed { index, _ ->
+                    jsonPath("$.content[$index].senderName") {
+                        value(letterIds[index + page * size].second)
                     }
-                    jsonPath("$.content[$index].letterId"){
-                        value(letterIds[index+page*size].first)
+                    jsonPath("$.content[$index].letterId") {
+                        value(letterIds[index + page * size].first)
                     }
                 }
             }
-            jsonPath("$.totalElements"){
+            jsonPath("$.totalElements") {
                 isNumber()
             }
-            jsonPath("$.totalPages"){
+            jsonPath("$.totalPages") {
                 isNumber()
             }
-            jsonPath("$.size"){
+            jsonPath("$.size") {
                 isNumber()
             }
-            jsonPath("$.page"){
+            jsonPath("$.page") {
                 isNumber()
             }
         }
     }
-
-
 
     @Nested
     inner class GetSpaceLetterDetail {
         @Test
         @DisplayName("편지 상세 조회 성공")
         fun getSpaceLetterDetail() {
-            //given
+            // given
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val spaceId = spaceMockManager.settingSpace(userId)
-            val letters = (0..3).map {
-                letterMockManager.generateMockSpaceLetter(
-                    senderId = senderId,
-                    receiverId = userId,
-                    spaceId = spaceId,
-                    senderName = "senderUsername"
-                )
-            }
+            val letters =
+                (0..3).map {
+                    letterMockManager.generateMockSpaceLetter(
+                        senderId = senderId,
+                        receiverId = userId,
+                        spaceId = spaceId,
+                        senderName = "senderUsername",
+                    )
+                }
             val letterId = letters[1]["letterId"] as String
-            //when
-            val response = mockMvc.get("/api/v1/spaces/letters/$letterId") {
-                contentType = MediaType.APPLICATION_JSON
-                header("Authorization", "Bearer $accessToken")
-            }
-            //then
+            // when
+            val response =
+                mockMvc.get("/api/v1/spaces/letters/$letterId") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
             response.andExpect {
                 status { isOk() }
                 jsonPath("$.senderName") {
@@ -212,23 +213,25 @@ class SpaceLetterApiIntegrationTest: IntegrationSupporter() {
     }
 
     @Test
-    fun deleteSpaceLetter(){
-        //given
+    fun deleteSpaceLetter()  {
+        // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
-        val spaceLetter = letterMockManager.generateMockSpaceLetter(
-            receiverId = userId,
-            senderName = "senderName",
-            spaceId = spaceId
-        )
+        val spaceLetter =
+            letterMockManager.generateMockSpaceLetter(
+                receiverId = userId,
+                senderName = "senderName",
+                spaceId = spaceId,
+            )
         val letterId = spaceLetter["letterId"] as String
-        //when
-        val response = mockMvc.delete("/api/v1/spaces/letters/$letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.delete("/api/v1/spaces/letters/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }

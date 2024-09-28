@@ -8,17 +8,17 @@ import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.UserToken
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class ReissueTokenService(
     private val userTokenConvertPort: UserTokenConvertPort,
     private val userTokenManagementPort: UserTokenManagementPort,
-    private val userManagementPort: UserManagementPort
+    private val userManagementPort: UserManagementPort,
 ) : ReissueTokenUsecase {
-
-
     override fun reissue(request: ReissueTokenUsecase.Command): ReissueTokenUsecase.Response {
-        if(userTokenManagementPort.isExistsToken(request.refreshToken).not()) {
+        if (userTokenManagementPort.isExistsToken(request.refreshToken).not()) {
             throw UserException.UserPermissionDeniedException("존재하지 않는 토큰입니다.")
         }
         val userClaims = userTokenConvertPort.resolveRefreshToken(request.refreshToken)
@@ -31,7 +31,7 @@ class ReissueTokenService(
         userTokenManagementPort.saveUserToken(UserToken(token = refreshToken))
         return ReissueTokenUsecase.Response(
             accessToken = accessToken,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
         )
     }
 }

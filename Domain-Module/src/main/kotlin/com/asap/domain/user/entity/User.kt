@@ -9,6 +9,5 @@ data class User(
     val username: String,
     val profileImage: String,
     val permission: UserPermission,
-    val birthday: LocalDate?
-) {
-}
+    val birthday: LocalDate?,
+)
