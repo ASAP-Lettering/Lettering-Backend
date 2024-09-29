@@ -103,7 +103,7 @@ class AuthApiIntegrationTest : IntegrationSupporter() {
                         Date(
                             LocalDateTime
                                 .now()
-                                .minusDays(1)
+                                .minusHours(1)
                                 .toInstant(
                                     ZoneOffset.UTC,
                                 ).toEpochMilli(),
