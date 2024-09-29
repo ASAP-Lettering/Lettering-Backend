@@ -2,49 +2,31 @@ package com.asap.bootstrap.acceptance.letter.controller
 
 import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
-import com.asap.application.letter.port.`in`.MoveLetterUsecase
-import com.asap.application.letter.port.`in`.RemoveLetterUsecase
-import com.asap.bootstrap.AcceptanceSupporter
-import com.asap.bootstrap.letter.controller.SpaceLetterController
+import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.put
 import java.time.LocalDate
 
-@WebMvcTest(SpaceLetterController::class)
-class SpaceLetterControllerTest: AcceptanceSupporter() {
-
-    @MockBean
-    lateinit var moveLetterUsecase: MoveLetterUsecase
-
-    @MockBean
-    lateinit var getSpaceLettersUsecase: GetSpaceLettersUsecase
-
-    @MockBean
-    lateinit var getSpaceLetterDetailUsecase: GetSpaceLetterDetailUsecase
-
-    @MockBean
-    lateinit var removeLetterUsecase: RemoveLetterUsecase
-
+class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun moveLetterToSpace() {
-        //given
+        // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         val request = MoveLetterToSpaceRequest("spaceId")
         val letterId = "letterId"
-        //when
-        val response = mockMvc.put("/api/v1/spaces/letters/$letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }
@@ -52,15 +34,16 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
 
     @Test
     fun moveLetterToIndependentLetter() {
-        //given
+        // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         val letterId = "letterId"
-        //when
-        val response = mockMvc.put("/api/v1/spaces/letters/$letterId/independent") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$letterId/independent") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }
@@ -68,81 +51,87 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
 
     @Test
     fun getAllSpaceLetters() {
-        //given
+        // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         val spaceId = "spaceId"
         val page = 0
         val size = 10
-        val pageResponse = GetSpaceLettersUsecase.Response(
-            letters = listOf(
-                GetSpaceLettersUsecase.LetterInfo(
-                    senderName = "senderName",
-                    letterId = "letterId"
-                )
-            ),
-            total = 1,
-            page = 0,
-            size = 10,
-            totalPages = 1
-        )
-        BDDMockito.given(getSpaceLettersUsecase.get(GetSpaceLettersUsecase.Query(page, size, spaceId, "userId")))
+        val pageResponse =
+            GetSpaceLettersUsecase.Response(
+                letters =
+                    listOf(
+                        GetSpaceLettersUsecase.LetterInfo(
+                            senderName = "senderName",
+                            letterId = "letterId",
+                        ),
+                    ),
+                total = 1,
+                page = 0,
+                size = 10,
+                totalPages = 1,
+            )
+        BDDMockito
+            .given(getSpaceLettersUsecase.get(GetSpaceLettersUsecase.Query(page, size, spaceId, "userId")))
             .willReturn(pageResponse)
-        //when
-        val response = mockMvc.get("/api/v1/spaces/$spaceId/letters?page=$page&size=$size") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces/$spaceId/letters?page=$page&size=$size") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
-            jsonPath("$.content"){
+            jsonPath("$.content") {
                 isArray()
             }
-            jsonPath("$.totalElements"){
+            jsonPath("$.totalElements") {
                 isNumber()
             }
-            jsonPath("$.totalPages"){
+            jsonPath("$.totalPages") {
                 isNumber()
             }
-            jsonPath("$.size"){
+            jsonPath("$.size") {
                 isNumber()
             }
-            jsonPath("$.page"){
+            jsonPath("$.page") {
                 isNumber()
             }
         }
     }
 
-
     @Test
-    fun getLetterDetail(){
-        //given
+    fun getLetterDetail() {
+        // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
-        val details = GetSpaceLetterDetailUsecase.Response(
-            senderName = "senderName",
-            spaceName = "spaceName",
-            letterCount = 1,
-            content = "content",
-            sendDate = LocalDate.now(),
-            images = listOf("images"),
-            templateType = 1,
-            prevLetter = GetSpaceLetterDetailUsecase.NearbyLetter("prevLetterId", "prevSenderName"),
-            nextLetter = GetSpaceLetterDetailUsecase.NearbyLetter("nextLetterId", "nextSenderName")
-        )
-        BDDMockito.given(
-            getSpaceLetterDetailUsecase.get(
-                GetSpaceLetterDetailUsecase.Query(
-                    letterId = "letterId",
-                    userId = "userId"
-                )
+        val details =
+            GetSpaceLetterDetailUsecase.Response(
+                senderName = "senderName",
+                spaceName = "spaceName",
+                letterCount = 1,
+                content = "content",
+                sendDate = LocalDate.now(),
+                images = listOf("images"),
+                templateType = 1,
+                prevLetter = GetSpaceLetterDetailUsecase.NearbyLetter("prevLetterId", "prevSenderName"),
+                nextLetter = GetSpaceLetterDetailUsecase.NearbyLetter("nextLetterId", "nextSenderName"),
             )
-        ).willReturn(details)
-        //when
-        val response = mockMvc.get("/api/v1/spaces/letters/{letterId}", "letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        BDDMockito
+            .given(
+                getSpaceLetterDetailUsecase.get(
+                    GetSpaceLetterDetailUsecase.Query(
+                        letterId = "letterId",
+                        userId = "userId",
+                    ),
+                ),
+            ).willReturn(details)
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces/letters/{letterId}", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
             jsonPath("$.senderName") {
@@ -206,18 +195,18 @@ class SpaceLetterControllerTest: AcceptanceSupporter() {
         }
     }
 
-
     @Test
-    fun deleteSpaceLetter(){
-        //given
+    fun deleteSpaceLetter() {
+        // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         val letterId = "letterId"
-        //when
-        val response = mockMvc.delete("/api/v1/spaces/letters/$letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        //then
+        // when
+        val response =
+            mockMvc.delete("/api/v1/spaces/letters/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
         response.andExpect {
             status { isOk() }
         }

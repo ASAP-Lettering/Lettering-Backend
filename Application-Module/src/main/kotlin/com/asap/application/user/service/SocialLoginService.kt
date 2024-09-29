@@ -6,17 +6,17 @@ import com.asap.common.exception.DefaultException
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.enums.SocialLoginProvider
 import org.springframework.stereotype.Service
-
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class SocialLoginService(
     private val userAuthManagementPort: UserAuthManagementPort,
     private val authInfoRetrievePort: AuthInfoRetrievePort,
     private val userTokenConvertPort: UserTokenConvertPort,
     private val userManagementPort: UserManagementPort,
-    private val userTokenManagementPort: UserTokenManagementPort
+    private val userTokenManagementPort: UserTokenManagementPort,
 ) : SocialLoginUsecase {
-
     override fun login(command: SocialLoginUsecase.Command): SocialLoginUsecase.Response {
         val authInfo =
             authInfoRetrievePort.getAuthInfo(SocialLoginProvider.parse(command.provider), command.accessToken)
@@ -31,15 +31,15 @@ class SocialLoginService(
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
             }
         } ?: run {
-            val registerToken = userTokenConvertPort.generateRegisterToken(
-                authInfo.socialId,
-                authInfo.socialLoginProvider.name,
-                authInfo.username,
-                authInfo.profileImage
-            )
+            val registerToken =
+                userTokenConvertPort.generateRegisterToken(
+                    authInfo.socialId,
+                    authInfo.socialLoginProvider.name,
+                    authInfo.username,
+                    authInfo.profileImage,
+                )
             userTokenManagementPort.saveUserToken(UserToken(token = registerToken))
             SocialLoginUsecase.NonRegistered(registerToken)
         }
     }
-
 }

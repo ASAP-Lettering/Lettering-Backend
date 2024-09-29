@@ -3,9 +3,9 @@ spring:
     database: h2
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;NON_KEYWORDS=USER
       username: sa
       password: sa

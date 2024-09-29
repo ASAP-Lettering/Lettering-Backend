@@ -1,5 +1,6 @@
 package com.asap.bootstrap
 
+import com.asap.application.user.UserMockManager
 import com.asap.security.jwt.TestJwtDataGenerator
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 abstract class IntegrationSupporter {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -21,4 +21,7 @@ abstract class IntegrationSupporter {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var userMockManager: UserMockManager
 }

@@ -2,7 +2,8 @@ package com.asap.domain.common
 
 import com.fasterxml.uuid.Generators
 
-data class DomainId(
+@JvmInline
+value class DomainId(
     val value: String
 ) {
     companion object{

@@ -9,10 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class KakaoOAuthRetrieveHandler(
-    @Qualifier("kakaoWebClient") private val kakaoWebClient: WebClient
+    @Qualifier("kakaoWebClient") private val kakaoWebClient: WebClient,
 ) : OAuthRetrieveHandler {
-    override fun getOAuthInfo(request: OAuthRetrieveHandler.OAuthRequest): OAuthRetrieveHandler.OAuthResponse {
-        return kakaoWebClient.get()
+    override fun getOAuthInfo(request: OAuthRetrieveHandler.OAuthRequest): OAuthRetrieveHandler.OAuthResponse =
+        kakaoWebClient
+            .get()
             .uri("/v2/user/me")
             .header("Authorization", "Bearer ${request.accessToken}")
             .retrieve()
@@ -20,27 +21,23 @@ class KakaoOAuthRetrieveHandler(
                 throw OAuthException.OAuthRetrieveFailedException("카카오 사용자 정보를 가져오는데 실패했습니다.")
             })
             .bodyToMono(KakaoUserInfo::class.java)
-            .block()?.let {
+            .block()
+            ?.let {
                 OAuthRetrieveHandler.OAuthResponse(
                     username = it.properties.nickname,
                     socialId = it.id,
-                    profileImage = it.properties.profileImage
+                    profileImage = it.properties.profileImage,
                 )
             } ?: throw OAuthException.OAuthRetrieveFailedException("카카오 사용자 정보를 가져오는데 실패했습니다.")
-    }
-
 
     data class KakaoUserInfo(
         val id: String,
-        val properties: Properties
+        val properties: Properties,
     )
-
 
     data class Properties(
         val nickname: String,
         @field:JsonProperty("profile_image")
-        val profileImage: String
+        val profileImage: String,
     )
-
-
 }

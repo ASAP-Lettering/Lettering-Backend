@@ -66,7 +66,7 @@ class LetterQueryServiceTest : BehaviorSpec({
             birthday = null
         )
         every {
-            mockSendLetterManagementPort.getExpiredLetterNotNull(
+            mockSendLetterManagementPort.getReadLetterNotNull(
                 receiverId = DomainId(query.userId),
                 letterId = DomainId(query.letterId)
             )

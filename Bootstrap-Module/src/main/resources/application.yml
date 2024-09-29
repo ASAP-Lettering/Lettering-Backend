@@ -4,10 +4,13 @@ spring:
       dev:
         - security
         - aws
+        - persistence
       local:
         - security-local
         - aws-local
+        - persistence-local
       test:
         - security-local
         - aws-local
+        - persistence-test
     active: local

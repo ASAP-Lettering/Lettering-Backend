@@ -1,7 +1,6 @@
 package com.asap.bootstrap.integration.space
 
 import com.asap.application.space.SpaceMockManager
-import com.asap.application.user.UserMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
@@ -21,14 +20,9 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.*
 
-
 class SpaceApiIntegrationTest : IntegrationSupporter() {
-
     @Autowired
     lateinit var spaceMockManager: SpaceMockManager
-
-    @Autowired
-    lateinit var userMockManager: UserMockManager
 
     @Test
     fun getMainSpaceId() {
@@ -37,9 +31,10 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         spaceMockManager.settingSpace(userId)
         // when
-        val response = mockMvc.get("/api/v1/spaces/main") {
-            header("Authorization", "Bearer $accessToken")
-        }
+        val response =
+            mockMvc.get("/api/v1/spaces/main") {
+                header("Authorization", "Bearer $accessToken")
+            }
 
         // then
         response.andExpect {
@@ -57,16 +52,18 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        val request = CreateSpaceRequest(
-            spaceName = "spaceName",
-            templateType = 0
-        )
+        val request =
+            CreateSpaceRequest(
+                spaceName = "spaceName",
+                templateType = 0,
+            )
         // when
-        val response = mockMvc.post("/api/v1/spaces") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-            header("Authorization", "Bearer $accessToken")
-        }
+        val response =
+            mockMvc.post("/api/v1/spaces") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -79,15 +76,17 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
-        val request = UpdateSpaceNameRequest(
-            spaceName = "change space name"
-        )
+        val request =
+            UpdateSpaceNameRequest(
+                spaceName = "change space name",
+            )
         // when
-        val response = mockMvc.put("/api/v1/spaces/$spaceId/name") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-            header("Authorization", "Bearer $accessToken")
-        }
+        val response =
+            mockMvc.put("/api/v1/spaces/$spaceId/name") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -99,12 +98,14 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        for (i in 0..2)
+        for (i in 0..2) {
             spaceMockManager.settingSpace(userId)
-        // when
-        val response = mockMvc.get("/api/v1/spaces") {
-            header("Authorization", "Bearer $accessToken")
         }
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces") {
+                header("Authorization", "Bearer $accessToken")
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -148,9 +149,10 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         // when
-        val response = mockMvc.delete("/api/v1/spaces/$spaceId") {
-            header("Authorization", "Bearer $accessToken")
-        }
+        val response =
+            mockMvc.delete("/api/v1/spaces/$spaceId") {
+                header("Authorization", "Bearer $accessToken")
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -166,11 +168,12 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
         val request = DeleteMultipleSpacesRequest(spaceIds)
         // when
-        val response = mockMvc.delete("/api/v1/spaces") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-            header("Authorization", "Bearer $accessToken")
-        }
+        val response =
+            mockMvc.delete("/api/v1/spaces") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
         // then
         response.andExpect {
             status { isOk() }
@@ -178,25 +181,26 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         spaceMockManager.getSpaceCount(userId) shouldBe 0
     }
 
-
     @Nested
-    inner class UpdateSpaceOrder{
+    inner class UpdateSpaceOrder  {
         @Test
         @DisplayName("space의 순서를 업데이트 한다.")
         fun updateSpaceOrder() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }
+            val spaceIndexes =
+                (0..3).map {
+                    val spaceId = spaceMockManager.settingSpace(userId)
+                    UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                }
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isOk() }
@@ -210,18 +214,21 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }.toMutableList()
+            val spaceIndexes =
+                (0..3)
+                    .map {
+                        val spaceId = spaceMockManager.settingSpace(userId)
+                        UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                    }.toMutableList()
             val invalidSpaceId = UUID.randomUUID().toString()
             spaceIndexes[0] = UpdateSpaceOrderRequest.SpaceOrder(invalidSpaceId, spaceIndexes[0].index)
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isBadRequest() }
@@ -230,45 +237,50 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("유효하지 않은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_Invalid_Index(){
+        fun updateSpaceOrderFail_with_Invalid_Index()  {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }.toMutableList()
+            val spaceIndexes =
+                (0..3)
+                    .map {
+                        val spaceId = spaceMockManager.settingSpace(userId)
+                        UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                    }.toMutableList()
             spaceIndexes[0] = UpdateSpaceOrderRequest.SpaceOrder(spaceIndexes[0].spaceId, 4)
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isBadRequest() }
             }
         }
 
-
         @Test
         @DisplayName("사용자의 space보다 많은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_over_Index_exists_space(){
+        fun updateSpaceOrderFail_with_over_Index_exists_space()  {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }.toMutableList()
+            val spaceIndexes =
+                (0..3)
+                    .map {
+                        val spaceId = spaceMockManager.settingSpace(userId)
+                        UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                    }.toMutableList()
             spaceIndexes.add(UpdateSpaceOrderRequest.SpaceOrder(UUID.randomUUID().toString(), 4))
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isBadRequest() }
@@ -277,21 +289,24 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("사용자의 space보다 적은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_less_Index_exists_space(){
+        fun updateSpaceOrderFail_with_less_Index_exists_space()  {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }.toMutableList()
+            val spaceIndexes =
+                (0..3)
+                    .map {
+                        val spaceId = spaceMockManager.settingSpace(userId)
+                        UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                    }.toMutableList()
             spaceIndexes.removeLast()
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isBadRequest() }
@@ -300,32 +315,28 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("인덱스를 중복해서 요청하면 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_duplicate_Index(){
+        fun updateSpaceOrderFail_with_duplicate_Index()  {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val spaceIndexes = (0..3).map {
-                val spaceId = spaceMockManager.settingSpace(userId)
-                UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-            }.toMutableList()
+            val spaceIndexes =
+                (0..3)
+                    .map {
+                        val spaceId = spaceMockManager.settingSpace(userId)
+                        UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                    }.toMutableList()
             spaceIndexes[0] = UpdateSpaceOrderRequest.SpaceOrder(spaceIndexes[0].spaceId, 0)
             // when
-            val response = mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
+            val response =
+                mockMvc.put("/api/v1/spaces/order") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
+                    header("Authorization", "Bearer $accessToken")
+                }
             // then
             response.andExpect {
                 status { isBadRequest() }
             }
         }
-
-
     }
-
-
-
-
-
 }

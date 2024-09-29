@@ -10,28 +10,32 @@ import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.service.SpaceIndexValidator
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class SpaceCommandService(
     private val spaceManagementPort: SpaceManagementPort,
-) : SpaceCreateUsecase, SpaceUpdateNameUsecase, SpaceDeleteUsecase, SpaceUpdateIndexUsecase {
-
+) : SpaceCreateUsecase,
+    SpaceUpdateNameUsecase,
+    SpaceDeleteUsecase,
+    SpaceUpdateIndexUsecase {
     private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
-
 
     override fun create(command: SpaceCreateUsecase.Command) {
         spaceManagementPort.createSpace(
             userId = DomainId(command.userId),
             spaceName = command.spaceName,
-            templateType = command.templateType
+            templateType = command.templateType,
         )
     }
 
     override fun update(command: SpaceUpdateNameUsecase.Command) {
-        val space = spaceManagementPort.getSpaceNotNull(
-            userId = DomainId(command.userId),
-            spaceId = DomainId(command.spaceId)
-        )
+        val space =
+            spaceManagementPort.getSpaceNotNull(
+                userId = DomainId(command.userId),
+                spaceId = DomainId(command.spaceId),
+            )
         val updatedSpace = space.updateName(command.name)
         spaceManagementPort.update(updatedSpace)
     }
@@ -39,36 +43,37 @@ class SpaceCommandService(
     override fun deleteOne(command: SpaceDeleteUsecase.DeleteOneCommand) {
         spaceManagementPort.deleteById(
             userId = DomainId(command.userId),
-            spaceId = DomainId(command.spaceId)
+            spaceId = DomainId(command.spaceId),
         )
     }
 
     override fun deleteAll(command: SpaceDeleteUsecase.DeleteAllCommand) {
         spaceManagementPort.deleteAllBySpaceIds(
             userId = DomainId(command.userId),
-            spaceIds = command.spaceIds.map { DomainId(it) }
+            spaceIds = command.spaceIds.map { DomainId(it) },
         )
     }
 
     override fun update(command: SpaceUpdateIndexUsecase.Command) {
         val indexedSpaces = spaceManagementPort.getAllIndexedSpace(DomainId(command.userId))
-        val changeIndexMap =command.orders.associateBy({ DomainId(it.spaceId) }, { it.index })
+        val changeIndexMap = command.orders.associateBy({ DomainId(it.spaceId) }, { it.index })
 
-        try{
+        try {
             spaceIndexValidator.validate(
                 indexedSpaces = indexedSpaces,
-                validateIndex = changeIndexMap
+                validateIndex = changeIndexMap,
             )
-        }catch (e: DefaultException.InvalidArgumentException){
+        } catch (e: DefaultException.InvalidArgumentException) {
             throw SpaceException.InvalidSpaceUpdateException()
         }
 
-        val updatedSpaces = indexedSpaces.map {
-            it.updateIndex(changeIndexMap.getValue(it.id))
-        }
+        val updatedSpaces =
+            indexedSpaces.map {
+                it.updateIndex(changeIndexMap.getValue(it.id))
+            }
         spaceManagementPort.updateIndexes(
             userId = DomainId(command.userId),
-            orders = updatedSpaces
+            orders = updatedSpaces,
         )
     }
 }

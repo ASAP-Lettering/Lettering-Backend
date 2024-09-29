@@ -10,28 +10,26 @@ import java.util.*
 
 @Component
 class S3ImageManagementAdapter(
-    private val s3Template: S3Template
+    private val s3Template: S3Template,
 ) : ImageManagementPort {
-
-
     override fun save(image: ImageMetadata): UploadedImage {
         val key = "${image.owner}/${UUID.randomUUID()}"
 
-        val resource = s3Template.upload(
-            BUCKET_NAME,
-            key,
-            image.fileMetaData.inputStream,
-            ObjectMetadata.builder()
-                .contentType(image.fileMetaData.contentType)
-                .acl("public-read")
-                .build()
-        )
+        val resource =
+            s3Template.upload(
+                BUCKET_NAME,
+                key,
+                image.fileMetaData.inputStream,
+                ObjectMetadata
+                    .builder()
+                    .contentType(image.fileMetaData.contentType)
+                    .acl("public-read")
+                    .build(),
+            )
         return UploadedImage(
-            imageUrl = resource.url.toString()
+            imageUrl = resource.url.toString(),
         )
     }
-
-
 
     companion object {
         private const val BUCKET_NAME = "lettering-images"

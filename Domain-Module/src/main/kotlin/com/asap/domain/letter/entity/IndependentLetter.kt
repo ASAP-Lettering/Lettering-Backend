@@ -12,6 +12,5 @@ data class IndependentLetter(
     val sender: SenderInfo,
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
-    val isNew: Boolean = true
-) {
-}
+    val isNew: Boolean = true,
+)

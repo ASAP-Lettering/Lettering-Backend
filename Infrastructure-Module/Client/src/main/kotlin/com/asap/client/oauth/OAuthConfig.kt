@@ -8,16 +8,12 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OAuthConfig(
-    private val kakaoOAuthRetrieveHandler: KakaoOAuthRetrieveHandler
+    private val kakaoOAuthRetrieveHandler: KakaoOAuthRetrieveHandler,
 ) {
-
     @Bean
     @Qualifier("oAuthRetrieveHandlers")
-    fun oAuthRetrieveHandlers(): Map<SocialLoginProvider, OAuthRetrieveHandler>{
-        return mapOf(
-            SocialLoginProvider.KAKAO to kakaoOAuthRetrieveHandler as OAuthRetrieveHandler
+    fun oAuthRetrieveHandlers(): Map<SocialLoginProvider, OAuthRetrieveHandler> =
+        mapOf(
+            SocialLoginProvider.KAKAO to kakaoOAuthRetrieveHandler as OAuthRetrieveHandler,
         )
-    }
-
-
 }

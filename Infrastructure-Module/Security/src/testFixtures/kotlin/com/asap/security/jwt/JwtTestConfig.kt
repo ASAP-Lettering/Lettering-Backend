@@ -1,24 +1,22 @@
 package com.asap.security.jwt
 
+import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.security.jwt.user.UserJwtProperties
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 
 @TestConfiguration
-class JwtTestConfig {
-
+class JwtTestConfig(
+    private val userTokenManagementPort: UserTokenManagementPort,
+) {
     @Bean
     @Primary
-    fun userJwtProperties(): UserJwtProperties {
-        return UserJwtProperties(TEST_SECRET)
-    }
+    fun userJwtProperties(): UserJwtProperties = UserJwtProperties(TEST_SECRET)
 
     @Bean
-    fun testJwtDataGenerator(userJwtProperties: UserJwtProperties): TestJwtDataGenerator {
-        return TestJwtDataGenerator(userJwtProperties)
-    }
-
+    fun testJwtDataGenerator(userJwtProperties: UserJwtProperties): TestJwtDataGenerator =
+        TestJwtDataGenerator(userJwtProperties, userTokenManagementPort)
 
     companion object {
         const val TEST_SECRET = "hdcksljdfaklsdjfnakjcbvzcnxvbaikaklsjdflhiuasdvbzmxncbvaksd"
