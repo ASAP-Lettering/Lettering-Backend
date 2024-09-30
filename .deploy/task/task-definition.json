@@ -56,7 +56,7 @@
         "options": {
           "awslogs-group": "/ecs/lettering-task",
           "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "ecs",
+          "awslogs-stream-prefix": "firelens",
           "awslogs-create-group": "true"
         }
       }
