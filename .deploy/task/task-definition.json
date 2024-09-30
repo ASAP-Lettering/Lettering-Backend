@@ -36,7 +36,10 @@
           "Labels": "job=\"firelens\"",
           "Name": "loki",
           "host": "dev.simproject.kr",
-          "port": "3100"
+          "port": "3100",
+          "LineFormat": "key_value",
+          "RemoveKeys": "container_id,ecs_task_arn",
+          "LabelKeys": "container_name,ecs_task_definition,source,ecs_cluster"
         }
       }
     },
