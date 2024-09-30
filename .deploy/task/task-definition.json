@@ -33,8 +33,8 @@
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Host": "https://342f-121-134-227-161.ngrok-free.app/loki/api/v1/push",
           "Labels": "{job=\"lettering\"}",
+          "Url": "https://342f-121-134-227-161.ngrok-free.app/loki/api/v1/push",
           "Name": "loki"
         }
       }
