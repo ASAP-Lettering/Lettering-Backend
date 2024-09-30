@@ -34,9 +34,9 @@
         "logDriver": "awsfirelens",
         "options": {
           "Labels": "{job=\"firelens\"}",
-          "Name": "grafana-loki",
-          "Url": "https://dev.simproject.kr:3100/loki/api/v1/push",
-          "LineFormat": "key_value"
+          "Name": "loki",
+          "host": "dev.simproject.kr",
+          "port": "3100"
         }
       }
     },
