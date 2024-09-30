@@ -37,7 +37,7 @@
           "Name": "loki",
           "host": "dev.simproject.kr",
           "port": "3100",
-          "LineFormat": "key_value"
+          "line_format": "key_value"
         }
       }
     },
