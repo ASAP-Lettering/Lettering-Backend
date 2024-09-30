@@ -33,7 +33,7 @@
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Labels": "{job=\"firelens\"}",
+          "Labels": "job=\"firelens\"",
           "Name": "loki",
           "host": "dev.simproject.kr",
           "port": "3100"
