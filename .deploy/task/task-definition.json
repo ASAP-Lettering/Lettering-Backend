@@ -33,13 +33,11 @@
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Labels": "job=\"firelens\"",
+          "Labels": "job=firelens",
           "Name": "loki",
           "host": "dev.simproject.kr",
           "port": "3100",
-          "LineFormat": "key_value",
-          "RemoveKeys": "container_id,ecs_task_arn",
-          "LabelKeys": "container_name,ecs_task_definition,source,ecs_cluster"
+          "LineFormat": "key_value"
         }
       }
     },
@@ -58,7 +56,7 @@
         "options": {
           "awslogs-group": "/ecs/lettering-task",
           "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "ecs",
+          "awslogs-stream-prefix": "firelens",
           "awslogs-create-group": "true"
         }
       }
