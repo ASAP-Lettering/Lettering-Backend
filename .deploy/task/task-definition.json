@@ -34,10 +34,10 @@
         "logDriver": "awsfirelens",
         "options": {
           "Labels": "{job=\"lettering\"}",
-          "Name": "http",
-          "Host": "106c-121-134-227-161.ngrok-free.app",
-          "Port": "443",
-          "URI": "/loki/api/v1/push"
+          "Name": "loki",
+          "host": "106c-121-134-227-161.ngrok-free.app",
+          "port": "443",
+          "tls": "on"
         }
       }
     },
