@@ -33,11 +33,10 @@
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Labels": "{job=\"lettering\"}",
+          "Labels": "{job=\"firelens\"}",
           "Name": "loki",
-          "host": "106c-121-134-227-161.ngrok-free.app",
-          "port": "443",
-          "tls": "on"
+          "host": "dev.simproject.kr",
+          "port": "3100"
         }
       }
     },
