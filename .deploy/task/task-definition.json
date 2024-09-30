@@ -35,8 +35,7 @@
         "options": {
           "Labels": "{job=\"lettering\"}",
           "Name": "loki",
-          "Host": "https://342f-121-134-227-161.ngrok-free.app",
-          "Port": "443"
+          "Host": "https://342f-121-134-227-161.ngrok-free.app"
         }
       }
     },
