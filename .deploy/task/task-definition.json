@@ -35,7 +35,7 @@
         "options": {
           "Labels": "{job=\"firelens\"}",
           "Name": "grafana-loki",
-          "Url": "https://106c-121-134-227-161.ngrok-free.app/loki/api/v1/push",
+          "Url": "https://dev.simproject.kr:3100/loki/api/v1/push",
           "LineFormat": "key_value"
         }
       }
