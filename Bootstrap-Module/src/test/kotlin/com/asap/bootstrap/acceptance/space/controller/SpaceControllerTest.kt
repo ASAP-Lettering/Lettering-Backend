@@ -44,7 +44,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
                 mainSpaceGetUsecase.get(
                     MainSpaceGetUsecase.Query("userId"),
                 ),
-            ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
+            ).willReturn(MainSpaceGetUsecase.Response("spaceId", "username"))
         // when
         val response =
             mockMvc.get("/api/v1/spaces/main") {
@@ -54,6 +54,11 @@ class SpaceControllerTest : AcceptanceSupporter() {
         response.andExpect {
             status { isOk() }
             jsonPath("$.spaceId") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.username") {
                 exists()
                 isString()
                 isNotEmpty()
@@ -70,12 +75,6 @@ class SpaceControllerTest : AcceptanceSupporter() {
                 spaceName = "spaceName",
                 templateType = 0,
             )
-        BDDMockito
-            .given(
-                mainSpaceGetUsecase.get(
-                    MainSpaceGetUsecase.Query("userId"),
-                ),
-            ).willReturn(MainSpaceGetUsecase.Response("spaceId"))
         // when
         val response =
             mockMvc.post("/api/v1/spaces") {

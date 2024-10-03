@@ -21,7 +21,7 @@ class SpaceController(
         val response = mainSpaceGetUsecase.get(
             MainSpaceGetUsecase.Query(userId)
         )
-        return MainSpaceInfoResponse(response.id)
+        return MainSpaceInfoResponse(response.id, response.username)
     }
 
     override fun getSpaces(
