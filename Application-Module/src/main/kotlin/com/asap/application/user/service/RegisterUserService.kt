@@ -1,5 +1,6 @@
 package com.asap.application.user.service
 
+import com.asap.application.user.event.UserEvent
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.RegisterUserUsecase
 import com.asap.application.user.port.out.UserAuthManagementPort
@@ -10,6 +11,7 @@ import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.vo.UserPermission
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,6 +22,7 @@ class RegisterUserService(
     private val userAuthManagementPort: UserAuthManagementPort,
     private val userManagementPort: UserManagementPort,
     private val userTokenManagementPort: UserTokenManagementPort,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : RegisterUserUsecase {
     /**
      * 1. register token으로부터 사용자 정보 추출 -> 토큰이 이미 사용됐으면 에러
@@ -56,6 +59,9 @@ class RegisterUserService(
 
         userManagementPort.saveUser(registerUser)
         userAuthManagementPort.saveUserAuth(userAuth)
+
+        // TODO 더 좋은 방법 없는지 고민해보기
+        applicationEventPublisher.publishEvent(UserEvent.UserCreatedEvent(registerUser))
 
         val accessToken = userTokenConvertPort.generateAccessToken(registerUser)
         val refreshToken = userTokenConvertPort.generateRefreshToken(registerUser)
