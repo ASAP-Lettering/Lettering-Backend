@@ -9,11 +9,12 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "space")
 class SpaceEntity(
+    id: String,
     userId: String,
     name: String,
     templateType: Int,
     index: Int,
-) : AggregateRoot<SpaceEntity>() {
+) : AggregateRoot<SpaceEntity>(id) {
     @Column(name = "user_id", nullable = false)
     var userId: String = userId
 
@@ -32,20 +33,6 @@ class SpaceEntity(
         columnDefinition = "varchar(20)",
     )
     var spaceStatus: EntityStatus = EntityStatus.ACTIVE
-
-    companion object {
-        fun default(
-            userId: String,
-            name: String,
-            templateType: Int,
-            index: Int,
-        ) = SpaceEntity(
-            userId = userId,
-            name = name,
-            templateType = templateType,
-            index = index,
-        )
-    }
 
     fun update(space: Space) {
         this.userId = space.userId.value

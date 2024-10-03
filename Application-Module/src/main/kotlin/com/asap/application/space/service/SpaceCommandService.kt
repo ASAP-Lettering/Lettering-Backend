@@ -8,6 +8,7 @@ import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
+import com.asap.domain.space.entity.Space
 import com.asap.domain.space.service.SpaceIndexValidator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,11 +24,14 @@ class SpaceCommandService(
     private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 
     override fun create(command: SpaceCreateUsecase.Command) {
-        spaceManagementPort.createSpace(
-            userId = DomainId(command.userId),
-            spaceName = command.spaceName,
-            templateType = command.templateType,
-        )
+        Space
+            .create(
+                userId = DomainId(command.userId),
+                name = command.spaceName,
+                templateType = command.templateType,
+            ).let {
+                spaceManagementPort.save(it)
+            }
     }
 
     override fun update(command: SpaceUpdateNameUsecase.Command) {

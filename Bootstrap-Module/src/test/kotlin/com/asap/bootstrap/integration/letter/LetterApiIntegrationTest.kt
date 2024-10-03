@@ -29,9 +29,10 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("편지 열람 가능 검증 성공")
         fun verifyLetter() {
             // given
+            val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterCode = letterMockManager.generateMockSendLetter("username")
+            val letterCode = letterMockManager.generateMockSendLetter("username", senderId = senderId)
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -78,9 +79,10 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("해당 사용자는 편지 열람 권한이 없음")
         fun verifyLetter_With_InvalidUser() {
             // given
+            val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterCode = letterMockManager.generateMockSendLetter("otherUsername")
+            val letterCode = letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId)
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -102,10 +104,12 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         @DisplayName("다른 사용자가 이미 연람함 편지면 열람 불가")
         fun verifyLetter_With_ExpiredLetter() {
             // given
+            val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
+            val otherUserId = userMockManager.settingUser(username = "otherUser")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
             val letterCode =
-                letterMockManager.generateMockReadLetter("username", "otherUserId")["letterCode"] as String
+                letterMockManager.generateMockReadLetter("username", otherUserId, senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -116,9 +120,9 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 }
             // then
             response.andExpect {
-                status { isBadRequest() }
+                status { isForbidden() }
                 jsonPath("$.code") {
-                    value("LETTER-001")
+                    value("LETTER-002")
                 }
             }
         }
@@ -128,8 +132,10 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         fun verifyLetter_With_ExpiredLetter_ReAccessible() {
             // given
             val userId = userMockManager.settingUser(username = "username")
+            val sender = userMockManager.settingUser(username = "senderUsername")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterCode = letterMockManager.generateMockReadLetter("username", userId)["letterCode"] as String
+            val letterCode =
+                letterMockManager.generateMockReadLetter("username", userId, senderId = sender)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =

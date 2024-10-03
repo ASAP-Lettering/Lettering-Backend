@@ -54,7 +54,7 @@ class LetterCommandService(
             // event
         }
 
-        return SendLetterUsecase.Response(letterCode = sendLetter.letterCode)
+        return SendLetterUsecase.Response(letterCode = sendLetter.letterCode!!)
     }
 
     override fun verify(command: VerifyLetterAccessibleUsecase.Command): VerifyLetterAccessibleUsecase.Response {
@@ -70,11 +70,11 @@ class LetterCommandService(
         val sendLetter = sendLetterManagementPort.getLetterByCodeNotNull(command.letterCode)
         sendLetter
             .isSameReceiver {
-                userManagementPort.getUserNotNull(DomainId(command.userId)).username
+                userManagementPort.getUserNotNull(DomainId(command.userId))
             }.takeIf { it }
             ?.let {
-                val readLetter = sendLetter.readLetter(DomainId(command.userId))
-                sendLetterManagementPort.save(readLetter)
+                sendLetter.readLetter(DomainId(command.userId))
+                sendLetterManagementPort.save(sendLetter)
                 return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
             } ?: throw LetterException.InvalidLetterAccessException()
     }
@@ -99,9 +99,9 @@ class LetterCommandService(
                 content = sendLetter.content,
                 receiveDate = sendLetter.createdDate,
             )
-        val receivedLetter = sendLetter.receiveLetter()
+        sendLetter.receiveLetter()
 
-        sendLetterManagementPort.save(receivedLetter)
+        sendLetterManagementPort.save(sendLetter)
         independentLetterManagementPort.save(independentLetter)
     }
 
