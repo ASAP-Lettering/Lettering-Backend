@@ -44,6 +44,11 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                 isString()
                 isNotEmpty()
             }
+            jsonPath("$.username") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
         }
     }
 

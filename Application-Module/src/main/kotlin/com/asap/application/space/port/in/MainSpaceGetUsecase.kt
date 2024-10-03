@@ -9,7 +9,8 @@ interface MainSpaceGetUsecase {
     )
 
     data class Response(
-        val id: String
+        val id: String,
+        val username: String
     )
 
 }
