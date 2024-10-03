@@ -3,6 +3,7 @@ package com.asap.persistence.jpa.space.entity
 import com.asap.domain.space.entity.Space
 import com.asap.persistence.jpa.common.AggregateRoot
 import com.asap.persistence.jpa.common.EntityStatus
+import com.asap.persistence.jpa.user.entity.UserEntity
 import jakarta.persistence.*
 
 @Entity
@@ -13,7 +14,13 @@ class SpaceEntity(
     templateType: Int,
     index: Int,
 ) : AggregateRoot<SpaceEntity>() {
+    @Column(name = "user_id", nullable = false)
     var userId: String = userId
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+    lateinit var user: UserEntity
+
     var name: String = name
     var templateType: Int = templateType
     var index: Int = index
