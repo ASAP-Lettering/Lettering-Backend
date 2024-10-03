@@ -13,8 +13,8 @@ abstract class BaseEntity(
     open val id: String = DomainId.generate().value,
 ) {
     @CreatedDate
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 }

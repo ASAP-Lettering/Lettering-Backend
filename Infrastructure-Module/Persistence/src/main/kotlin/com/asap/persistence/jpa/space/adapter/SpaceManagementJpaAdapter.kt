@@ -1,0 +1,94 @@
+package com.asap.persistence.jpa.space.adapter
+
+import com.asap.application.space.exception.SpaceException
+import com.asap.application.space.port.out.SpaceManagementPort
+import com.asap.domain.common.DomainId
+import com.asap.domain.space.entity.IndexedSpace
+import com.asap.domain.space.entity.MainSpace
+import com.asap.domain.space.entity.Space
+import com.asap.persistence.jpa.space.SpaceMapper
+import com.asap.persistence.jpa.space.entity.SpaceEntity
+import com.asap.persistence.jpa.space.repository.*
+import org.springframework.stereotype.Repository
+
+@Repository
+class SpaceManagementJpaAdapter(
+    private val spaceJpaRepository: SpaceJpaRepository,
+) : SpaceManagementPort {
+    override fun getMainSpace(userId: DomainId): MainSpace =
+        spaceJpaRepository.findAllActiveSpaceByUserId(userId.value).first().let {
+            SpaceMapper.toMainSpace(it)
+        }
+
+    override fun getSpaceNotNull(
+        userId: DomainId,
+        spaceId: DomainId,
+    ): Space =
+        spaceJpaRepository.findActiveSpaceByIdAndUserId(spaceId.value, userId.value)?.let {
+            SpaceMapper.toSpace(it)
+        } ?: throw SpaceException.SpaceNotFoundException()
+
+    override fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace> =
+        spaceJpaRepository
+            .findAllActiveSpaceByUserId(userId.value)
+            .map {
+                SpaceMapper.toIndexedSpace(it)
+            }.sortedBy { it.index }
+
+    override fun createSpace(
+        userId: DomainId,
+        spaceName: String,
+        templateType: Int,
+    ): Space {
+        SpaceEntity
+            .default(
+                userId = userId.value,
+                name = spaceName,
+                templateType = templateType,
+                index = spaceJpaRepository.countActiveSpaceByUserId(userId.value),
+            ).let {
+                spaceJpaRepository.save(it)
+                return SpaceMapper.toSpace(it)
+            }
+    }
+
+    override fun update(space: Space): Space =
+        spaceJpaRepository.findActiveSpaceByIdAndUserId(space.id.value, space.userId.value)?.let {
+            it.update(space)
+            spaceJpaRepository.save(it)
+            SpaceMapper.toSpace(it)
+        } ?: throw SpaceException.SpaceNotFoundException()
+
+    override fun updateIndexes(
+        userId: DomainId,
+        orders: List<IndexedSpace>,
+    ) {
+        val spaces = spaceJpaRepository.findAllActiveSpaceByUserId(userId.value)
+        orders.forEach { order ->
+            spaces.find { it.id == order.id.value }?.let {
+                it.index = order.index
+                spaceJpaRepository.save(it)
+            }
+        }
+    }
+
+    override fun deleteById(
+        userId: DomainId,
+        spaceId: DomainId,
+    ) {
+        spaceJpaRepository.deleteByUserIdAndId(
+            userId = userId.value,
+            id = spaceId.value,
+        )
+    }
+
+    override fun deleteAllBySpaceIds(
+        userId: DomainId,
+        spaceIds: List<DomainId>,
+    ) {
+        spaceJpaRepository.deleteAllByUserIdAndIds(
+            userId = userId.value,
+            ids = spaceIds.map { it.value },
+        )
+    }
+}
