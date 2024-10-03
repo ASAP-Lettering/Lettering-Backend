@@ -28,4 +28,15 @@ object SpaceMapper {
             templateType = spaceEntity.templateType,
             index = spaceEntity.index,
         )
+
+    fun toSpaceEntity(
+        space: Space,
+        index: Int,
+    ) = SpaceEntity(
+        id = space.id.value,
+        userId = space.userId.value,
+        name = space.name,
+        templateType = space.templateType,
+        index = index,
+    )
 }

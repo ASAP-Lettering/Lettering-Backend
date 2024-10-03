@@ -7,7 +7,6 @@ import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
 import com.asap.persistence.jpa.space.SpaceMapper
-import com.asap.persistence.jpa.space.entity.SpaceEntity
 import com.asap.persistence.jpa.space.repository.*
 import org.springframework.stereotype.Repository
 
@@ -35,21 +34,15 @@ class SpaceManagementJpaAdapter(
                 SpaceMapper.toIndexedSpace(it)
             }.sortedBy { it.index }
 
-    override fun createSpace(
-        userId: DomainId,
-        spaceName: String,
-        templateType: Int,
-    ): Space {
-        SpaceEntity
-            .default(
-                userId = userId.value,
-                name = spaceName,
-                templateType = templateType,
-                index = spaceJpaRepository.countActiveSpaceByUserId(userId.value),
-            ).let {
-                spaceJpaRepository.save(it)
-                return SpaceMapper.toSpace(it)
-            }
+    override fun save(space: Space): Space {
+        val entity =
+            SpaceMapper.toSpaceEntity(
+                space = space,
+                index = spaceJpaRepository.countActiveSpaceByUserId(space.userId.value),
+            )
+        return spaceJpaRepository.save(entity).let {
+            SpaceMapper.toSpace(it)
+        }
     }
 
     override fun update(space: Space): Space =

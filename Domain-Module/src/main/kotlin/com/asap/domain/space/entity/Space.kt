@@ -6,10 +6,20 @@ data class Space(
     val id: DomainId = DomainId.generate(),
     val userId: DomainId,
     val name: String,
-    val templateType: Int
+    val templateType: Int,
 ) {
-
-    fun updateName(name: String): Space {
-        return this.copy(name = name)
+    companion object {
+        fun create(
+            userId: DomainId,
+            name: String,
+            templateType: Int,
+        ): Space =
+            Space(
+                userId = userId,
+                name = name,
+                templateType = templateType,
+            )
     }
+
+    fun updateName(name: String): Space = this.copy(name = name)
 }

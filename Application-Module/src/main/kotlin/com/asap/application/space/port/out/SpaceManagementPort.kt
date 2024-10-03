@@ -6,42 +6,31 @@ import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
 
 interface SpaceManagementPort {
-
-    fun getMainSpace(
-        userId: DomainId
-    ): MainSpace
+    fun getMainSpace(userId: DomainId): MainSpace
 
     fun getSpaceNotNull(
         userId: DomainId,
-        spaceId: DomainId
+        spaceId: DomainId,
     ): Space
 
-    fun getAllIndexedSpace(
-        userId: DomainId,
-    ): List<IndexedSpace>
+    fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace>
 
-    fun createSpace(
-        userId: DomainId,
-        spaceName: String,
-        templateType: Int
-    ): Space
+    fun save(space: Space): Space
 
     fun update(space: Space): Space
 
     fun updateIndexes(
         userId: DomainId,
-        orders: List<IndexedSpace>
+        orders: List<IndexedSpace>,
     )
-
 
     fun deleteById(
         userId: DomainId,
-        spaceId: DomainId
+        spaceId: DomainId,
     )
 
     fun deleteAllBySpaceIds(
         userId: DomainId,
-        spaceIds: List<DomainId>
+        spaceIds: List<DomainId>,
     )
-
 }

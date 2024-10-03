@@ -29,40 +29,10 @@
           "valueFrom": "arn:aws:ssm:ap-northeast-2:396608783702:parameter/jwt/secret",
           "name": "JWT_SECRET"
         }
-      ],
-      "logConfiguration": {
-        "logDriver": "awsfirelens",
-        "options": {
-          "Labels": "job=firelens",
-          "Name": "loki",
-          "host": "dev.simproject.kr",
-          "port": "3100",
-          "line_format": "key_value"
-        }
-      }
-    },
-    {
-      "essential": true,
-      "image": "grafana/fluent-bit-plugin-loki:2.9.3-amd64",
-      "name": "log_router",
-      "firelensConfiguration": {
-        "type": "fluentbit",
-        "options": {
-          "enable-ecs-log-metadata": "true"
-        }
-      },
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/lettering-task",
-          "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "firelens",
-          "awslogs-create-group": "true"
-        }
-      }
+      ]
     }
   ],
-  "cpu": "768",
+  "cpu": "512",
   "memory": "768",
   "family": "lettering-task"
 }

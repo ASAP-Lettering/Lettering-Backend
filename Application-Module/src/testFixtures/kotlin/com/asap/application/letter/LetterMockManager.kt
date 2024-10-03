@@ -20,7 +20,10 @@ class LetterMockManager(
 ) {
     private val letterCodeGenerator = LetterCodeGenerator()
 
-    fun generateMockSendLetter(receiverName: String): String {
+    fun generateMockSendLetter(
+        receiverName: String,
+        senderId: String = DomainId.generate().value,
+    ): String {
         val sendLetter =
             SendLetter(
                 receiverName = receiverName,
@@ -30,15 +33,15 @@ class LetterMockManager(
                         templateType = 1,
                         images = listOf("image1", "image2"),
                     ),
-                senderId = DomainId.generate(),
+                senderId = DomainId(senderId),
                 letterCode =
                     letterCodeGenerator.generateCode(
                         content = "content",
-                        ownerId = DomainId.generate().value,
+                        ownerId = senderId,
                     ),
             )
         sendLetterManagementPort.save(sendLetter)
-        return sendLetter.letterCode
+        return sendLetter.letterCode!!
     }
 
     fun generateMockReadLetter(
@@ -59,13 +62,13 @@ class LetterMockManager(
                 letterCode =
                     letterCodeGenerator.generateCode(
                         content = "content",
-                        ownerId = DomainId(senderId).value,
+                        ownerId = senderId,
                     ),
             )
-        val readLetter = sendLetter.readLetter(DomainId(receiverId))
-        sendLetterManagementPort.save(readLetter)
+        sendLetter.readLetter(DomainId(receiverId))
+        sendLetterManagementPort.save(sendLetter)
         return mapOf(
-            "letterCode" to sendLetter.letterCode,
+            "letterCode" to sendLetter.letterCode!!,
             "letterId" to sendLetter.id.value,
         )
     }
