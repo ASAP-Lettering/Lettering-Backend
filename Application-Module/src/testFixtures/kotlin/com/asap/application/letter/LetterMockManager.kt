@@ -1,9 +1,11 @@
 package com.asap.application.letter
 
+import com.asap.application.letter.port.out.DraftLetterManagementPort
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.domain.common.DomainId
+import com.asap.domain.letter.entity.DraftLetter
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.entity.SpaceLetter
@@ -17,6 +19,7 @@ class LetterMockManager(
     private val sendLetterManagementPort: SendLetterManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
+    private val draftLetterManagementPort: DraftLetterManagementPort,
 ) {
     private val letterCodeGenerator = LetterCodeGenerator()
 
@@ -71,18 +74,6 @@ class LetterMockManager(
             "letterCode" to sendLetter.letterCode!!,
             "letterId" to sendLetter.id.value,
         )
-    }
-
-    fun isExistVerifiedLetter(
-        letterId: String,
-        userId: String,
-    ): Boolean {
-        return try {
-            sendLetterManagementPort.getReadLetterNotNull(DomainId(userId), DomainId(letterId))
-            true
-        } catch (e: Exception) {
-            return false
-        }
     }
 
     fun generateMockIndependentLetter(
@@ -161,5 +152,11 @@ class LetterMockManager(
         } catch (e: Exception) {
             return false
         }
+    }
+
+    fun generateMockDraftLetter(userId: String): String {
+        val draftLetter = DraftLetter.default(DomainId(userId))
+        draftLetterManagementPort.save(draftLetter)
+        return draftLetter.id.value
     }
 }
