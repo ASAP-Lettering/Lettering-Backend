@@ -6,30 +6,36 @@ sealed class LetterException(
     codePrefix: String = CODE_PREFIX,
     errorCode: Int,
     httpStatus: Int = 400,
-    message: String = DEFAULT_ERROR_MESSAGE
-): BusinessException(codePrefix, errorCode, httpStatus, message) {
-
+    message: String = DEFAULT_ERROR_MESSAGE,
+) : BusinessException(codePrefix, errorCode, httpStatus, message) {
     class SendLetterNotFoundException(
-        message: String = "존재하지 않는 편지입니다."
-    ): LetterException(
-        errorCode = 1,
-        message = message
-    )
+        message: String = "존재하지 않는 편지입니다.",
+    ) : LetterException(
+            errorCode = 1,
+            message = message,
+        )
 
     class InvalidLetterAccessException(
-        message: String = "편지에 대한 접근 권한이 없습니다."
-    ): LetterException(
-        errorCode = 2,
-        message = message,
-        httpStatus = 403
-    )
+        message: String = "편지에 대한 접근 권한이 없습니다.",
+    ) : LetterException(
+            errorCode = 2,
+            message = message,
+            httpStatus = 403,
+        )
 
     class ReceiveLetterNotFoundException(
-        message: String = "존재하지 않는 편지입니다."
-    ): LetterException(
-        errorCode = 3,
-        message = message
-    )
+        message: String = "존재하지 않는 편지입니다.",
+    ) : LetterException(
+            errorCode = 3,
+            message = message,
+        )
+
+    class DraftLetterNotFoundException(
+        message: String = "존재하지 않는 임시 편지입니다.",
+    ) : LetterException(
+            errorCode = 4,
+            message = message,
+        )
 
     companion object {
         const val CODE_PREFIX = "LETTER"

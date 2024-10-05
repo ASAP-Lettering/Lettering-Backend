@@ -1,6 +1,8 @@
 package com.asap.persistence.jpa.letter.adapter
 
+import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.out.DraftLetterManagementPort
+import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.DraftLetter
 import com.asap.persistence.jpa.letter.DraftLetterMapper
 import com.asap.persistence.jpa.letter.repository.DraftLetterJpaRepository
@@ -14,4 +16,21 @@ class DraftLetterManagementJpaAdapter(
         draftLetterJpaRepository
             .save(DraftLetterMapper.toEntity(draftLetter))
             .let { DraftLetterMapper.toDomain(it) }
+
+    override fun getDraftLetterNotNull(
+        draftId: DomainId,
+        ownerId: DomainId,
+    ): DraftLetter =
+        draftLetterJpaRepository
+            .findByIdAndOwnerId(draftId.value, ownerId.value)
+            ?.let { DraftLetterMapper.toDomain(it) }
+            ?: throw LetterException.DraftLetterNotFoundException()
+
+    override fun update(draftLetter: DraftLetter): DraftLetter =
+        DraftLetterMapper
+            .toEntity(draftLetter)
+            .apply {
+                this.update()
+                draftLetterJpaRepository.save(this)
+            }.let { DraftLetterMapper.toDomain(it) }
 }

@@ -4,10 +4,10 @@ import com.asap.domain.common.DomainId
 
 data class DraftLetter(
     val id: DomainId = DomainId.generate(),
-    val content: String,
-    val receiverName: String,
+    var content: String,
+    var receiverName: String,
     val ownerId: DomainId,
-    val images: List<String>,
+    var images: List<String>,
 ) {
     companion object {
         fun default(ownerId: DomainId) =
@@ -17,5 +17,15 @@ data class DraftLetter(
                 receiverName = "",
                 images = emptyList(),
             )
+    }
+
+    fun update(
+        content: String,
+        receiverName: String,
+        images: List<String>,
+    )  {
+        this.content = content
+        this.receiverName = receiverName
+        this.images = images
     }
 }

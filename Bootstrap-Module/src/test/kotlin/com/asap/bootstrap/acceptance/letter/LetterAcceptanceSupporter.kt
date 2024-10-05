@@ -34,4 +34,7 @@ abstract class LetterAcceptanceSupporter : AcceptanceSupporter() {
 
     @MockBean
     lateinit var generateDraftKeyUsecase: GenerateDraftKeyUsecase
+
+    @MockBean
+    lateinit var updateDraftLetterUsecase: UpdateDraftLetterUsecase
 }

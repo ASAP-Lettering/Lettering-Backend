@@ -2,8 +2,10 @@ package com.asap.bootstrap.acceptance.letter.controller
 
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
+import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.post
 
 class DraftLetterControllerTest : LetterAcceptanceSupporter() {
@@ -26,6 +28,30 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         response.andExpect {
             status { isOk() }
             jsonPath("$.draftId") { isString() }
+        }
+    }
+
+    @Test
+    fun `update draft`() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request =
+            UpdateDraftLetterRequest(
+                content = "content",
+                receiverName = "receiverName",
+                images = listOf("image"),
+            )
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/drafts/draftId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+                content = objectMapper.writeValueAsString(request)
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }
