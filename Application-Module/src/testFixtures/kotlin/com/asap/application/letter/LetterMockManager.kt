@@ -84,6 +84,8 @@ class LetterMockManager(
         senderId: String? = null,
         receiverId: String,
         senderName: String,
+        movedAt: LocalDateTime = LocalDateTime.now(),
+        isOpened: Boolean = false,
     ): Map<String, Any> {
         val independentLetter =
             IndependentLetter(
@@ -103,8 +105,8 @@ class LetterMockManager(
                         images = listOf("image1", "image2"),
                     ),
                 receiveDate = LocalDate.now(),
-                movedAt = LocalDateTime.now(),
-                isOpened = false,
+                movedAt = movedAt,
+                isOpened = isOpened,
             )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(

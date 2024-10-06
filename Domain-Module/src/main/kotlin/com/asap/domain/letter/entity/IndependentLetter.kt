@@ -14,7 +14,7 @@ data class IndependentLetter(
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
     val movedAt: LocalDateTime = LocalDateTime.now(),
-    val isOpened: Boolean = false,
+    var isOpened: Boolean = false,
 ) {
     companion object {
         fun createBySpaceLetter(
@@ -31,5 +31,9 @@ data class IndependentLetter(
             )
     }
 
-    fun isNew(): Boolean = LocalDateTime.now().minusDays(1).isAfter(movedAt) || isOpened.not()
+    fun isNew(): Boolean = movedAt.isAfter(LocalDateTime.now().minusDays(1)) && isOpened.not()
+
+    fun read() {
+        isOpened = true
+    }
 }

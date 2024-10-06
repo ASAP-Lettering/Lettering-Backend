@@ -43,15 +43,49 @@ class LetterQueryService(
             }
     }
 
-    override fun get(query: GetIndependentLettersUsecase.Query): GetIndependentLettersUsecase.Response {
-        val letters = independentLetterManagementPort.getAllByReceiverId(DomainId(query.userId))
-        return GetIndependentLettersUsecase.Response(
+    override fun getAll(queryAll: GetIndependentLettersUsecase.QueryAll): GetIndependentLettersUsecase.Response.All {
+        val letters = independentLetterManagementPort.getAllByReceiverId(DomainId(queryAll.userId))
+        return GetIndependentLettersUsecase.Response.All(
             letters =
                 letters.map {
                     GetIndependentLettersUsecase.LetterInfo(
                         letterId = it.id.value,
                         senderName = it.sender.senderName,
                         isNew = it.isNew(),
+                    )
+                },
+        )
+    }
+
+    @Transactional
+    override fun get(query: GetIndependentLettersUsecase.Query): GetIndependentLettersUsecase.Response.One {
+        val letter =
+            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(query.letterId), DomainId(query.userId)).apply {
+                read()
+                independentLetterManagementPort.save(this)
+            }
+        val letterCount = independentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
+        val (prevLetter, nextLetter) =
+            independentLetterManagementPort.getNearbyLetter(DomainId(query.userId), DomainId(query.letterId))
+        return GetIndependentLettersUsecase.Response.One(
+            senderName = letter.sender.senderName,
+            letterCount = letterCount.toLong(),
+            content = letter.content.content,
+            sendDate = letter.receiveDate,
+            images = letter.content.images,
+            templateType = letter.content.templateType,
+            prevLetter =
+                prevLetter?.let {
+                    GetIndependentLettersUsecase.NearbyLetter(
+                        letterId = it.id.value,
+                        senderName = it.sender.senderName,
+                    )
+                },
+            nextLetter =
+                nextLetter?.let {
+                    GetIndependentLettersUsecase.NearbyLetter(
+                        letterId = it.id.value,
+                        senderName = it.sender.senderName,
                     )
                 },
         )

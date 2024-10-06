@@ -181,13 +181,13 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 isNew = true,
             )
         val response =
-            GetIndependentLettersUsecase.Response(
+            GetIndependentLettersUsecase.Response.All(
                 letters = listOf(letterInfo),
             )
         BDDMockito
             .given(
-                getIndependentLettersUsecase.get(
-                    GetIndependentLettersUsecase.Query(
+                getIndependentLettersUsecase.getAll(
+                    GetIndependentLettersUsecase.QueryAll(
                         userId = "userId",
                     ),
                 ),
@@ -217,6 +217,103 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 jsonPath("$.content[0].isNew") {
                     exists()
                     isBoolean()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun getIndependentLetterDetail() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val response =
+            GetIndependentLettersUsecase.Response.One(
+                senderName = "senderName",
+                letterCount = 1,
+                content = "content",
+                sendDate = LocalDate.now(),
+                images = listOf("images"),
+                templateType = 1,
+                prevLetter =
+                    GetIndependentLettersUsecase.NearbyLetter(
+                        letterId = "prevLetterId",
+                        senderName = "prevSenderName",
+                    ),
+                nextLetter =
+                    GetIndependentLettersUsecase.NearbyLetter(
+                        letterId = "nextLetterId",
+                        senderName = "nextSenderName",
+                    ),
+            )
+        BDDMockito
+            .given(
+                getIndependentLettersUsecase.get(
+                    GetIndependentLettersUsecase.Query(
+                        userId = "userId",
+                        letterId = "letterId",
+                    ),
+                ),
+            ).willReturn(response)
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/independent/{letterId}", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.senderName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.letterCount") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.content") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.sendDate") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.images") {
+                exists()
+                isArray()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.prevLetter") {
+                exists()
+                jsonPath("$.prevLetter.letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.prevLetter.senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+            }
+            jsonPath("$.nextLetter") {
+                exists()
+                jsonPath("$.nextLetter.letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.nextLetter.senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
                 }
             }
         }

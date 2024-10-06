@@ -47,6 +47,34 @@ class ReceiveLetterManagementJpaAdapter(
             ?.let { ReceiverLetterMapper.toIndependentLetter(it) }
             ?: throw LetterException.ReceiveLetterNotFoundException()
 
+    override fun getIndependentLetterByIdNotNull(
+        id: DomainId,
+        userId: DomainId,
+    ): IndependentLetter {
+        val letter =
+            receiveLetterJpaRepository.findIndependentByIdAndReceiverId(id.value, userId.value)
+                ?: throw LetterException.ReceiveLetterNotFoundException()
+        return ReceiverLetterMapper.toIndependentLetter(letter)
+    }
+
+    override fun countIndependentLetterByReceiverId(receiverId: DomainId): Int =
+        receiveLetterJpaRepository.countActiveIndependentByReceiverId(receiverId.value)
+
+    override fun getNearbyLetter(
+        userId: DomainId,
+        letterId: DomainId,
+    ): Pair<IndependentLetter?, IndependentLetter?> {
+        val letters =
+            receiveLetterJpaRepository
+                .findAllIndependentByReceiverId(userId.value)
+                .sortedBy { it.receiveDate }
+        val index = letters.indexOfFirst { it.id == letterId.value }
+        return Pair(
+            letters.getOrNull(index - 1)?.let { ReceiverLetterMapper.toIndependentLetter(it) },
+            letters.getOrNull(index + 1)?.let { ReceiverLetterMapper.toIndependentLetter(it) },
+        )
+    }
+
     override fun save(letter: SpaceLetter) {
         ReceiveLetterEntity(
             id = letter.id.value,
