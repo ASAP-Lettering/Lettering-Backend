@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Space", description = "Space API")
 @RequestMapping("/api/v1/spaces")
 interface SpaceApi {
-
-
     @Operation(summary = "메인 스페이스 ID 조회")
     @ApiResponses(
         value = [
@@ -24,17 +22,16 @@ interface SpaceApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = MainSpaceInfoResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = MainSpaceInfoResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @GetMapping("/main")
     fun getMainSpace(
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): MainSpaceInfoResponse
-
 
     @Operation(summary = "전체 스페이스 목록 조회")
     @GetMapping
@@ -46,14 +43,14 @@ interface SpaceApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = GetAllSpaceResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = GetAllSpaceResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun getSpaces(
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): GetAllSpaceResponse
 
     @Operation(summary = "스페이스 생성")
@@ -62,29 +59,29 @@ interface SpaceApi {
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "스페이스 생성 성공"
-            )
-        ]
+                description = "스페이스 생성 성공",
+            ),
+        ],
     )
     fun createSpace(
         @RequestBody request: CreateSpaceRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "스페이스 이름 수정")
     @PutMapping("/{spaceId}/name")
     @ApiResponses(
-        value =[
+        value = [
             ApiResponse(
                 responseCode = "200",
-                description = "스페이스 이름 수정 성공"
-            )
-        ]
+                description = "스페이스 이름 수정 성공",
+            ),
+        ],
     )
     fun updateSpaceName(
         @PathVariable spaceId: String,
         @RequestBody request: UpdateSpaceNameRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "스페이스 삭제")
@@ -93,13 +90,13 @@ interface SpaceApi {
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "스페이스 삭제 성공"
-            )
-        ]
+                description = "스페이스 삭제 성공",
+            ),
+        ],
     )
     fun deleteSpace(
         @PathVariable spaceId: String,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "스페이스 순서 변경")
@@ -108,13 +105,13 @@ interface SpaceApi {
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "스페이스 순서 변경 성공"
-            )
-        ]
+                description = "스페이스 순서 변경 성공",
+            ),
+        ],
     )
     fun updateSpaceOrder(
         @RequestBody request: UpdateSpaceOrderRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "여러 스페이스 삭제")
@@ -123,16 +120,33 @@ interface SpaceApi {
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "여러 스페이스 삭제 성공"
-            )
-        ]
+                description = "여러 스페이스 삭제 성공",
+            ),
+        ],
     )
     fun deleteSpaces(
         @RequestBody request: DeleteMultipleSpacesRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
-
-
-
+    @Operation(summary = "스페이스 조회")
+    @GetMapping("/{spaceId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "스페이스 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GetSpaceResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getSpace(
+        @PathVariable spaceId: String,
+        @AccessUser userId: String,
+    ): GetSpaceResponse
 }

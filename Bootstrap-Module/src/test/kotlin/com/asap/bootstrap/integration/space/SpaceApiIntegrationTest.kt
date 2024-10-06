@@ -49,6 +49,15 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                 isString()
                 isNotEmpty()
             }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.spaceName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
         }
     }
 
@@ -187,7 +196,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Nested
-    inner class UpdateSpaceOrder  {
+    inner class UpdateSpaceOrder {
         @Test
         @DisplayName("space의 순서를 업데이트 한다.")
         fun updateSpaceOrder() {
@@ -242,7 +251,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("유효하지 않은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_Invalid_Index()  {
+        fun updateSpaceOrderFail_with_Invalid_Index() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -268,7 +277,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("사용자의 space보다 많은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_over_Index_exists_space()  {
+        fun updateSpaceOrderFail_with_over_Index_exists_space() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -294,7 +303,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("사용자의 space보다 적은 index로 업데이트 요청시 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_less_Index_exists_space()  {
+        fun updateSpaceOrderFail_with_less_Index_exists_space() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -320,7 +329,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
 
         @Test
         @DisplayName("인덱스를 중복해서 요청하면 400 에러를 반환한다.")
-        fun updateSpaceOrderFail_with_duplicate_Index()  {
+        fun updateSpaceOrderFail_with_duplicate_Index() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -341,6 +350,37 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             // then
             response.andExpect {
                 status { isBadRequest() }
+            }
+        }
+    }
+
+    @Test
+    fun getSpace() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val spaceId = spaceMockManager.settingSpace(userId)
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces/$spaceId") {
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.spaceId") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.spaceName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
             }
         }
     }
