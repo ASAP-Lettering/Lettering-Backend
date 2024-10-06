@@ -3,6 +3,8 @@ package com.asap.bootstrap.letter.api
 import com.asap.bootstrap.common.security.annotation.AccessUser
 import com.asap.bootstrap.letter.dto.*
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.web.bind.annotation.*
@@ -13,7 +15,16 @@ interface DraftLetterApi {
     @PostMapping("/key")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "임시 저장 키 발급 성공"),
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 키 발급 성공",
+                content = [
+                    Content(
+                        schema =
+                            Schema(implementation = GenerateDraftKeyResponse::class),
+                    ),
+                ],
+            ),
         ],
     )
     fun getDraftKey(
@@ -33,23 +44,71 @@ interface DraftLetterApi {
         @RequestBody request: UpdateDraftLetterRequest,
     )
 
+    @Operation(summary = "임시 저장 목록 조회")
     @GetMapping()
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 목록 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetAllDraftLetterResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     fun getAllDrafts(
         @AccessUser userId: String,
     ): GetAllDraftLetterResponse
 
+    @Operation(summary = "임시 저장 조회")
     @GetMapping("/{draftKey}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetDraftLetterResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     fun getDraftLetter(
         @PathVariable draftKey: String,
         @AccessUser userId: String,
     ): GetDraftLetterResponse
 
+    @Operation(summary = "임시 저장 개수 조회")
     @GetMapping("/count")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 개수 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetDraftLetterCountResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     fun getDraftCount(
         @AccessUser userId: String,
     ): GetDraftLetterCountResponse
 
+    @Operation(summary = "임시 저장 삭제")
     @DeleteMapping("/{draftId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "임시 저장 삭제 성공"),
+        ],
+    )
     fun deleteDraft(
         @PathVariable draftId: String,
         @AccessUser userId: String,

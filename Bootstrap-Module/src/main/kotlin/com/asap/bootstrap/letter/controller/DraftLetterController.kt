@@ -2,6 +2,7 @@ package com.asap.bootstrap.letter.controller
 
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.GetDraftLetterUsecase
+import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
 import com.asap.bootstrap.letter.api.DraftLetterApi
 import com.asap.bootstrap.letter.dto.*
@@ -12,6 +13,7 @@ class DraftLetterController(
     private val generateDraftKeyUsecase: GenerateDraftKeyUsecase,
     private val updateDraftLetterUsecase: UpdateDraftLetterUsecase,
     private val getDraftLetterUsecase: GetDraftLetterUsecase,
+    private val removeDraftLetterUsecase: RemoveDraftLetterUsecase,
 ) : DraftLetterApi {
     override fun getDraftKey(userId: String): GenerateDraftKeyResponse {
         val response = generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command(userId))
@@ -79,6 +81,11 @@ class DraftLetterController(
         draftId: String,
         userId: String,
     ) {
-        TODO("Not yet implemented")
+        removeDraftLetterUsecase.command(
+            RemoveDraftLetterUsecase.Command(
+                draftId = draftId,
+                userId = userId,
+            ),
+        )
     }
 }
