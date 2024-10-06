@@ -16,9 +16,9 @@ abstract class BaseEntity(
     var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    open var updatedAt: LocalDateTime = LocalDateTime.now()
 
-    fun update()  {
+    fun update() {
         this.updatedAt = LocalDateTime.now()
     }
 }

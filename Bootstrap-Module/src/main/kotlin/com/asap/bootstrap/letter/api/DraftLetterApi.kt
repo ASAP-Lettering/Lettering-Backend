@@ -1,8 +1,7 @@
 package com.asap.bootstrap.letter.api
 
 import com.asap.bootstrap.common.security.annotation.AccessUser
-import com.asap.bootstrap.letter.dto.GenerateDraftKeyResponse
-import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
+import com.asap.bootstrap.letter.dto.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -37,7 +36,18 @@ interface DraftLetterApi {
     @GetMapping()
     fun getAllDrafts(
         @AccessUser userId: String,
-    )
+    ): GetAllDraftLetterResponse
+
+    @GetMapping("/{draftKey}")
+    fun getDraftLetter(
+        @PathVariable draftKey: String,
+        @AccessUser userId: String,
+    ): GetDraftLetterResponse
+
+    @GetMapping("/count")
+    fun getDraftCount(
+        @AccessUser userId: String,
+    ): GetDraftLetterCountResponse
 
     @DeleteMapping("/{draftId}")
     fun deleteDraft(

@@ -26,11 +26,17 @@ class DraftLetterManagementJpaAdapter(
             ?.let { DraftLetterMapper.toDomain(it) }
             ?: throw LetterException.DraftLetterNotFoundException()
 
+    override fun getAllDrafts(ownerId: DomainId): List<DraftLetter> =
+        draftLetterJpaRepository
+            .findByOwnerId(ownerId.value)
+            .map { DraftLetterMapper.toDomain(it) }
+
     override fun update(draftLetter: DraftLetter): DraftLetter =
         DraftLetterMapper
             .toEntity(draftLetter)
             .apply {
-                this.update()
                 draftLetterJpaRepository.save(this)
             }.let { DraftLetterMapper.toDomain(it) }
+
+    override fun countDrafts(ownerId: DomainId): Int = draftLetterJpaRepository.countByOwnerId(ownerId.value)
 }

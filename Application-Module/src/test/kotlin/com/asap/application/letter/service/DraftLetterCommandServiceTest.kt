@@ -13,7 +13,7 @@ class DraftLetterCommandServiceTest :
     BehaviorSpec({
 
         val mockGenerateDraftKeyUsecase = mockk<DraftLetterManagementPort>()
-        val draftLetterCommandService = DraftCommandService(mockGenerateDraftKeyUsecase)
+        val draftLetterCommandService = DraftLetterCommandService(mockGenerateDraftKeyUsecase)
 
         given("임시 저장 키를 발급할 때") {
             val userId = "userId"

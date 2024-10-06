@@ -8,4 +8,8 @@ interface DraftLetterJpaRepository : JpaRepository<DraftLetterEntity, String> {
         draftId: String,
         ownerId: String,
     ): DraftLetterEntity?
+
+    fun findByOwnerId(ownerId: String): List<DraftLetterEntity>
+
+    fun countByOwnerId(ownerId: String): Int
 }

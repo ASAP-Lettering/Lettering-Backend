@@ -12,6 +12,7 @@ object DraftLetterMapper {
             receiverName = draftLetter.receiverName,
             ownerId = draftLetter.ownerId.value,
             images = draftLetter.images,
+            updatedAt = draftLetter.lastUpdated,
         )
 
     fun toDomain(draftLetterEntity: DraftLetterEntity): DraftLetter =
@@ -21,5 +22,6 @@ object DraftLetterMapper {
             receiverName = draftLetterEntity.receiverName,
             ownerId = DomainId(draftLetterEntity.ownerId),
             images = draftLetterEntity.images,
+            lastUpdated = draftLetterEntity.updatedAt,
         )
 }
