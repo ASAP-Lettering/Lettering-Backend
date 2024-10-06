@@ -8,6 +8,7 @@ import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "receive_letter")
@@ -20,6 +21,8 @@ class ReceiveLetterEntity(
     senderName: String,
     receiverId: String,
     receiveDate: LocalDate,
+    movedAt: LocalDateTime,
+    isOpened: Boolean,
     spaceId: String? = null,
 ) : AggregateRoot<ReceiveLetterEntity>(id) {
     @Column(
@@ -61,6 +64,10 @@ class ReceiveLetterEntity(
     lateinit var receiver: UserEntity
 
     var receiveDate: LocalDate = receiveDate
+
+    var movedAt: LocalDateTime = movedAt
+
+    var isOpened: Boolean = isOpened
 
     @Column(
         name = "space_id",

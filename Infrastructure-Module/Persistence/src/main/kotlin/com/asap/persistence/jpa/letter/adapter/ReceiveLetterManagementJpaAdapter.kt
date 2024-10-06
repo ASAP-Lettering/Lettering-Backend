@@ -12,6 +12,7 @@ import com.asap.persistence.jpa.letter.ReceiverLetterMapper
 import com.asap.persistence.jpa.letter.entity.ReceiveLetterEntity
 import com.asap.persistence.jpa.letter.repository.*
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class ReceiveLetterManagementJpaAdapter(
@@ -28,6 +29,8 @@ class ReceiveLetterManagementJpaAdapter(
             senderName = letter.sender.senderName,
             receiverId = letter.receiver.receiverId.value,
             receiveDate = letter.receiveDate,
+            movedAt = letter.movedAt,
+            isOpened = letter.isOpened,
         ).apply {
             receiveLetterJpaRepository.save(this)
         }
@@ -44,17 +47,6 @@ class ReceiveLetterManagementJpaAdapter(
             ?.let { ReceiverLetterMapper.toIndependentLetter(it) }
             ?: throw LetterException.ReceiveLetterNotFoundException()
 
-    override fun saveBySpaceLetter(
-        letter: SpaceLetter,
-        userId: DomainId,
-    ): IndependentLetter {
-        val receiveLetter =
-            receiveLetterJpaRepository.findSpaceByIdAndReceiverId(letter.id.value, userId.value)
-                ?: throw LetterException.ReceiveLetterNotFoundException()
-        receiveLetter.spaceId = null
-        return ReceiverLetterMapper.toIndependentLetter(receiveLetter)
-    }
-
     override fun save(letter: SpaceLetter) {
         ReceiveLetterEntity(
             id = letter.id.value,
@@ -66,6 +58,8 @@ class ReceiveLetterManagementJpaAdapter(
             receiverId = letter.receiver.receiverId.value,
             receiveDate = letter.receiveDate,
             spaceId = letter.spaceId.value,
+            movedAt = LocalDateTime.now(),
+            isOpened = false,
         ).apply {
             receiveLetterJpaRepository.save(this)
         }

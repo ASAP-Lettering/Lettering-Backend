@@ -1,5 +1,6 @@
 package com.asap.application.letter.service
 
+import com.asap.application.letter.event.DraftLetterSendEvent
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
@@ -13,6 +14,7 @@ import com.asap.domain.letter.service.LetterCodeGenerator
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -24,6 +26,7 @@ class LetterCommandService(
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : SendLetterUsecase,
     VerifyLetterAccessibleUsecase,
     AddLetterUsecase,
@@ -51,7 +54,7 @@ class LetterCommandService(
         sendLetterManagementPort.save(sendLetter)
 
         command.draftId?.let {
-            // event
+            applicationEventPublisher.publishEvent(DraftLetterSendEvent(it, sendLetter.senderId.value))
         }
 
         return SendLetterUsecase.Response(letterCode = sendLetter.letterCode!!)
@@ -138,15 +141,14 @@ class LetterCommandService(
     }
 
     override fun moveToIndependent(command: MoveLetterUsecase.Command.ToIndependent) {
-        val spaceLetter =
-            spaceLetterManagementPort.getSpaceLetterNotNull(
+        spaceLetterManagementPort
+            .getSpaceLetterNotNull(
                 DomainId(command.letterId),
                 DomainId(command.userId),
-            )
-        independentLetterManagementPort.saveBySpaceLetter(
-            spaceLetter,
-            spaceLetter.receiver.receiverId,
-        )
+            ).apply {
+                val independentLetter = IndependentLetter.createBySpaceLetter(this, DomainId(command.userId))
+                independentLetterManagementPort.save(independentLetter)
+            }
     }
 
     override fun removeSpaceLetter(command: RemoveLetterUsecase.Command.SpaceLetter) {

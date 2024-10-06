@@ -14,6 +14,7 @@ import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class LetterMockManager(
     private val sendLetterManagementPort: SendLetterManagementPort,
@@ -26,7 +27,7 @@ class LetterMockManager(
     fun generateMockSendLetter(
         receiverName: String,
         senderId: String = DomainId.generate().value,
-    ): String {
+    ): Map<String, Any> {
         val sendLetter =
             SendLetter(
                 receiverName = receiverName,
@@ -44,7 +45,10 @@ class LetterMockManager(
                     ),
             )
         sendLetterManagementPort.save(sendLetter)
-        return sendLetter.letterCode!!
+        return mapOf(
+            "letterCode" to sendLetter.letterCode!!,
+            "letterId" to sendLetter.id.value,
+        )
     }
 
     fun generateMockReadLetter(
@@ -99,7 +103,8 @@ class LetterMockManager(
                         images = listOf("image1", "image2"),
                     ),
                 receiveDate = LocalDate.now(),
-                isNew = true,
+                movedAt = LocalDateTime.now(),
+                isOpened = false,
             )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(

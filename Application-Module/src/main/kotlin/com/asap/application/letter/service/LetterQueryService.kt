@@ -51,7 +51,7 @@ class LetterQueryService(
                     GetIndependentLettersUsecase.LetterInfo(
                         letterId = it.id.value,
                         senderName = it.sender.senderName,
-                        isNew = it.isNew,
+                        isNew = it.isNew(),
                     )
                 },
         )

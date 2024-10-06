@@ -32,7 +32,8 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterCode = letterMockManager.generateMockSendLetter("username", senderId = senderId)
+            val letterCode =
+                letterMockManager.generateMockSendLetter("username", senderId = senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -82,7 +83,8 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            val letterCode = letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId)
+            val letterCode =
+                letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -165,7 +167,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 content = "content",
                 images = listOf("images"),
                 templateType = 1,
-                draftId = "draftId",
+                draftId = null,
             )
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -185,6 +187,36 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 isNotEmpty()
             }
         }
+    }
+
+    @Test
+    fun sendLetter_With_DraftId() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val draftId = letterMockManager.generateMockDraftLetter(userId)
+
+        val request =
+            SendLetterRequest(
+                receiverName = "receiverName",
+                content = "content",
+                images = listOf("images"),
+                templateType = 1,
+                draftId = draftId,
+            )
+        // when
+        mockMvc.post("/api/v1/letters/send") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+            header("Authorization", "Bearer $accessToken")
+        }
+        // then
+        mockMvc
+            .get("/api/v1/letters/drafts/$draftId") {
+                header("Authorization", "Bearer $accessToken")
+            }.andExpect {
+                status { isNotFound() }
+            }
     }
 
     @Nested

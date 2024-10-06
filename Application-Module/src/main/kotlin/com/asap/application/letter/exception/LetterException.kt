@@ -35,6 +35,7 @@ sealed class LetterException(
     ) : LetterException(
             errorCode = 4,
             message = message,
+            httpStatus = 404,
         )
 
     companion object {
