@@ -22,6 +22,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
 class LetterCommandServiceTest :
@@ -31,6 +32,7 @@ class LetterCommandServiceTest :
         val mockIndependentLetterManagementPort = mockk<IndependentLetterManagementPort>(relaxed = true)
         val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
         val mockSpaceLetterManagementPort = mockk<SpaceLetterManagementPort>(relaxed = true)
+        val mockApplicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val letterCommandService =
             LetterCommandService(
@@ -38,6 +40,7 @@ class LetterCommandServiceTest :
                 mockIndependentLetterManagementPort,
                 mockSpaceLetterManagementPort,
                 mockUserManagementPort,
+                mockApplicationEventPublisher,
             )
 
         given("편지 전송 요청이 들어올 때") {
@@ -216,7 +219,6 @@ class LetterCommandServiceTest :
                             receiverId = DomainId("user-id"),
                         ),
                     receiveDate = LocalDate.now(),
-                    isNew = true,
                 )
             every {
                 mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id"))
@@ -270,7 +272,9 @@ class LetterCommandServiceTest :
             `when`("편지를 이동하면") {
                 letterCommandService.moveToIndependent(command)
                 then("편지가 이동되어야 한다") {
-                    verify { mockIndependentLetterManagementPort.saveBySpaceLetter(spaceLetter, DomainId("user-id")) }
+                    verify {
+                        mockIndependentLetterManagementPort.save(any())
+                    }
                 }
             }
         }

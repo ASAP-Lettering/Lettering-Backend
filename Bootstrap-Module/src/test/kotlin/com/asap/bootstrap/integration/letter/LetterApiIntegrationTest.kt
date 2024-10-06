@@ -167,7 +167,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 content = "content",
                 images = listOf("images"),
                 templateType = 1,
-                draftId = "draftId",
+                draftId = null,
             )
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)

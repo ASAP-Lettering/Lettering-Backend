@@ -14,6 +14,7 @@ import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class LetterMockManager(
     private val sendLetterManagementPort: SendLetterManagementPort,
@@ -102,7 +103,8 @@ class LetterMockManager(
                         images = listOf("image1", "image2"),
                     ),
                 receiveDate = LocalDate.now(),
-                isNew = true,
+                movedAt = LocalDateTime.now(),
+                isOpened = false,
             )
         independentLetterManagementPort.save(independentLetter)
         return mapOf(
