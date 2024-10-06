@@ -79,8 +79,8 @@ class LetterController(
 
     override fun getIndependentLetters(userId: String): SliceResponse<GetIndependentLetterSimpleInfo> {
         val response =
-            getIndependentLettersUsecase.get(
-                GetIndependentLettersUsecase.Query(
+            getIndependentLettersUsecase.getAll(
+                GetIndependentLettersUsecase.QueryAll(
                     userId = userId,
                 ),
             )
@@ -96,6 +96,41 @@ class LetterController(
             size = response.letters.size,
             number = 0,
             hasNext = false,
+        )
+    }
+
+    override fun getIndependentLetterDetail(
+        letterId: String,
+        userId: String,
+    ): GetIndependentLetterDetailResponse {
+        val response =
+            getIndependentLettersUsecase.get(
+                GetIndependentLettersUsecase.Query(
+                    userId = userId,
+                    letterId = letterId,
+                ),
+            )
+        return GetIndependentLetterDetailResponse(
+            senderName = response.senderName,
+            letterCount = response.letterCount,
+            content = response.content,
+            sendDate = response.sendDate,
+            images = response.images,
+            templateType = response.templateType,
+            prevLetter =
+                response.prevLetter?.let {
+                    GetIndependentLetterDetailResponse.NearbyLetter(
+                        letterId = it.letterId,
+                        senderName = it.senderName,
+                    )
+                },
+            nextLetter =
+                response.nextLetter?.let {
+                    GetIndependentLetterDetailResponse.NearbyLetter(
+                        letterId = it.letterId,
+                        senderName = it.senderName,
+                    )
+                },
         )
     }
 

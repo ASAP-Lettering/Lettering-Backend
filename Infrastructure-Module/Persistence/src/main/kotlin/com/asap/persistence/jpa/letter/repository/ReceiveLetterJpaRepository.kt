@@ -73,6 +73,20 @@ interface ReceiveLetterJpaRepository : JpaRepository<ReceiveLetterEntity, String
 
     fun countBySpaceId(spaceId: String): Int
 
+    @Query(
+        """
+        SELECT COUNT(r.id)
+        FROM ReceiveLetterEntity r
+        WHERE r.receiverId = :receiverId
+        and r.entityStatus = :entityStatus
+        and r.spaceId is null
+    """,
+    )
+    fun countIndependentByReceiverId(
+        receiverId: String,
+        entityStatus: EntityStatus,
+    ): Int
+
     fun findAllBySpaceIdAndReceiverId(
         spaceId: String,
         receiverId: String,
@@ -116,3 +130,6 @@ fun ReceiveLetterJpaRepository.findIndependentByIdAndReceiverId(
 fun ReceiveLetterJpaRepository.deleteByLetterId(id: String) {
     updateEntityStatusById(id, EntityStatus.DELETED)
 }
+
+fun ReceiveLetterJpaRepository.countActiveIndependentByReceiverId(receiverId: String): Int =
+    countIndependentByReceiverId(receiverId, EntityStatus.ACTIVE)

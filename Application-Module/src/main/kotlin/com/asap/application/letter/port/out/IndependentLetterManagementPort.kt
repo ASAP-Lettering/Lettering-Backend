@@ -9,4 +9,16 @@ interface IndependentLetterManagementPort {
     fun getAllByReceiverId(receiverId: DomainId): List<IndependentLetter>
 
     fun getIndependentLetterByIdNotNull(id: DomainId): IndependentLetter
+
+    fun getIndependentLetterByIdNotNull(
+        id: DomainId,
+        userId: DomainId,
+    ): IndependentLetter
+
+    fun countIndependentLetterByReceiverId(receiverId: DomainId): Int
+
+    fun getNearbyLetter(
+        userId: DomainId,
+        letterId: DomainId,
+    ): Pair<IndependentLetter?, IndependentLetter?>
 }

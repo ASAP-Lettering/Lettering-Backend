@@ -92,8 +92,8 @@ class LetterQueryServiceTest :
         }
 
         given("모든 무소속 편지를 조회할 떄") {
-            val query =
-                GetIndependentLettersUsecase.Query(
+            val queryAll =
+                GetIndependentLettersUsecase.QueryAll(
                     userId = "user-id",
                 )
             val mockLetters =
@@ -107,7 +107,7 @@ class LetterQueryServiceTest :
                             ),
                         receiver =
                             ReceiverInfo(
-                                receiverId = DomainId(query.userId),
+                                receiverId = DomainId(queryAll.userId),
                             ),
                         content =
                             LetterContent(
@@ -119,10 +119,10 @@ class LetterQueryServiceTest :
                     ),
                 )
             every {
-                mockIndependentLetterManagementPort.getAllByReceiverId(DomainId(query.userId))
+                mockIndependentLetterManagementPort.getAllByReceiverId(DomainId(queryAll.userId))
             } returns mockLetters
             `when`("편지가 존재하면") {
-                val response = letterQueryService.get(query)
+                val response = letterQueryService.getAll(queryAll)
                 then("편지 정보를 가져와야 한다") {
                     response.letters[0].letterId shouldBe mockLetters[0].id.value
                     response.letters[0].senderName shouldBe mockLetters[0].sender.senderName
@@ -246,6 +246,110 @@ class LetterQueryServiceTest :
                     response.nextLetter.shouldNotBeNull {
                         this.letterId shouldBe nextSpaceLetter.id.value
                         this.senderName shouldBe nextSpaceLetter.sender.senderName
+                    }
+                }
+            }
+        }
+
+        given("궤도 편지 상세 정보를 조회할 때") {
+            val query =
+                GetIndependentLettersUsecase.Query(
+                    userId = "user-id",
+                    letterId = "letter-id",
+                )
+            val independentLetter =
+                IndependentLetter(
+                    id = DomainId(query.letterId),
+                    sender =
+                        SenderInfo(
+                            senderId = DomainId.generate(),
+                            senderName = "sender-name",
+                        ),
+                    receiver =
+                        ReceiverInfo(
+                            receiverId = DomainId(query.userId),
+                        ),
+                    content =
+                        LetterContent(
+                            content = "content",
+                            templateType = 1,
+                            images = listOf("image1", "image2"),
+                        ),
+                    receiveDate = LocalDate.now(),
+                )
+            val prevIndependentLetter =
+                IndependentLetter(
+                    id = DomainId.generate(),
+                    sender =
+                        SenderInfo(
+                            senderId = DomainId.generate(),
+                            senderName = "prev-sender-name",
+                        ),
+                    receiver =
+                        ReceiverInfo(
+                            receiverId = DomainId(query.userId),
+                        ),
+                    content =
+                        LetterContent(
+                            content = "prev-content",
+                            templateType = 1,
+                            images = listOf("prev-image1", "prev-image2"),
+                        ),
+                    receiveDate = LocalDate.now(),
+                )
+
+            val nextIndependentLetter =
+                IndependentLetter(
+                    id = DomainId.generate(),
+                    sender =
+                        SenderInfo(
+                            senderId = DomainId.generate(),
+                            senderName = "next-sender-name",
+                        ),
+                    receiver =
+                        ReceiverInfo(
+                            receiverId = DomainId(query.userId),
+                        ),
+                    content =
+                        LetterContent(
+                            content = "next-content",
+                            templateType = 1,
+                            images = listOf("next-image1", "next-image2"),
+                        ),
+                    receiveDate = LocalDate.now(),
+                )
+
+            every {
+                mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(
+                    DomainId(query.letterId),
+                    DomainId(query.userId),
+                )
+            } returns independentLetter
+            every {
+                mockIndependentLetterManagementPort.getNearbyLetter(
+                    userId = DomainId(query.userId),
+                    letterId = DomainId(query.letterId),
+                )
+            } returns Pair(prevIndependentLetter, nextIndependentLetter)
+            every {
+                mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
+            } returns 3
+            `when`("편지가 존재하면") {
+                val response = letterQueryService.get(query)
+                then("편지 정보를 가져와야 한다") {
+                    response.senderName shouldBe independentLetter.sender.senderName
+                    response.letterCount shouldBe 3
+                    response.content shouldBe independentLetter.content.content
+                    response.sendDate shouldBe independentLetter.receiveDate
+                    response.images shouldBe independentLetter.content.images
+                    response.templateType shouldBe independentLetter.content.templateType
+                    response.prevLetter.shouldNotBeNull {
+                        this.letterId shouldBe prevIndependentLetter.id.value
+                        this.senderName shouldBe prevIndependentLetter.sender.senderName
+                    }
+                    response.nextLetter.shouldNotBeNull {
+                        this.letterId shouldBe nextIndependentLetter.id.value
+                        this.senderName shouldBe nextIndependentLetter.sender.senderName
                     }
                 }
             }

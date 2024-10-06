@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Letter", description = "Letter API")
 @RequestMapping("/api/v1/letters")
 interface LetterApi {
-
-
     @Operation(summary = "편지 열람 가능 검증")
     @PutMapping("/verify")
     @ApiResponses(
@@ -27,9 +25,9 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = LetterVerifyResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = LetterVerifyResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -39,9 +37,9 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "403",
@@ -51,17 +49,16 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun verifyLetter(
         @RequestBody request: LetterVerifyRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): LetterVerifyResponse
-
 
     /**
      * url 다시 논의해보기
@@ -76,9 +73,9 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = VerifiedLetterInfoResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = VerifiedLetterInfoResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -88,17 +85,16 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun getVerifiedLetter(
         @PathVariable letterId: String,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): VerifiedLetterInfoResponse
-
 
     @Operation(summary = "편지 수령 처리")
     @PostMapping("/verify/receive")
@@ -116,15 +112,15 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun addVerifiedLetter(
         @RequestBody request: AddVerifiedLetterRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
 
     @Operation(summary = "실물 편지 내용 추가")
@@ -134,14 +130,13 @@ interface LetterApi {
             ApiResponse(
                 responseCode = "200",
                 description = "실물 편지 내용 추가 성공",
-            )
-        ]
+            ),
+        ],
     )
     fun addPhysicalLetter(
         @RequestBody request: AddPhysicalLetterRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     )
-
 
     @Operation(summary = "궤도 편지 목록 조회")
     @GetMapping("/independent")
@@ -153,16 +148,38 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = SliceResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = SliceResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun getIndependentLetters(
         @AccessUser userId: String,
     ): SliceResponse<GetIndependentLetterSimpleInfo>
 
+    @Operation(summary = "궤도 편지 상세 조회")
+    @GetMapping("/independent/{letterId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "궤도 편지 상세 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GetIndependentLetterDetailResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getIndependentLetterDetail(
+        @PathVariable letterId: String,
+        @AccessUser userId: String,
+    ): GetIndependentLetterDetailResponse
+
+    @Operation(summary = "편지 수정")
     @PutMapping("/{letterId}")
     fun updateLetter(
         @PathVariable letterId: String,
@@ -180,26 +197,18 @@ interface LetterApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = SendLetterResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = SendLetterResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "4XX",
-                description = "편지 전송 실패"
-            )
-        ]
+                description = "편지 전송 실패",
+            ),
+        ],
     )
     fun sendLetter(
         @RequestBody request: SendLetterRequest,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): SendLetterResponse
-
-
-
-
-
-
-
-
 }

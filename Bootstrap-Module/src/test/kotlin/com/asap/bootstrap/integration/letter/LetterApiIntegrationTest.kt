@@ -15,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
+import java.time.LocalDateTime
 
 class LetterApiIntegrationTest : IntegrationSupporter() {
     @Autowired
@@ -383,7 +384,162 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 jsonPath("$.content[0].isNew") {
                     exists()
                     isBoolean()
+                    value(true)
                 }
+            }
+        }
+    }
+
+    @Test
+    fun getIndependentLetter_IsNewFalse_IsAfter() {
+        // given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter =
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+                movedAt = LocalDateTime.now().minusDays(2),
+            )
+        val letterId = independentLetter["letterId"] as String
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/independent") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                jsonPath("$.content[0].letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value(letterId)
+                }
+                jsonPath("$.content[0].senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value("senderUsername")
+                }
+                jsonPath("$.content[0].isNew") {
+                    exists()
+                    isBoolean()
+                    value(false)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun getIndependentLetter_IsNewFalse_IsBefore_Opened() {
+        // given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter =
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+                isOpened = true,
+            )
+        val letterId = independentLetter["letterId"] as String
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/independent") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                jsonPath("$.content[0].letterId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value(letterId)
+                }
+                jsonPath("$.content[0].senderName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value("senderUsername")
+                }
+                jsonPath("$.content[0].isNew") {
+                    exists()
+                    isBoolean()
+                    value(false)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun getIndependentLetterDetail() {
+        // given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter =
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+            )
+        val letterId = independentLetter["letterId"] as String
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/independent/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.senderName") {
+                exists()
+                isString()
+                isNotEmpty()
+                value("senderUsername")
+            }
+            jsonPath("$.letterCount") {
+                exists()
+                isNumber()
+                value(1)
+            }
+            jsonPath("$.content") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.sendDate") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.images") {
+                exists()
+                isArray()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.prevLetter") {
+                doesNotExist()
+            }
+            jsonPath("$.nextLetter") {
+                doesNotExist()
             }
         }
     }
