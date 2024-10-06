@@ -5,6 +5,7 @@ import com.asap.persistence.jpa.user.entity.UserEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import java.time.LocalDateTime
 
 @Entity
 @Table(
@@ -16,6 +17,7 @@ class DraftLetterEntity(
     receiverName: String,
     ownerId: String,
     images: List<String>,
+    updatedAt: LocalDateTime,
 ) : AggregateRoot<DraftLetterEntity>(id) {
     var content: String = content
     var receiverName: String = receiverName
@@ -41,4 +43,6 @@ class DraftLetterEntity(
         columnDefinition = "text",
     )
     var images: List<String> = images
+
+    override var updatedAt: LocalDateTime = updatedAt
 }

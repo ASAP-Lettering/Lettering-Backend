@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class DraftCommandService(
+class DraftLetterCommandService(
     private val draftLetterManagementPort: DraftLetterManagementPort,
 ) : GenerateDraftKeyUsecase,
     UpdateDraftLetterUsecase {

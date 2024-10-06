@@ -6,6 +6,7 @@ import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
 class DraftLetterApiIntegrationTest : IntegrationSupporter() {
@@ -53,6 +54,72 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun `get all drafts`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val draftId = letterMockManager.generateMockDraftLetter(userId)
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts") {
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.drafts[0].draftKey") { isString() }
+            jsonPath("$.drafts[0].receiverName") { isString() }
+            jsonPath("$.drafts[0].content") { isString() }
+            jsonPath("$.drafts[0].lastUpdated") { isString() }
+        }
+    }
+
+    @Test
+    fun `get draft letter`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val draftId = letterMockManager.generateMockDraftLetter(userId)
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts/$draftId") {
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.draftKey") { isString() }
+            jsonPath("$.receiverName") { isString() }
+            jsonPath("$.content") { isString() }
+            jsonPath("$.images") { isArray() }
+        }
+    }
+
+    @Test
+    fun `get draft count`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        letterMockManager.generateMockDraftLetter(userId)
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts/count") {
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.count") {
+                isNumber()
+                value(1)
+            }
         }
     }
 }
