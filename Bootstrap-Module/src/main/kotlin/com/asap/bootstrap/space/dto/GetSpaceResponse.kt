@@ -1,8 +1,7 @@
 package com.asap.bootstrap.space.dto
 
-data class MainSpaceInfoResponse(
+data class GetSpaceResponse(
     val spaceId: String,
-    val username: String,
     val templateType: Int,
     val spaceName: String,
 )

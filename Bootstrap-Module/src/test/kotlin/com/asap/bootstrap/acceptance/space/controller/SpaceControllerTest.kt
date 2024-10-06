@@ -44,7 +44,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
                 mainSpaceGetUsecase.get(
                     MainSpaceGetUsecase.Query("userId"),
                 ),
-            ).willReturn(MainSpaceGetUsecase.Response("spaceId", "username"))
+            ).willReturn(MainSpaceGetUsecase.Response("spaceId", "username", 0, "spaceName"))
         // when
         val response =
             mockMvc.get("/api/v1/spaces/main") {
@@ -59,6 +59,15 @@ class SpaceControllerTest : AcceptanceSupporter() {
                 isNotEmpty()
             }
             jsonPath("$.username") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+            jsonPath("$.spaceName") {
                 exists()
                 isString()
                 isNotEmpty()
@@ -238,6 +247,48 @@ class SpaceControllerTest : AcceptanceSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun getSpace() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val spaceId = "spaceId"
+        BDDMockito
+            .given(
+                spaceGetUsecase.get(
+                    SpaceGetUsecase.GetQuery("userId", spaceId),
+                ),
+            ).willReturn(
+                SpaceGetUsecase.GetResponse(
+                    spaceId = "spaceId",
+                    spaceName = "spaceName",
+                    templateType = 0,
+                ),
+            )
+        // when
+        val response =
+            mockMvc.get("/api/v1/spaces/$spaceId") {
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.spaceId") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.spaceName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
         }
     }
 }

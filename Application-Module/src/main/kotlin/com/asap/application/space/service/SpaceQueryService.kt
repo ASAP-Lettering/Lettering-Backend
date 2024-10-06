@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class SpaceQueryService(
     private val spaceManagementPort: SpaceManagementPort,
-    private val userManagementPort: UserManagementPort
+    private val userManagementPort: UserManagementPort,
 ) : MainSpaceGetUsecase,
     SpaceGetUsecase {
     override fun get(query: MainSpaceGetUsecase.Query): MainSpaceGetUsecase.Response {
@@ -20,9 +20,16 @@ class SpaceQueryService(
             spaceManagementPort.getMainSpace(
                 userId = DomainId(query.userId),
             )
+        val space =
+            spaceManagementPort.getSpaceNotNull(
+                userId = DomainId(query.userId),
+                spaceId = mainSpace.id,
+            )
         return MainSpaceGetUsecase.Response(
             id = mainSpace.id.value,
-            username = userManagementPort.getUserNotNull(DomainId(query.userId)).username
+            username = userManagementPort.getUserNotNull(DomainId(query.userId)).username,
+            templateType = space.templateType,
+            spaceName = space.name,
         )
     }
 
@@ -34,15 +41,28 @@ class SpaceQueryService(
 
         return SpaceGetUsecase.GetAllResponse(
             spaces =
-            spaces.map {
-                SpaceGetUsecase.SpaceDetail(
-                    spaceName = it.name,
-                    letterCount = 0,
-                    isMainSpace = it.isMain(),
-                    spaceIndex = it.index,
-                    spaceId = it.id.value,
-                )
-            },
+                spaces.map {
+                    SpaceGetUsecase.SpaceDetail(
+                        spaceName = it.name,
+                        letterCount = 0,
+                        isMainSpace = it.isMain(),
+                        spaceIndex = it.index,
+                        spaceId = it.id.value,
+                    )
+                },
+        )
+    }
+
+    override fun get(query: SpaceGetUsecase.GetQuery): SpaceGetUsecase.GetResponse {
+        val space =
+            spaceManagementPort.getSpaceNotNull(
+                userId = DomainId(query.userId),
+                spaceId = DomainId(query.spaceId),
+            )
+        return SpaceGetUsecase.GetResponse(
+            spaceName = space.name,
+            spaceId = space.id.value,
+            templateType = space.templateType,
         )
     }
 }
