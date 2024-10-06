@@ -13,7 +13,7 @@ interface DraftLetterManagementPort {
 
     fun getAllDrafts(ownerId: DomainId): List<DraftLetter>
 
-    fun update(draftLetter: DraftLetter): DraftLetter
-
     fun countDrafts(ownerId: DomainId): Int
+
+    fun remove(draftLetter: DraftLetter)
 }

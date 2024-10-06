@@ -31,12 +31,9 @@ class DraftLetterManagementJpaAdapter(
             .findByOwnerId(ownerId.value)
             .map { DraftLetterMapper.toDomain(it) }
 
-    override fun update(draftLetter: DraftLetter): DraftLetter =
-        DraftLetterMapper
-            .toEntity(draftLetter)
-            .apply {
-                draftLetterJpaRepository.save(this)
-            }.let { DraftLetterMapper.toDomain(it) }
-
     override fun countDrafts(ownerId: DomainId): Int = draftLetterJpaRepository.countByOwnerId(ownerId.value)
+
+    override fun remove(draftLetter: DraftLetter) {
+        draftLetterJpaRepository.delete(DraftLetterMapper.toEntity(draftLetter))
+    }
 }

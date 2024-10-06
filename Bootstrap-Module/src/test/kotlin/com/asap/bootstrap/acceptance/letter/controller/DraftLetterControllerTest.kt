@@ -7,6 +7,7 @@ import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import java.time.LocalDateTime
@@ -153,6 +154,24 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         response.andExpect {
             status { isOk() }
             jsonPath("$.count") { isNumber() }
+        }
+    }
+
+    @Test
+    fun `delete draft`() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+
+        // when
+        val response =
+            mockMvc.delete("/api/v1/letters/drafts/draftKey") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.asap.application.letter.service
 
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
+import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
 import com.asap.application.letter.port.out.DraftLetterManagementPort
 import com.asap.domain.common.DomainId
@@ -13,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 class DraftLetterCommandService(
     private val draftLetterManagementPort: DraftLetterManagementPort,
 ) : GenerateDraftKeyUsecase,
-    UpdateDraftLetterUsecase {
+    UpdateDraftLetterUsecase,
+    RemoveDraftLetterUsecase {
     override fun command(command: GenerateDraftKeyUsecase.Command): GenerateDraftKeyUsecase.Response {
         val draftLetter = DraftLetter.default(DomainId(command.userId))
         draftLetterManagementPort.save(draftLetter)
@@ -23,8 +25,8 @@ class DraftLetterCommandService(
     override fun command(command: UpdateDraftLetterUsecase.Command) {
         val draftLetter =
             draftLetterManagementPort.getDraftLetterNotNull(
-                DomainId(command.draftId),
-                DomainId(command.userId),
+                draftId = DomainId(command.draftId),
+                ownerId = DomainId(command.userId),
             )
 
         draftLetter.update(
@@ -32,6 +34,16 @@ class DraftLetterCommandService(
             receiverName = command.receiverName,
             images = command.images,
         )
-        draftLetterManagementPort.update(draftLetter)
+        draftLetterManagementPort.save(draftLetter)
+    }
+
+    override fun command(command: RemoveDraftLetterUsecase.Command) {
+        draftLetterManagementPort
+            .getDraftLetterNotNull(
+                draftId = DomainId(command.draftId),
+                ownerId = DomainId(command.userId),
+            ).let {
+                draftLetterManagementPort.remove(it)
+            }
     }
 }
