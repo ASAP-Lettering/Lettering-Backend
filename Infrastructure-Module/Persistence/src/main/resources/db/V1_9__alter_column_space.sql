@@ -1,0 +1,1 @@
+alter table space change `index` space_index int;

@@ -24,6 +24,11 @@ class SpaceEntity(
 
     var name: String = name
     var templateType: Int = templateType
+
+    @Column(
+        name = "space_index",
+        nullable = false,
+    )
     var index: Int = index
 
     @Enumerated(EnumType.STRING)
@@ -38,5 +43,6 @@ class SpaceEntity(
         this.userId = space.userId.value
         this.name = space.name
         this.templateType = space.templateType
+        update()
     }
 }
