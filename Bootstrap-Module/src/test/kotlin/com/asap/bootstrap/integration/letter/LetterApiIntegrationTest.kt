@@ -571,7 +571,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Test
-    fun deleteIndependentLetter()  {
+    fun deleteIndependentLetter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
@@ -584,14 +584,20 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             )
         val letterId = independentLetter.id.value
         // when
-        val result =
-            mockMvc.delete("/api/v1/letters/independent/$letterId") {
+        mockMvc.delete("/api/v1/letters/independent/$letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+
+        val response =
+            mockMvc.get("/api/v1/letters/independent/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
+
         // then
-        result.andExpect {
-            status { isOk() }
+        response.andExpect {
+            status { isNotFound() }
         }
     }
 }

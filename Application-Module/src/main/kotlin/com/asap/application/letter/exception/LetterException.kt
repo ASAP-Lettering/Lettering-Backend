@@ -28,6 +28,7 @@ sealed class LetterException(
     ) : LetterException(
             errorCode = 3,
             message = message,
+            httpStatus = 404,
         )
 
     class DraftLetterNotFoundException(
