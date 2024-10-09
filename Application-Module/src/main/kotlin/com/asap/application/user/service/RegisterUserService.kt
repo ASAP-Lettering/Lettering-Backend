@@ -68,6 +68,8 @@ class RegisterUserService(
 
         userTokenManagementPort.saveUserToken(UserToken(token = refreshToken))
 
+        applicationEventPublisher.publishEvent(UserEvent.UserCreatedEvent(registerUser))
+
         return RegisterUserUsecase.Response(accessToken, refreshToken)
     }
 }

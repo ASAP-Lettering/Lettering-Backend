@@ -159,4 +159,10 @@ class LetterCommandService(
             )
         spaceLetterManagementPort.delete(spaceLetter)
     }
+
+    override fun removeIndependentLetter(command: RemoveLetterUsecase.Command.IndependentLetter) {
+        val independentLetter =
+            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
+        independentLetterManagementPort.delete(independentLetter)
+    }
 }

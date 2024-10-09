@@ -86,7 +86,7 @@ class LetterMockManager(
         senderName: String,
         movedAt: LocalDateTime = LocalDateTime.now(),
         isOpened: Boolean = false,
-    ): Map<String, Any> {
+    ): IndependentLetter {
         val independentLetter =
             IndependentLetter(
                 sender =
@@ -109,9 +109,7 @@ class LetterMockManager(
                 isOpened = isOpened,
             )
         independentLetterManagementPort.save(independentLetter)
-        return mapOf(
-            "letterId" to independentLetter.id.value,
-        )
+        return independentLetter
     }
 
     fun generateMockSpaceLetter(

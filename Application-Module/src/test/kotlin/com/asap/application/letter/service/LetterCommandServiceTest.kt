@@ -337,4 +337,36 @@ class LetterCommandServiceTest :
                 }
             }
         }
+
+        given("궤도 편지 삭제 요청이 들어올 떄") {
+            val command = RemoveLetterUsecase.Command.IndependentLetter("letter-id", "user-id")
+            val independentLetter =
+                IndependentLetter(
+                    id = DomainId("letter-id"),
+                    content = LetterContent("content", images = emptyList(), templateType = 1),
+                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
+                    receiver = ReceiverInfo(DomainId("user-id")),
+                    receiveDate = LocalDate.now(),
+                )
+            every { mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id")) } returns independentLetter
+            `when`("편지를 삭제하면") {
+                letterCommandService.removeIndependentLetter(command)
+                then("편지가 삭제되어야 한다") {
+                    verify { mockIndependentLetterManagementPort.delete(independentLetter) }
+                }
+            }
+
+            clearMocks(mockIndependentLetterManagementPort)
+            every { mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id")) } throws
+                LetterException.ReceiveLetterNotFoundException()
+            `when`("편지가 존재하지 않으면") {
+                then("예외가 발생해야 한다") {
+                    shouldThrow<LetterException.ReceiveLetterNotFoundException> {
+                        letterCommandService.removeIndependentLetter(command)
+                    }.apply {
+                        verify(exactly = 0) { mockIndependentLetterManagementPort.delete(any()) }
+                    }
+                }
+            }
+        }
     })

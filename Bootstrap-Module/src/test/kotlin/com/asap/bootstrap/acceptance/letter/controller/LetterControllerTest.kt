@@ -12,6 +12,7 @@ import com.asap.bootstrap.letter.dto.SendLetterRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
@@ -335,6 +336,22 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             mockMvc.post("/api/v1/letters/physical/receive") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun deleteIndependentLetter()  {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        // when
+        val response =
+            mockMvc.delete("/api/v1/letters/independent/{letterId}", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
         // then

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
@@ -356,7 +357,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 receiverId = receiverId,
                 senderName = "senderUsername",
             )
-        val letterId = independentLetter["letterId"] as String
+        val letterId = independentLetter.id.value
         // when
         val result =
             mockMvc.get("/api/v1/letters/independent") {
@@ -403,7 +404,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 senderName = "senderUsername",
                 movedAt = LocalDateTime.now().minusDays(2),
             )
-        val letterId = independentLetter["letterId"] as String
+        val letterId = independentLetter.id.value
         // when
         val result =
             mockMvc.get("/api/v1/letters/independent") {
@@ -450,7 +451,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 senderName = "senderUsername",
                 isOpened = true,
             )
-        val letterId = independentLetter["letterId"] as String
+        val letterId = independentLetter.id.value
         // when
         val result =
             mockMvc.get("/api/v1/letters/independent") {
@@ -496,7 +497,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 receiverId = receiverId,
                 senderName = "senderUsername",
             )
-        val letterId = independentLetter["letterId"] as String
+        val letterId = independentLetter.id.value
         // when
         val result =
             mockMvc.get("/api/v1/letters/independent/$letterId") {
@@ -566,6 +567,37 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun deleteIndependentLetter() {
+        // given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter =
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+            )
+        val letterId = independentLetter.id.value
+        // when
+        mockMvc.delete("/api/v1/letters/independent/$letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+
+        val response =
+            mockMvc.get("/api/v1/letters/independent/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isNotFound() }
         }
     }
 }
