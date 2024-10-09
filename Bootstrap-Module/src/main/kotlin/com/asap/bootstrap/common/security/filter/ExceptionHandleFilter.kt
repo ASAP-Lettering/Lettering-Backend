@@ -47,6 +47,9 @@ class ExceptionHandleFilter(
                             ).toByteArray(),
                     )
                     response.contentType = "application/json"
+                    // add cors header
+                    response.addHeader("Access-Control-Allow-Origin", "*")
+                    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
                 }
 
                 else -> {
@@ -62,6 +65,9 @@ class ExceptionHandleFilter(
                             ).toByteArray(),
                     )
                     response.contentType = "application/json"
+
+                    response.addHeader("Access-Control-Allow-Origin", "*")
+                    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
                 }
             }
         }
