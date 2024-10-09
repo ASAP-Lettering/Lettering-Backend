@@ -75,6 +75,10 @@ class ReceiveLetterManagementJpaAdapter(
         )
     }
 
+    override fun delete(letter: IndependentLetter) {
+        receiveLetterJpaRepository.deleteByLetterId(letter.id.value)
+    }
+
     override fun save(letter: SpaceLetter) {
         ReceiveLetterEntity(
             id = letter.id.value,

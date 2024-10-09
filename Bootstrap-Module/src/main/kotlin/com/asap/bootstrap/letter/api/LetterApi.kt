@@ -179,6 +179,12 @@ interface LetterApi {
         @AccessUser userId: String,
     ): GetIndependentLetterDetailResponse
 
+    @DeleteMapping("/independent/{letterId}")
+    fun deleteIndependentLetter(
+        @PathVariable letterId: String,
+        @AccessUser userId: String,
+    )
+
     @Operation(summary = "편지 수정")
     @PutMapping("/{letterId}")
     fun updateLetter(

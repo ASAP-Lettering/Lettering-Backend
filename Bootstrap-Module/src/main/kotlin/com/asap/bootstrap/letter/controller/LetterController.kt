@@ -13,6 +13,7 @@ class LetterController(
     private val getVerifiedLetterUsecase: GetVerifiedLetterUsecase,
     private val addLetterUsecase: AddLetterUsecase,
     private val getIndependentLettersUsecase: GetIndependentLettersUsecase,
+    private val removeLetterUsecase: RemoveLetterUsecase,
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -131,6 +132,18 @@ class LetterController(
                         senderName = it.senderName,
                     )
                 },
+        )
+    }
+
+    override fun deleteIndependentLetter(
+        letterId: String,
+        userId: String,
+    ) {
+        removeLetterUsecase.removeIndependentLetter(
+            RemoveLetterUsecase.Command.IndependentLetter(
+                letterId = letterId,
+                userId = userId,
+            ),
         )
     }
 

@@ -21,4 +21,6 @@ interface IndependentLetterManagementPort {
         userId: DomainId,
         letterId: DomainId,
     ): Pair<IndependentLetter?, IndependentLetter?>
+
+    fun delete(letter: IndependentLetter)
 }

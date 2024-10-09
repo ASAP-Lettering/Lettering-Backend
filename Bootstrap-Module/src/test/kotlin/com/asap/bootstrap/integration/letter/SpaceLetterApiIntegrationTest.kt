@@ -28,10 +28,11 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val independentLetterId =
-            letterMockManager.generateMockIndependentLetter(
-                receiverId = userId,
-                senderName = "senderName",
-            )["letterId"] as String
+            letterMockManager
+                .generateMockIndependentLetter(
+                    receiverId = userId,
+                    senderName = "senderName",
+                ).id.value
         val request = MoveLetterToSpaceRequest(spaceId)
         // when
         val response =
@@ -213,7 +214,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Test
-    fun deleteSpaceLetter()  {
+    fun deleteSpaceLetter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)
