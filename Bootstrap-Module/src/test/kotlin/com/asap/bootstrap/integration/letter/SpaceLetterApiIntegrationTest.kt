@@ -4,7 +4,6 @@ import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -213,29 +212,73 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun deleteSpaceLetter() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
-        val spaceLetter =
-            letterMockManager.generateMockSpaceLetter(
-                receiverId = userId,
-                senderName = "senderName",
-                spaceId = spaceId,
-            )
-        val letterId = spaceLetter["letterId"] as String
-        // when
-        val response =
+    @Nested
+    inner class DeleteSpaceLetter {
+        @Test
+        @DisplayName("공간 편지 삭제 성공")
+        fun deleteSpaceLetter() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId)
+            val spaceLetter =
+                letterMockManager.generateMockSpaceLetter(
+                    receiverId = userId,
+                    senderName = "senderName",
+                    spaceId = spaceId,
+                )
+            val letterId = spaceLetter["letterId"] as String
+            // when
             mockMvc.delete("/api/v1/spaces/letters/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+
+            val response =
+                mockMvc.get("/api/v1/spaces/letters/$letterId") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isNotFound() }
+            }
         }
-        letterMockManager.isExistSpaceLetter(letterId, userId) shouldBe false
+
+        @Test
+        fun deleteSpaceLetter_not_found_in_letter_list()  {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId)
+            val spaceLetter =
+                letterMockManager.generateMockSpaceLetter(
+                    receiverId = userId,
+                    senderName = "senderName",
+                    spaceId = spaceId,
+                )
+            val letterId = spaceLetter["letterId"] as String
+            // when
+            mockMvc.delete("/api/v1/spaces/letters/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+            val response =
+                mockMvc.get("/api/v1/spaces/$spaceId/letters?page=0&size=10") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    isArray()
+                    isEmpty()
+                }
+            }
+        }
     }
 }
