@@ -4,6 +4,7 @@ import com.asap.application.user.port.`in`.TokenResolveUsecase
 import com.asap.bootstrap.common.security.vo.UserAuthentication
 import com.asap.common.security.SecurityContext
 import com.asap.common.security.SecurityContextHolder
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -14,19 +15,24 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 @Order(1)
 class JwtAuthenticationFilter(
-    private val tokenResolveUsecase: TokenResolveUsecase
+    private val tokenResolveUsecase: TokenResolveUsecase,
 ) : OncePerRequestFilter() {
+    private val kotlinLogger = KotlinLogging.logger { }
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val token = request.getHeader(AUTHORIZATION_HEADER)
         if (token != null && token.startsWith(BEARER_PREFIX)) {
             val accessToken = token.substring(BEARER_PREFIX.length)
             val resolveResponse = tokenResolveUsecase.resolveAccessToken(accessToken)
+
+            kotlinLogger.info { "request user id: ${resolveResponse.userId}" }
+
             SecurityContextHolder.setContext(
-                SecurityContext(UserAuthentication(resolveResponse.userId))
+                SecurityContext(UserAuthentication(resolveResponse.userId)),
             )
         }
 
