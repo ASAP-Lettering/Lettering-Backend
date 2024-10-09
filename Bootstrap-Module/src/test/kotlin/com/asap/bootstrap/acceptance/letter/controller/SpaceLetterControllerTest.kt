@@ -3,6 +3,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
+import com.asap.bootstrap.letter.dto.ModifyLetterRequest
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
@@ -204,6 +205,30 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
         val response =
             mockMvc.delete("/api/v1/spaces/letters/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun updateSpaceLetter() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val letterId = "letterId"
+        val request =
+            ModifyLetterRequest(
+                content = "content",
+                images = listOf("images"),
+                senderName = "senderName",
+            )
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$letterId/content") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
         // then

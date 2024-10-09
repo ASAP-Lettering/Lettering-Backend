@@ -14,6 +14,7 @@ class LetterController(
     private val addLetterUsecase: AddLetterUsecase,
     private val getIndependentLettersUsecase: GetIndependentLettersUsecase,
     private val removeLetterUsecase: RemoveLetterUsecase,
+    private val updateLetterUsecase: UpdateLetterUsecase,
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -147,12 +148,20 @@ class LetterController(
         )
     }
 
-    override fun updateLetter(
+    override fun updateIndependentLetter(
         letterId: String,
         request: ModifyLetterRequest,
         userId: String,
     ) {
-        TODO("Not yet implemented")
+        updateLetterUsecase.updateIndependentLetter(
+            UpdateLetterUsecase.Command.Independent(
+                letterId = letterId,
+                senderName = request.senderName,
+                content = request.content,
+                images = request.images,
+                userId = userId,
+            ),
+        )
     }
 
     override fun sendLetter(

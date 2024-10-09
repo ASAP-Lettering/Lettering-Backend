@@ -36,4 +36,14 @@ data class IndependentLetter(
     fun read() {
         isOpened = true
     }
+
+    fun update(
+        senderName: String,
+        content: String,
+        images: List<String>,
+    ) {
+        this.sender.update(senderName)
+        this.content.updateContent(content)
+        this.content.updateImages(images.toMutableList())
+    }
 }

@@ -5,10 +5,7 @@ import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
 import com.asap.application.letter.port.`in`.SendLetterUsecase
 import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
-import com.asap.bootstrap.letter.dto.AddPhysicalLetterRequest
-import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
-import com.asap.bootstrap.letter.dto.LetterVerifyRequest
-import com.asap.bootstrap.letter.dto.SendLetterRequest
+import com.asap.bootstrap.letter.dto.*
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType
@@ -345,13 +342,36 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     }
 
     @Test
-    fun deleteIndependentLetter()  {
+    fun deleteIndependentLetter() {
         // given
         val accessToken = testJwtDataGenerator.generateAccessToken()
         // when
         val response =
             mockMvc.delete("/api/v1/letters/independent/{letterId}", "letterId") {
                 contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun updateIndependentLetter() {
+        // given
+        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val request =
+            ModifyLetterRequest(
+                senderName = "senderName",
+                content = "content",
+                images = listOf("images"),
+            )
+        // when
+        val response =
+            mockMvc.put("/api/v1/letters/independent/{letterId}/content", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
         // then

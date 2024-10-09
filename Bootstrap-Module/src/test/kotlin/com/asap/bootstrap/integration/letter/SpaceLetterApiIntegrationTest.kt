@@ -3,6 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
+import com.asap.bootstrap.letter.dto.ModifyLetterRequest
 import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -247,7 +248,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         }
 
         @Test
-        fun deleteSpaceLetter_not_found_in_letter_list()  {
+        fun deleteSpaceLetter_not_found_in_letter_list() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -279,6 +280,38 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                     isEmpty()
                 }
             }
+        }
+    }
+
+    @Test
+    fun updateSpaceLetter()  {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceLetter =
+            letterMockManager.generateMockSpaceLetter(
+                receiverId = userId,
+                senderName = "senderName",
+                spaceId = spaceId,
+            )
+        val letterId = spaceLetter["letterId"] as String
+        val request =
+            ModifyLetterRequest(
+                content = "updateContent",
+                images = listOf("image1", "image2"),
+                senderName = "updateSenderName",
+            )
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/letters/$letterId/content") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

@@ -1,8 +1,16 @@
 package com.asap.domain.letter.vo
 
 data class LetterContent(
-    val content: String,
-    val images: List<String>,
-    val templateType: Int
+    var content: String,
+    val images: MutableList<String>,
+    val templateType: Int,
 ) {
+    fun updateContent(content: String)  {
+        this.content = content
+    }
+
+    fun updateImages(images: MutableList<String>)  {
+        this.images.clear()
+        this.images.addAll(images)
+    }
 }

@@ -35,7 +35,7 @@ class LetterMockManager(
                     LetterContent(
                         content = "content",
                         templateType = 1,
-                        images = listOf("image1", "image2"),
+                        images = mutableListOf("image1", "image2"),
                     ),
                 senderId = DomainId(senderId),
                 letterCode =
@@ -63,7 +63,7 @@ class LetterMockManager(
                     LetterContent(
                         content = "content",
                         templateType = 1,
-                        images = listOf("image1", "image2"),
+                        images = mutableListOf("image1", "image2"),
                     ),
                 senderId = DomainId(senderId),
                 letterCode =
@@ -102,7 +102,7 @@ class LetterMockManager(
                     LetterContent(
                         content = "content",
                         templateType = 1,
-                        images = listOf("image1", "image2"),
+                        images = mutableListOf("image1", "image2"),
                     ),
                 receiveDate = LocalDate.now(),
                 movedAt = movedAt,
@@ -133,7 +133,7 @@ class LetterMockManager(
                     LetterContent(
                         content = "content",
                         templateType = 1,
-                        images = listOf("image1", "image2"),
+                        images = mutableListOf("image1", "image2"),
                     ),
                 spaceId = DomainId(spaceId),
                 receiveDate = LocalDate.now(),

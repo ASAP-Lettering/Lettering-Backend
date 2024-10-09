@@ -56,7 +56,7 @@ class LetterQueryServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = listOf("image1", "image2"),
+                            images = mutableListOf("image1", "image2"),
                             templateType = 1,
                         ),
                     senderId = DomainId.generate(),
@@ -113,7 +113,7 @@ class LetterQueryServiceTest :
                             LetterContent(
                                 content = "content",
                                 templateType = 1,
-                                images = listOf("image1", "image2"),
+                                images = mutableListOf("image1", "image2"),
                             ),
                         receiveDate = LocalDate.now(),
                     ),
@@ -160,7 +160,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "content",
                             templateType = 1,
-                            images = listOf("image1", "image2"),
+                            images = mutableListOf("image1", "image2"),
                         ),
                     receiveDate = LocalDate.now(),
                     spaceId = space.id,
@@ -181,7 +181,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "prev-content",
                             templateType = 1,
-                            images = listOf("prev-image1", "prev-image2"),
+                            images = mutableListOf("prev-image1", "prev-image2"),
                         ),
                     receiveDate = LocalDate.now(),
                     spaceId = space.id,
@@ -202,7 +202,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "next-content",
                             templateType = 1,
-                            images = listOf("next-image1", "next-image2"),
+                            images = mutableListOf("next-image1", "next-image2"),
                         ),
                     receiveDate = LocalDate.now(),
                     spaceId = space.id,
@@ -273,7 +273,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "content",
                             templateType = 1,
-                            images = listOf("image1", "image2"),
+                            images = mutableListOf("image1", "image2"),
                         ),
                     receiveDate = LocalDate.now(),
                 )
@@ -293,7 +293,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "prev-content",
                             templateType = 1,
-                            images = listOf("prev-image1", "prev-image2"),
+                            images = mutableListOf("prev-image1", "prev-image2"),
                         ),
                     receiveDate = LocalDate.now(),
                 )
@@ -314,7 +314,7 @@ class LetterQueryServiceTest :
                         LetterContent(
                             content = "next-content",
                             templateType = 1,
-                            images = listOf("next-image1", "next-image2"),
+                            images = mutableListOf("next-image1", "next-image2"),
                         ),
                     receiveDate = LocalDate.now(),
                 )
