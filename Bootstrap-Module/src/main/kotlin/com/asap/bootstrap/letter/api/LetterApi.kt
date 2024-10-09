@@ -186,8 +186,8 @@ interface LetterApi {
     )
 
     @Operation(summary = "편지 수정")
-    @PutMapping("/{letterId}")
-    fun updateLetter(
+    @PutMapping("/independent/{letterId}/content")
+    fun updateIndependentLetter(
         @PathVariable letterId: String,
         @RequestBody request: ModifyLetterRequest,
         @AccessUser userId: String,

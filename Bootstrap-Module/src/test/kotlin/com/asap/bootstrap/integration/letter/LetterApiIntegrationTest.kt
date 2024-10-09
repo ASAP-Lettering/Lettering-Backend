@@ -3,10 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.letter.dto.AddPhysicalLetterRequest
-import com.asap.bootstrap.letter.dto.AddVerifiedLetterRequest
-import com.asap.bootstrap.letter.dto.LetterVerifyRequest
-import com.asap.bootstrap.letter.dto.SendLetterRequest
+import com.asap.bootstrap.letter.dto.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -598,6 +595,38 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // then
         response.andExpect {
             status { isNotFound() }
+        }
+    }
+
+    @Test
+    fun updateIndependentLetter() {
+        // given
+        val receiverId = userMockManager.settingUser()
+        val senderId = userMockManager.settingUser(username = "senderUsername")
+        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val independentLetter =
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+            )
+        val letterId = independentLetter.id.value
+        val request =
+            ModifyLetterRequest(
+                content = "content",
+                images = listOf("images"),
+                senderName = "senderName",
+            )
+        // when
+        val response =
+            mockMvc.put("/api/v1/letters/independent/$letterId/content") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

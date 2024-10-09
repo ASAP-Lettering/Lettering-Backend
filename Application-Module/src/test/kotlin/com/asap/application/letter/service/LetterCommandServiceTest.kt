@@ -78,7 +78,7 @@ class LetterCommandServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = emptyList(),
+                            images = mutableListOf(),
                             templateType = 1,
                         ),
                     senderId = DomainId("sender-id"),
@@ -155,7 +155,7 @@ class LetterCommandServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = emptyList(),
+                            images = mutableListOf(),
                             templateType = 1,
                         ),
                     senderId = DomainId("sender-id"),
@@ -207,7 +207,7 @@ class LetterCommandServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = emptyList(),
+                            images = mutableListOf(),
                             templateType = 1,
                         ),
                     sender =
@@ -249,7 +249,7 @@ class LetterCommandServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = emptyList(),
+                            images = mutableListOf(),
                             templateType = 1,
                         ),
                     sender =
@@ -291,7 +291,7 @@ class LetterCommandServiceTest :
                     content =
                         LetterContent(
                             "content",
-                            images = emptyList(),
+                            images = mutableListOf(),
                             templateType = 1,
                         ),
                     sender =
@@ -343,7 +343,7 @@ class LetterCommandServiceTest :
             val independentLetter =
                 IndependentLetter(
                     id = DomainId("letter-id"),
-                    content = LetterContent("content", images = emptyList(), templateType = 1),
+                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
                     sender = SenderInfo(DomainId("senderId"), "sender-name"),
                     receiver = ReceiverInfo(DomainId("user-id")),
                     receiveDate = LocalDate.now(),
@@ -366,6 +366,52 @@ class LetterCommandServiceTest :
                     }.apply {
                         verify(exactly = 0) { mockIndependentLetterManagementPort.delete(any()) }
                     }
+                }
+            }
+        }
+
+        given("궤도 편지 수정 요청이 들어올 떄") {
+            val command =
+                UpdateLetterUsecase.Command.Independent(
+                    letterId = "letter-id",
+                    senderName = "sender-name",
+                    content = "content",
+                    images = emptyList(),
+                    userId = "user-id",
+                )
+            val independentLetter =
+                IndependentLetter(
+                    id = DomainId("letter-id"),
+                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
+                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
+                    receiver = ReceiverInfo(DomainId("user-id")),
+                    receiveDate = LocalDate.now(),
+                )
+            every { mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id")) } returns independentLetter
+            `when`("편지를 수정하면") {
+                letterCommandService.updateIndependentLetter(command)
+                then("편지가 수정되어야 한다") {
+                    verify { mockIndependentLetterManagementPort.save(independentLetter) }
+                }
+            }
+        }
+
+        given("행성 편지 수정 요청이 들어올 떄") {
+            val command = UpdateLetterUsecase.Command.Space("letter-id", "user-id", "name", "content", emptyList())
+            val spaceLetter =
+                SpaceLetter(
+                    id = DomainId("letter-id"),
+                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
+                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
+                    receiver = ReceiverInfo(DomainId("user-id")),
+                    receiveDate = LocalDate.now(),
+                    spaceId = DomainId("space-id"),
+                )
+            every { mockSpaceLetterManagementPort.getSpaceLetterNotNull(DomainId("letter-id"), DomainId("user-id")) } returns spaceLetter
+            `when`("편지를 수정하면") {
+                letterCommandService.updateSpaceLetter(command)
+                then("편지가 수정되어야 한다") {
+                    verify { mockSpaceLetterManagementPort.save(spaceLetter) }
                 }
             }
         }

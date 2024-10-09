@@ -4,6 +4,9 @@ import com.asap.domain.common.DomainId
 
 data class SenderInfo(
     val senderId: DomainId? = null,
-    val senderName: String
+    var senderName: String,
 ) {
+    fun update(senderName: String) {
+        this.senderName = senderName
+    }
 }

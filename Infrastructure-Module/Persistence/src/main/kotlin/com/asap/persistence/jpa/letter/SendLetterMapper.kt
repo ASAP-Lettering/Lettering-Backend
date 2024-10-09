@@ -12,7 +12,7 @@ object SendLetterMapper {
             content =
                 LetterContent(
                     content = sendLetterEntity.content,
-                    images = sendLetterEntity.images,
+                    images = sendLetterEntity.images.toMutableList(),
                     templateType = sendLetterEntity.templateType,
                 ),
             receiverName = sendLetterEntity.receiverName,

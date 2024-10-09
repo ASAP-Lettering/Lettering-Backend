@@ -31,7 +31,8 @@ class LetterCommandService(
     VerifyLetterAccessibleUsecase,
     AddLetterUsecase,
     MoveLetterUsecase,
-    RemoveLetterUsecase {
+    RemoveLetterUsecase,
+    UpdateLetterUsecase {
     private val letterCodeGenerator = LetterCodeGenerator()
 
     override fun send(command: SendLetterUsecase.Command): SendLetterUsecase.Response {
@@ -42,7 +43,7 @@ class LetterCommandService(
                     LetterContent(
                         content = command.content,
                         templateType = command.templateType,
-                        images = command.images,
+                        images = command.images.toMutableList(),
                     ),
                 senderId = DomainId(command.userId),
                 letterCode =
@@ -123,7 +124,7 @@ class LetterCommandService(
                     LetterContent(
                         content = command.content,
                         templateType = command.templateType,
-                        images = command.images,
+                        images = command.images.toMutableList(),
                     ),
                 receiveDate = LocalDate.now(),
             )
@@ -164,5 +165,30 @@ class LetterCommandService(
         val independentLetter =
             independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
         independentLetterManagementPort.delete(independentLetter)
+    }
+
+    override fun updateIndependentLetter(command: UpdateLetterUsecase.Command.Independent) {
+        val independentLetter =
+            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
+        independentLetter.update(
+            senderName = command.senderName,
+            content = command.content,
+            images = command.images,
+        )
+        independentLetterManagementPort.save(independentLetter)
+    }
+
+    override fun updateSpaceLetter(command: UpdateLetterUsecase.Command.Space) {
+        val spaceLetter =
+            spaceLetterManagementPort.getSpaceLetterNotNull(
+                DomainId(command.letterId),
+                DomainId(command.userId),
+            )
+        spaceLetter.update(
+            senderName = command.senderName,
+            content = command.content,
+            images = command.images,
+        )
+        spaceLetterManagementPort.save(spaceLetter)
     }
 }

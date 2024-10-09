@@ -16,7 +16,7 @@ object ReceiverLetterMapper {
                 LetterContent(
                     content = receiveLetterEntity.content,
                     templateType = receiveLetterEntity.templateType,
-                    images = receiveLetterEntity.images,
+                    images = receiveLetterEntity.images.toMutableList(),
                 ),
             sender =
                 SenderInfo(
@@ -39,7 +39,7 @@ object ReceiverLetterMapper {
                 LetterContent(
                     content = receiveLetterEntity.content,
                     templateType = receiveLetterEntity.templateType,
-                    images = receiveLetterEntity.images,
+                    images = receiveLetterEntity.images.toMutableList(),
                 ),
             sender =
                 SenderInfo(
