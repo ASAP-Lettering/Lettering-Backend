@@ -15,9 +15,13 @@ class SpaceManagementJpaAdapter(
     private val spaceJpaRepository: SpaceJpaRepository,
 ) : SpaceManagementPort {
     override fun getMainSpace(userId: DomainId): MainSpace =
-        spaceJpaRepository.findAllActiveSpaceByUserId(userId.value).first().let {
-            SpaceMapper.toMainSpace(it)
-        }
+        spaceJpaRepository
+            .findAllActiveSpaceByUserId(userId.value)
+            .first {
+                it.index == 0
+            }.let {
+                SpaceMapper.toMainSpace(it)
+            }
 
     override fun getSpaceNotNull(
         userId: DomainId,

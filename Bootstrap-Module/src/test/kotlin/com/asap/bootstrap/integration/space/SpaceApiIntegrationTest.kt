@@ -24,39 +24,90 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     @Autowired
     lateinit var spaceMockManager: SpaceMockManager
 
-    @Test
-    fun getMainSpaceId() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        spaceMockManager.settingSpace(userId)
-        // when
-        val response =
-            mockMvc.get("/api/v1/spaces/main") {
+    @Nested
+    inner class GetMainSpace  {
+        @Test
+        fun getMainSpaceId() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            spaceMockManager.settingSpace(userId)
+            // when
+            val response =
+                mockMvc.get("/api/v1/spaces/main") {
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.spaceId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.username") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.templateType") {
+                    exists()
+                    isNumber()
+                }
+                jsonPath("$.spaceName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+            }
+        }
+
+        @Test
+        fun getMainSpaceId_with_changedIndex()  {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceIndexes =
+                (0..3).map {
+                    val spaceId = spaceMockManager.settingSpace(userId)
+                    UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                }
+            mockMvc.put("/api/v1/spaces/order") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
                 header("Authorization", "Bearer $accessToken")
             }
+            // when
+            val response =
+                mockMvc.get("/api/v1/spaces/main") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
 
-        // then
-        response.andExpect {
-            status { isOk() }
-            jsonPath("$.spaceId") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.username") {
-                exists()
-                isString()
-                isNotEmpty()
-            }
-            jsonPath("$.templateType") {
-                exists()
-                isNumber()
-            }
-            jsonPath("$.spaceName") {
-                exists()
-                isString()
-                isNotEmpty()
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.spaceId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value(spaceIndexes[3].spaceId)
+                }
+                jsonPath("$.username") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.templateType") {
+                    exists()
+                    isNumber()
+                }
+                jsonPath("$.spaceName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
             }
         }
     }
