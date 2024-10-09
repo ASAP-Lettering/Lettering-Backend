@@ -33,11 +33,27 @@ interface ReceiveLetterJpaRepository : JpaRepository<ReceiveLetterEntity, String
         AND r.entityStatus = :entityStatus
     """,
     )
-    fun findAllBySpaceIdAndReceiverId(
+    fun findAllSpaceLetterBy(
         spaceId: String,
         receiverId: String,
         entityStatus: EntityStatus,
     ): List<ReceiveLetterEntity>
+
+    @Query(
+        """
+        SELECT r
+        FROM ReceiveLetterEntity r
+        WHERE r.receiverId = :receiverId
+        AND r.entityStatus = :entityStatus
+        AND r.spaceId = :spaceId
+    """,
+    )
+    fun findAllSpaceLetterBy(
+        spaceId: String,
+        receiverId: String,
+        pageable: Pageable,
+        entityStatus: EntityStatus,
+    ): Page<ReceiveLetterEntity>
 
     @Query(
         """
@@ -87,12 +103,6 @@ interface ReceiveLetterJpaRepository : JpaRepository<ReceiveLetterEntity, String
         entityStatus: EntityStatus,
     ): Int
 
-    fun findAllBySpaceIdAndReceiverId(
-        spaceId: String,
-        receiverId: String,
-        pageable: Pageable,
-    ): Page<ReceiveLetterEntity>
-
     @Modifying
     @Query(
         """
@@ -113,7 +123,13 @@ fun ReceiveLetterJpaRepository.findAllIndependentByReceiverId(receiverId: String
 fun ReceiveLetterJpaRepository.findAllSpaceBySpaceIdAndReceiverId(
     spaceId: String,
     receiverId: String,
-): List<ReceiveLetterEntity> = findAllBySpaceIdAndReceiverId(spaceId, receiverId, EntityStatus.ACTIVE)
+): List<ReceiveLetterEntity> = findAllSpaceLetterBy(spaceId, receiverId, EntityStatus.ACTIVE)
+
+fun ReceiveLetterJpaRepository.findAllActiveSpaceLetterBy(
+    spaceId: String,
+    receiverId: String,
+    pageable: Pageable,
+): Page<ReceiveLetterEntity> = findAllSpaceLetterBy(spaceId, receiverId, pageable, EntityStatus.ACTIVE)
 
 fun ReceiveLetterJpaRepository.findIndependentById(letterId: String): ReceiveLetterEntity? = findBy(letterId, false, EntityStatus.ACTIVE)
 

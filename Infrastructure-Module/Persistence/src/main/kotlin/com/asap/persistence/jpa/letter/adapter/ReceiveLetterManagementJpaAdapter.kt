@@ -143,7 +143,7 @@ class ReceiveLetterManagementJpaAdapter(
     ): Page<SpaceLetter> {
         val letters =
             receiveLetterJpaRepository
-                .findAllBySpaceIdAndReceiverId(
+                .findAllActiveSpaceLetterBy(
                     spaceId.value,
                     userId.value,
                     org.springframework.data.domain.PageRequest.of(
