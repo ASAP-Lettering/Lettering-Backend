@@ -25,7 +25,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
     lateinit var spaceMockManager: SpaceMockManager
 
     @Nested
-    inner class GetMainSpace  {
+    inner class GetMainSpace {
         @Test
         fun getMainSpaceId() {
             // given
@@ -64,7 +64,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         }
 
         @Test
-        fun getMainSpaceId_with_changedIndex()  {
+        fun getMainSpaceId_with_changedIndex() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = testJwtDataGenerator.generateAccessToken(userId)
@@ -207,43 +207,162 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun deleteSpace() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
-        // when
-        val response =
-            mockMvc.delete("/api/v1/spaces/$spaceId") {
+    @Nested
+    @DisplayName("스페이스 삭제")
+    inner class DeleteSpace {
+        @Test
+        fun deleteSpace() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId)
+            // when
+            val response =
+                mockMvc.delete("/api/v1/spaces/$spaceId") {
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+        @Test
+        fun deleteSpace_with_reindexing_space_order() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceIndexes =
+                (0..3).map {
+                    val spaceId = spaceMockManager.settingSpace(userId)
+                    UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                }
+            val deleteSpaceId = spaceIndexes[1].spaceId
+            mockMvc.delete("/api/v1/spaces/$deleteSpaceId") {
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
-        }
-        spaceMockManager.getSpaceCount(userId) shouldBe 0
-    }
 
-    @Test
-    fun deleteSpaces() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
-        val request = DeleteMultipleSpacesRequest(spaceIds)
-        // when
-        val response =
+            // when
+            val response =
+                mockMvc.get("/api/v1/spaces") {
+                    header("Authorization", "Bearer $accessToken")
+                    contentType = MediaType.APPLICATION_JSON
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.spaces") {
+                    isArray()
+                    isNotEmpty()
+                    haveLength(3)
+                    for (i in 0..2) {
+                        jsonPath("$.spaces[$i].spaceId") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                        }
+                        jsonPath("$.spaces[$i].spaceName") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                        }
+                        jsonPath("$.spaces[$i].letterCount") {
+                            exists()
+                            isNumber()
+                        }
+                        jsonPath("$.spaces[$i].isMainSpace") {
+                            exists()
+                            isBoolean()
+                        }
+                        jsonPath("$.spaces[$i].spaceIndex") {
+                            exists()
+                            isNumber()
+                            haveValue(i)
+                        }
+                    }
+                }
+            }
+        }
+
+        @Test
+        fun deleteSpaces() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
+            val request = DeleteMultipleSpacesRequest(spaceIds)
+            // when
+            val response =
+                mockMvc.delete("/api/v1/spaces") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+        @Test
+        fun deleteSpaces_with_reindexing_space_order() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val spaceIndexes =
+                (0..3).map {
+                    val spaceId = spaceMockManager.settingSpace(userId)
+                    UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
+                }
+            val deleteSpaceIds = spaceIndexes.subList(1, 3).map { it.spaceId }
+            val request = DeleteMultipleSpacesRequest(deleteSpaceIds)
             mockMvc.delete("/api/v1/spaces") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/spaces") {
+                    header("Authorization", "Bearer $accessToken")
+                    contentType = MediaType.APPLICATION_JSON
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.spaces") {
+                    isArray()
+                    isNotEmpty()
+                    haveLength(2)
+                    for (i in 0..1) {
+                        jsonPath("$.spaces[$i].spaceId") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                        }
+                        jsonPath("$.spaces[$i].spaceName") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                        }
+                        jsonPath("$.spaces[$i].letterCount") {
+                            exists()
+                            isNumber()
+                        }
+                        jsonPath("$.spaces[$i].isMainSpace") {
+                            exists()
+                            isBoolean()
+                        }
+                        jsonPath("$.spaces[$i].spaceIndex") {
+                            exists()
+                            isNumber()
+                            haveValue(i)
+                        }
+                    }
+                }
+            }
         }
-        spaceMockManager.getSpaceCount(userId) shouldBe 0
     }
 
     @Nested
@@ -270,7 +389,10 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             response.andExpect {
                 status { isOk() }
             }
-            spaceMockManager.getSpaceIndexes(userId) shouldBe spaceIndexes.map { it.spaceId to it.index }.sortedBy { it.second }
+            spaceMockManager.getSpaceIndexes(userId) shouldBe
+                spaceIndexes
+                    .map { it.spaceId to it.index }
+                    .sortedBy { it.second }
         }
 
         @Test
