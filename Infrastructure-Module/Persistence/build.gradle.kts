@@ -7,6 +7,6 @@ dependencies {
     runtimeOnly(Dependencies.DATABASE.MYSQL)
     runtimeOnly(Dependencies.DATABASE.H2)
 
-    implementation(Dependencies.FLYWAY.FLYWAY_CORE)
-    implementation(Dependencies.FLYWAY.FLYWAY_MYSQL)
+    implementation(Dependencies.Flyway.FLYWAY_CORE)
+    implementation(Dependencies.Flyway.FLYWAY_MYSQL)
 }

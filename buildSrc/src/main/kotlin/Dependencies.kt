@@ -64,8 +64,13 @@ object Dependencies {
         const val FASTER_XML = "com.fasterxml.uuid:java-uuid-generator:${Versions.UUID_GENERATOR}"
     }
 
-    object FLYWAY {
+    object Flyway {
         const val FLYWAY_CORE = "org.flywaydb:flyway-core"
         const val FLYWAY_MYSQL = "org.flywaydb:flyway-mysql"
+    }
+
+    object Instancio {
+        const val JUNIT = "org.instancio:instancio-junit:${Versions.INSTANCIO}"
+        const val CORE = "org.instancio:instancio-core:${Versions.INSTANCIO}"
     }
 }

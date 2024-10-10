@@ -10,7 +10,8 @@ interface UserTokenConvertPort {
         socialId: String,
         socialLoginProvider: String,
         username: String,
-        profileImage: String
+        email: String,
+        profileImage: String,
     ): String
 
     fun generateAccessToken(user: User): String

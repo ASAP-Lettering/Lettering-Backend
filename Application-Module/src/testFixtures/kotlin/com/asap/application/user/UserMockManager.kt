@@ -36,6 +36,7 @@ class UserMockManager(
                     profileImage = "profileImage",
                     permission = UserPermission(true, true, true),
                     birthday = LocalDate.now(),
+                    email = "email",
                 ),
             )
         return user.id.value
@@ -45,7 +46,7 @@ class UserMockManager(
         userId: String,
         socialId: String = "socialId",
         provider: String = "provider",
-    )  {
+    ) {
         userAuthManagementPort.saveUserAuth(
             UserAuth(
                 userId = DomainId(userId),

@@ -18,7 +18,6 @@ plugins {
     id("org.sonarqube") version "5.1.0.4882"
 }
 
-
 allprojects {
     group = "com.asap"
     version = ""
@@ -37,7 +36,6 @@ allprojects {
     tasks.withType<BootJar> {
         enabled = project.name == Versions.ROOT_MODULE
     }
-
 
     repositories {
         mavenCentral()
@@ -70,6 +68,8 @@ allprojects {
         implementation(Dependencies.Jackson.KOTLIN)
         implementation(Dependencies.Jackson.JAVA_TIME)
         implementation(Dependencies.Logger.KOTLIN_OSHAI)
+        implementation(Dependencies.Instancio.CORE)
+        implementation(Dependencies.Instancio.JUNIT)
     }
 
     kotlin {
@@ -82,32 +82,32 @@ allprojects {
         useJUnitPlatform()
     }
 
-    jacoco{
+    jacoco {
         toolVersion = "0.8.7"
     }
 }
 
-
-tasks.testCodeCoverageReport{
-    reports{
+tasks.testCodeCoverageReport {
+    reports {
         xml.required = true
     }
 }
 
-dependencies{
+dependencies {
     allprojects.forEach {
         add("jacocoAggregation", project(it.path))
     }
 }
 
-
-sonar{
-    properties{
+sonar {
+    properties {
         property("sonar.projectKey", "ASAP-Lettering_Lettering-Backend")
         property("sonar.organization", "asap-lettering")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.java.coveragePlugin", "jacoco")
-        property("sonar.coverage.jacoco.xmlReportPaths",
-            rootProject.layout.buildDirectory.file("reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"))
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            rootProject.layout.buildDirectory.file("reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"),
+        )
     }
 }

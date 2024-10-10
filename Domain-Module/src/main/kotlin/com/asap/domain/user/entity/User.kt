@@ -8,6 +8,7 @@ data class User(
     val id: DomainId = DomainId.generate(),
     val username: String,
     val profileImage: String,
+    val email: String,
     val permission: UserPermission,
     val birthday: LocalDate?,
 )

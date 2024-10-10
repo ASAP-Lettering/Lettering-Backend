@@ -8,6 +8,7 @@ import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
@@ -16,8 +17,6 @@ import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
 import com.asap.domain.space.entity.Space
-import com.asap.domain.user.entity.User
-import com.asap.domain.user.vo.UserPermission
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -62,14 +61,7 @@ class LetterQueryServiceTest :
                     senderId = DomainId.generate(),
                     letterCode = "letter-code",
                 )
-            val mockSender =
-                User(
-                    id = mockSendLetter.senderId,
-                    username = "sender-name",
-                    profileImage = "profile-image",
-                    permission = UserPermission(true, true, true),
-                    birthday = null,
-                )
+            val mockSender = UserFixture.createUser(mockSendLetter.senderId.value, "sender-name")
             every {
                 mockSendLetterManagementPort.getReadLetterNotNull(
                     receiverId = DomainId(query.userId),

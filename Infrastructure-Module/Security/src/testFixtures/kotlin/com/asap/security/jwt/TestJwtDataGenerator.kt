@@ -31,6 +31,7 @@ class TestJwtDataGenerator(
                         socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
                         username = username,
                         profileImage = "profileImage",
+                        email = "email",
                     ),
             ),
             userJwtProperties.secret,

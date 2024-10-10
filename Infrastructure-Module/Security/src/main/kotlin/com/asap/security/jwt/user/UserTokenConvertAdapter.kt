@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserTokenConvertAdapter(
-    private val userJwtProperties: UserJwtProperties
+    private val userJwtProperties: UserJwtProperties,
 ) : UserTokenConvertPort {
     override fun resolveRegisterToken(token: String): UserClaims.Register {
         val jwtPayload: JwtPayload<UserRegisterJwtClaims> =
@@ -25,7 +25,8 @@ class UserTokenConvertAdapter(
             socialId = jwtClaims.socialId,
             socialLoginProvider = jwtClaims.socialLoginProvider,
             username = jwtClaims.username,
-            profileImage = jwtClaims.profileImage
+            profileImage = jwtClaims.profileImage,
+            email = jwtClaims.email,
         )
     }
 
@@ -33,67 +34,73 @@ class UserTokenConvertAdapter(
         socialId: String,
         socialLoginProvider: String,
         username: String,
-        profileImage: String
+        email: String,
+        profileImage: String,
     ): String {
-        val jwtClaims = UserRegisterJwtClaims(
-            socialId = socialId,
-            socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
-            username = username,
-            profileImage = profileImage
-        )
+        val jwtClaims =
+            UserRegisterJwtClaims(
+                socialId = socialId,
+                socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
+                username = username,
+                email = email,
+                profileImage = profileImage,
+            )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.REGISTER_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)
     }
 
     override fun generateAccessToken(user: User): String {
-        val jwtClaims = UserJwtClaims(
-            userId = user.id.value,
-            tokenType = TokenType.ACCESS
-        )
+        val jwtClaims =
+            UserJwtClaims(
+                userId = user.id.value,
+                tokenType = TokenType.ACCESS,
+            )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.ACCESS_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)
     }
 
     override fun resolveAccessToken(token: String): UserClaims.Access {
-        val jwtPayload: JwtPayload<UserJwtClaims> = TokenType.ACCESS.resolveUserToken {
-            resolveToken(token, userJwtProperties.secret)
-        }
+        val jwtPayload: JwtPayload<UserJwtClaims> =
+            TokenType.ACCESS.resolveUserToken {
+                resolveToken(token, userJwtProperties.secret)
+            }
         val jwtClaims = jwtPayload.claims
         return UserClaims.Access(
-            userId = jwtClaims.userId
+            userId = jwtClaims.userId,
         )
     }
 
     override fun generateRefreshToken(user: User): String {
-        val jwtClaims = UserJwtClaims(
-            userId = user.id.value,
-            tokenType = TokenType.REFRESH
-        )
+        val jwtClaims =
+            UserJwtClaims(
+                userId = user.id.value,
+                tokenType = TokenType.REFRESH,
+            )
         val payload = getDefaultPayload(jwtClaims, UserJwtProperties.REFRESH_TOKEN_EXPIRE_TIME)
         return JwtProvider.createToken(payload, userJwtProperties.secret)
     }
 
     override fun resolveRefreshToken(token: String): UserClaims.Refresh {
-        val jwtPayload: JwtPayload<UserJwtClaims> = TokenType.REFRESH.resolveUserToken {
-            resolveToken(token, userJwtProperties.secret)
-        }
+        val jwtPayload: JwtPayload<UserJwtClaims> =
+            TokenType.REFRESH.resolveUserToken {
+                resolveToken(token, userJwtProperties.secret)
+            }
         val jwtClaims = jwtPayload.claims
         return UserClaims.Refresh(
-            userId = jwtClaims.userId
+            userId = jwtClaims.userId,
         )
     }
 
     private fun <T : JwtClaims> getDefaultPayload(
         jwtClaims: T,
-        expireTime: Long
-    ): JwtPayload<T> {
-        return JwtPayload(
+        expireTime: Long,
+    ): JwtPayload<T> =
+        JwtPayload(
             issuer = UserJwtProperties.ISSUER,
             subject = UserJwtProperties.SUBJECT,
             expireTime = expireTime,
             claims = jwtClaims,
         )
-    }
 
     private fun <T : JwtClaims> resolveToken(resolve: () -> JwtPayload<T>): JwtPayload<T> {
         try {
@@ -107,9 +114,7 @@ class UserTokenConvertAdapter(
         }
     }
 
-    private fun TokenType.resolveUserToken(
-        resolve: () -> JwtPayload<UserJwtClaims>
-    ): JwtPayload<UserJwtClaims> {
+    private fun TokenType.resolveUserToken(resolve: () -> JwtPayload<UserJwtClaims>): JwtPayload<UserJwtClaims> {
         return resolveToken {
             val jwtPayload = resolve()
             if (jwtPayload.claims.equalsTokenType(this).not()) {
