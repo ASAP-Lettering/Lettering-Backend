@@ -39,6 +39,7 @@ class SpaceLetterController(
                     GetSpaceLettersResponse(
                         senderName = it.senderName,
                         letterId = it.letterId,
+                        receivedDate = it.receivedDate,
                     )
                 },
             totalElements = response.total,
@@ -92,7 +93,7 @@ class SpaceLetterController(
             spaceName = response.spaceName,
             letterCount = response.letterCount,
             content = response.content,
-            sendDate = response.sendDate,
+            receiveDate = response.receiveDate,
             images = response.images,
             templateType = response.templateType,
             prevLetter =

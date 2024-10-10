@@ -64,6 +64,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                         GetSpaceLettersUsecase.LetterInfo(
                             senderName = "senderName",
                             letterId = "letterId",
+                            receivedDate = LocalDate.now(),
                         ),
                     ),
                 total = 1,
@@ -111,7 +112,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                 spaceName = "spaceName",
                 letterCount = 1,
                 content = "content",
-                sendDate = LocalDate.now(),
+                receiveDate = LocalDate.now(),
                 images = listOf("images"),
                 templateType = 1,
                 prevLetter = GetSpaceLetterDetailUsecase.NearbyLetter("prevLetterId", "prevSenderName"),
@@ -154,7 +155,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                 isString()
                 isNotEmpty()
             }
-            jsonPath("$.sendDate") {
+            jsonPath("$.receiveDate") {
                 exists()
                 isString()
                 isNotEmpty()
