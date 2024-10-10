@@ -20,7 +20,7 @@ interface SpaceGetUsecase {
 
     data class SpaceDetail(
         val spaceName: String,
-        val letterCount: Int,
+        val letterCount: Long,
         val isMainSpace: Boolean,
         val spaceIndex: Int,
         val spaceId: String,

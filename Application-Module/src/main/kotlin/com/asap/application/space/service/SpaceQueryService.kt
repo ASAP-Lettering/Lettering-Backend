@@ -1,5 +1,6 @@
 package com.asap.application.space.service
 
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceGetUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class SpaceQueryService(
     private val spaceManagementPort: SpaceManagementPort,
     private val userManagementPort: UserManagementPort,
+    private val spaceLetterManagementPort: SpaceLetterManagementPort,
 ) : MainSpaceGetUsecase,
     SpaceGetUsecase {
     override fun get(query: MainSpaceGetUsecase.Query): MainSpaceGetUsecase.Response {
@@ -44,7 +46,7 @@ class SpaceQueryService(
                 spaces.map {
                     SpaceGetUsecase.SpaceDetail(
                         spaceName = it.name,
-                        letterCount = 0,
+                        letterCount = spaceLetterManagementPort.countLetterBySpaceId(it.id),
                         isMainSpace = it.isMain(),
                         spaceIndex = it.index,
                         spaceId = it.id.value,
