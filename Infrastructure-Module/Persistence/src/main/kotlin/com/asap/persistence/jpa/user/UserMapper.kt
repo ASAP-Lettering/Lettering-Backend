@@ -24,6 +24,7 @@ object UserMapper {
                     privatePermission = user.permission.privatePermission,
                     marketingPermission = user.permission.marketingPermission,
                 ),
+            email = user.email,
         )
 
     fun toUser(userEntity: UserEntity): User =
@@ -38,6 +39,7 @@ object UserMapper {
                     marketingPermission = userEntity.userPermission.marketingPermission,
                 ),
             birthday = userEntity.birthday,
+            email = userEntity.email,
         )
 
     fun toUserAuthEntity(userAuth: UserAuth): UserAuthEntity =

@@ -1,10 +1,9 @@
 object Versions {
-
     const val KOTLIN = "1.9.24"
 
     const val JAVA_VERSION = "17"
 
-    const val ROOT_MODULE ="Bootstrap-Module"
+    const val ROOT_MODULE = "Bootstrap-Module"
 
     const val KOTEST_VERSION = "5.9.1"
     const val MOCKK_VERSION = "1.13.12"
@@ -16,4 +15,6 @@ object Versions {
     const val KOTLIN_OSHAI = "5.1.4"
 
     const val SPRING_AWS = "3.0.0"
+
+    const val INSTANCIO = "5.0.2"
 }

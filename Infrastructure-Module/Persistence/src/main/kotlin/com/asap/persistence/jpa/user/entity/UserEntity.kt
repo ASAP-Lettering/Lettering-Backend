@@ -9,6 +9,7 @@ import java.time.LocalDate
 class UserEntity(
     id: String,
     username: String,
+    email: String,
     profileImage: String,
     userPermission: UserPermissionEntity,
     birthday: LocalDate?,
@@ -18,6 +19,11 @@ class UserEntity(
 
     @Column(nullable = false)
     val profileImage: String = profileImage
+
+    @Column(
+        columnDefinition = "varchar(100)",
+    )
+    val email: String = email
 
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     val userPermission: UserPermissionEntity = userPermission

@@ -54,6 +54,7 @@ class RegisterUserServiceTest :
                     socialLoginProvider = SocialLoginProvider.KAKAO,
                     username = "test",
                     profileImage = "profileImage",
+                    email = "email",
                 )
             every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false
             every { mockUserTokenConvertPort.generateAccessToken(any()) } returns "accessToken"
@@ -74,6 +75,7 @@ class RegisterUserServiceTest :
                     socialLoginProvider = SocialLoginProvider.KAKAO,
                     username = "test",
                     profileImage = "profileImage",
+                    email = "email",
                 )
             every { mockUserTokenManagementPort.isExistsToken("duplicate") } returns true
             every { mockUserAuthManagementPort.isExistsUserAuth("duplicate", SocialLoginProvider.KAKAO) } returns true
@@ -123,6 +125,7 @@ class RegisterUserServiceTest :
                     socialLoginProvider = SocialLoginProvider.KAKAO,
                     username = "test",
                     profileImage = "profileImage",
+                    email = "email",
                 )
             every { mockUserTokenManagementPort.isExistsToken("valid") } returns true
             every { mockUserAuthManagementPort.isExistsUserAuth("123", SocialLoginProvider.KAKAO) } returns false

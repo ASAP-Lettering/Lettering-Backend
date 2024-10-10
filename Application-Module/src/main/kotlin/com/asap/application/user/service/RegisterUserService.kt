@@ -49,6 +49,7 @@ class RegisterUserService(
                         command.marketingPermission,
                     ),
                 birthday = command.birthday,
+                email = userClaims.email,
             )
         val userAuth =
             UserAuth(

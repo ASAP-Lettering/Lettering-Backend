@@ -37,6 +37,7 @@ class SocialLoginService(
                     authInfo.socialLoginProvider.name,
                     authInfo.username,
                     authInfo.profileImage,
+                    authInfo.email,
                 )
             userTokenManagementPort.saveUserToken(UserToken(token = registerToken))
             SocialLoginUsecase.NonRegistered(registerToken)

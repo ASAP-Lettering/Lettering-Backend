@@ -4,12 +4,11 @@ import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceGetUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
-import com.asap.domain.user.entity.User
-import com.asap.domain.user.vo.UserPermission
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -37,19 +36,7 @@ class SpaceQueryServiceTest :
                 MainSpaceGetUsecase.Query(
                     userId = "userId",
                 )
-            val user =
-                User(
-                    id = DomainId("userId"),
-                    username = "username",
-                    profileImage = "profileImage",
-                    permission =
-                        UserPermission(
-                            true,
-                            true,
-                            true,
-                        ),
-                    birthday = null,
-                )
+            val user = UserFixture.createUser("userId")
             val space =
                 Space(
                     id = mainSpace.id,

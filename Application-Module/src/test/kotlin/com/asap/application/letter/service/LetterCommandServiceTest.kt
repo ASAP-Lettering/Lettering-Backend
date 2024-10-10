@@ -6,6 +6,7 @@ import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
@@ -13,8 +14,6 @@ import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
-import com.asap.domain.user.entity.User
-import com.asap.domain.user.vo.UserPermission
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -84,14 +83,7 @@ class LetterCommandServiceTest :
                     senderId = DomainId("sender-id"),
                     letterCode = letterCode,
                 )
-            val mockUser =
-                User(
-                    id = DomainId("user-id"),
-                    username = "receiver-name",
-                    profileImage = "profile-image",
-                    permission = UserPermission(true, true, true),
-                    birthday = LocalDate.now(),
-                )
+            val mockUser = UserFixture.createUser("user-id", "receiver-name")
             every { mockSendLetterManagementPort.verifiedLetter(any(), letterCode) } returns false
             every { mockSendLetterManagementPort.getLetterByCodeNotNull(any()) } returns sendLetter
             every { mockUserManagementPort.getUserNotNull(any()) } returns mockUser
@@ -114,14 +106,7 @@ class LetterCommandServiceTest :
                 }
             }
 
-            val anotherUser =
-                User(
-                    id = DomainId("user-id"),
-                    username = "another-name",
-                    profileImage = "profile-image",
-                    permission = UserPermission(true, true, true),
-                    birthday = LocalDate.now(),
-                )
+            val anotherUser = UserFixture.createUser("another-user-id")
             every { mockSendLetterManagementPort.getLetterByCodeNotNull(any()) } returns sendLetter
             every { mockUserManagementPort.getUserNotNull(any()) } returns anotherUser
             `when`("편지의 수신자 이름과 사용자 이름이 다르면") {

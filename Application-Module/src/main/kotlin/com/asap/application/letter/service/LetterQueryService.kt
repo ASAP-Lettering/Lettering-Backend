@@ -31,7 +31,7 @@ class LetterQueryService(
             .getReadLetterNotNull(
                 receiverId = DomainId(query.userId),
                 letterId = DomainId(query.letterId),
-            ).let {
+            ).also {
                 val sender = userManagementPort.getUserNotNull(it.senderId)
                 return GetVerifiedLetterUsecase.Response(
                     senderName = sender.username,

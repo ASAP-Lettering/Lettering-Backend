@@ -6,6 +6,6 @@ data class AuthInfo(
     val socialLoginProvider: SocialLoginProvider,
     val socialId: String,
     val username: String,
-    val profileImage: String
-) {
-}
+    val email: String,
+    val profileImage: String,
+)
