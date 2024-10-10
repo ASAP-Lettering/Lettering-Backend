@@ -1,5 +1,6 @@
 package com.asap.application.space.service
 
+import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.`in`.MainSpaceGetUsecase
 import com.asap.application.space.port.`in`.SpaceGetUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
@@ -20,11 +21,13 @@ class SpaceQueryServiceTest :
 
         val spaceManagementPort = mockk<SpaceManagementPort>()
         val userManagementPort = mockk<UserManagementPort>()
+        val spaceLetterManagementPort = mockk<SpaceLetterManagementPort>()
 
         val spaceQueryService =
             SpaceQueryService(
                 spaceManagementPort,
                 userManagementPort,
+                spaceLetterManagementPort,
             )
 
         given("메인 스페이스 조회 요청이 들어왔을 때") {
@@ -89,6 +92,7 @@ class SpaceQueryServiceTest :
                     userId = "userId",
                 )
             every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
+            every { spaceLetterManagementPort.countLetterBySpaceId(any()) } returns 0
             `when`("유저 아이디가 주어진다면") {
                 val response = spaceQueryService.getAll(query)
                 then("모든 스페이스를 반환한다") {

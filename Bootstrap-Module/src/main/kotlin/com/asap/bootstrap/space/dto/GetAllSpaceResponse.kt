@@ -1,15 +1,13 @@
 package com.asap.bootstrap.space.dto
 
 data class GetAllSpaceResponse(
-    val spaces: List<SpaceDetail>
+    val spaces: List<SpaceDetail>,
 ) {
-
-
     data class SpaceDetail(
         val spaceName: String,
-        val letterCount: Int,
+        val letterCount: Long,
         val isMainSpace: Boolean,
         val spaceIndex: Int,
-        val spaceId: String
+        val spaceId: String,
     )
 }
