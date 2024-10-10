@@ -145,13 +145,15 @@ class SpaceCommandServiceTest :
             `when`("유저 아이디, 스페이스 순서가 주어진다면") {
                 spaceCommandService.update(spaceUpdateIndexCommand)
                 then("스페이스 순서를 수정한다") {
+                    indexedSpaces[0].updateIndex(1)
+                    indexedSpaces[1].updateIndex(0)
                     verify {
                         spaceManagementPort.updateIndexes(
                             userId = DomainId(spaceUpdateIndexCommand.userId),
                             orders =
                                 listOf(
-                                    indexedSpaces[0].updateIndex(1),
-                                    indexedSpaces[1].updateIndex(0),
+                                    indexedSpaces[0],
+                                    indexedSpaces[1],
                                 ),
                         )
                     }

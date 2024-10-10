@@ -6,15 +6,13 @@ data class IndexedSpace(
     val id: DomainId,
     val userId: DomainId,
     val name: String,
-    val index: Int,
-    val templateType: Int
+    var index: Int,
+    val templateType: Int,
 ) {
+    fun isMain(): Boolean = index == 0
 
-    fun isMain(): Boolean {
-        return index == 0
-    }
-
-    fun updateIndex(index: Int): IndexedSpace {
-        return this.copy(index = index)
+    fun updateIndex(index: Int)  {
+        check(index >= 0) { "Index must be greater than or equal to 0" }
+        this.index = index
     }
 }

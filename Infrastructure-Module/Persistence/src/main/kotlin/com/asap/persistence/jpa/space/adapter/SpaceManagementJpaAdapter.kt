@@ -56,6 +56,14 @@ class SpaceManagementJpaAdapter(
             SpaceMapper.toSpace(it)
         } ?: throw SpaceException.SpaceNotFoundException()
 
+    override fun update(indexedSpace: IndexedSpace): IndexedSpace {
+        spaceJpaRepository.findActiveSpaceByIdAndUserId(indexedSpace.id.value, indexedSpace.userId.value)?.let {
+            it.index = indexedSpace.index
+            spaceJpaRepository.save(it)
+        } ?: throw SpaceException.SpaceNotFoundException()
+        return indexedSpace
+    }
+
     override fun updateIndexes(
         userId: DomainId,
         orders: List<IndexedSpace>,

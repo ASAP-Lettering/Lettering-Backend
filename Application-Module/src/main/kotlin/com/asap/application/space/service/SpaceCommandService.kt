@@ -49,6 +49,7 @@ class SpaceCommandService(
             userId = DomainId(command.userId),
             spaceId = DomainId(command.spaceId),
         )
+        reIndexingSpaceOrder(DomainId(command.userId))
     }
 
     override fun deleteAll(command: SpaceDeleteUsecase.DeleteAllCommand) {
@@ -56,6 +57,7 @@ class SpaceCommandService(
             userId = DomainId(command.userId),
             spaceIds = command.spaceIds.map { DomainId(it) },
         )
+        reIndexingSpaceOrder(DomainId(command.userId))
     }
 
     override fun update(command: SpaceUpdateIndexUsecase.Command) {
@@ -71,13 +73,22 @@ class SpaceCommandService(
             throw SpaceException.InvalidSpaceUpdateException()
         }
 
-        val updatedSpaces =
-            indexedSpaces.map {
-                it.updateIndex(changeIndexMap.getValue(it.id))
-            }
+        indexedSpaces.map {
+            it.updateIndex(changeIndexMap.getValue(it.id))
+        }
         spaceManagementPort.updateIndexes(
             userId = DomainId(command.userId),
-            orders = updatedSpaces,
+            orders = indexedSpaces,
         )
+    }
+
+    private fun reIndexingSpaceOrder(userId: DomainId) {
+        spaceManagementPort
+            .getAllIndexedSpace(userId)
+            .sortedBy { it.index }
+            .forEachIndexed { index, indexedSpace ->
+                indexedSpace.updateIndex(index)
+                spaceManagementPort.update(indexedSpace)
+            }
     }
 }

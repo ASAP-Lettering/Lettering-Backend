@@ -19,6 +19,8 @@ interface SpaceManagementPort {
 
     fun update(space: Space): Space
 
+    fun update(indexedSpace: IndexedSpace): IndexedSpace
+
     fun updateIndexes(
         userId: DomainId,
         orders: List<IndexedSpace>,
