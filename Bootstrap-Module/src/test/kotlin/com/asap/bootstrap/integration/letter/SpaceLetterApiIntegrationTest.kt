@@ -172,7 +172,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                     isString()
                     isNotEmpty()
                 }
-                jsonPath("$.sendDate") {
+                jsonPath("$.receiveDate") {
                     exists()
                     isString()
                     isNotEmpty()
@@ -284,7 +284,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Test
-    fun updateSpaceLetter()  {
+    fun updateSpaceLetter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = testJwtDataGenerator.generateAccessToken(userId)

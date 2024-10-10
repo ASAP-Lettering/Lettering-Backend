@@ -108,6 +108,7 @@ class LetterQueryService(
                     GetSpaceLettersUsecase.LetterInfo(
                         senderName = it.sender.senderName,
                         letterId = it.id.value,
+                        receivedDate = it.receiveDate,
                     )
                 },
             total = letters.totalElements,
@@ -137,7 +138,7 @@ class LetterQueryService(
             spaceName = space.name,
             letterCount = letterCount,
             content = spaceLetter.content.content,
-            sendDate = spaceLetter.receiveDate,
+            receiveDate = spaceLetter.receiveDate,
             images = spaceLetter.content.images,
             templateType = spaceLetter.content.templateType,
             prevLetter =

@@ -228,7 +228,7 @@ class LetterQueryServiceTest :
                     response.spaceName shouldBe space.name
                     response.letterCount shouldBe 3
                     response.content shouldBe spaceLetter.content.content
-                    response.sendDate shouldBe spaceLetter.receiveDate
+                    response.receiveDate shouldBe spaceLetter.receiveDate
                     response.images shouldBe spaceLetter.content.images
                     response.templateType shouldBe spaceLetter.content.templateType
                     response.prevLetter.shouldNotBeNull {
