@@ -179,7 +179,16 @@ interface LetterApi {
         @AccessUser userId: String,
     ): GetIndependentLetterDetailResponse
 
+    @Operation(summary = "궤도 편지 삭제")
     @DeleteMapping("/independent/{letterId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "궤도 편지 삭제 성공",
+            ),
+        ],
+    )
     fun deleteIndependentLetter(
         @PathVariable letterId: String,
         @AccessUser userId: String,
@@ -187,6 +196,14 @@ interface LetterApi {
 
     @Operation(summary = "편지 수정")
     @PutMapping("/independent/{letterId}/content")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "편지 수정 성공",
+            ),
+        ],
+    )
     fun updateIndependentLetter(
         @PathVariable letterId: String,
         @RequestBody request: ModifyLetterRequest,
@@ -217,4 +234,24 @@ interface LetterApi {
         @RequestBody request: SendLetterRequest,
         @AccessUser userId: String,
     ): SendLetterResponse
+
+    @Operation(summary = "모든 편지 수 조회")
+    @GetMapping("/count")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "모든 편지 수 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = AllLetterCountResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getLetterCount(
+        @AccessUser userId: String,
+    ): AllLetterCountResponse
 }

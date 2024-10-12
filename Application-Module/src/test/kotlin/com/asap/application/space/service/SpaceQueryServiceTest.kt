@@ -92,7 +92,7 @@ class SpaceQueryServiceTest :
                     userId = "userId",
                 )
             every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
-            every { spaceLetterManagementPort.countLetterBySpaceId(any()) } returns 0
+            every { spaceLetterManagementPort.countSpaceLetterBy(any(), any()) } returns 0
             `when`("유저 아이디가 주어진다면") {
                 val response = spaceQueryService.getAll(query)
                 then("모든 스페이스를 반환한다") {

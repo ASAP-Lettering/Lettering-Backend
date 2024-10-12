@@ -57,7 +57,7 @@ class ReceiveLetterManagementJpaAdapter(
         return ReceiverLetterMapper.toIndependentLetter(letter)
     }
 
-    override fun countIndependentLetterByReceiverId(receiverId: DomainId): Int =
+    override fun countIndependentLetterByReceiverId(receiverId: DomainId): Long =
         receiveLetterJpaRepository.countActiveIndependentByReceiverId(receiverId.value)
 
     override fun getNearbyLetter(
@@ -134,9 +134,15 @@ class ReceiveLetterManagementJpaAdapter(
         )
     }
 
-    override fun countLetterBySpaceId(spaceId: DomainId): Long = receiveLetterJpaRepository.countBySpaceId(spaceId.value).toLong()
+    override fun countSpaceLetterBy(
+        spaceId: DomainId,
+        receiverId: DomainId,
+    ): Long = receiveLetterJpaRepository.countActiveSpaceLetterBy(spaceId.value, receiverId.value)
 
-    override fun getAllBySpaceId(
+    override fun countAllSpaceLetterBy(receiverId: DomainId): Long =
+        receiveLetterJpaRepository.countAllActiveSpaceLetterBy(receiverId.value)
+
+    override fun getAllBy(
         spaceId: DomainId,
         userId: DomainId,
         pageRequest: PageRequest,

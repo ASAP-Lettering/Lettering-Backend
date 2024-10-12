@@ -1,5 +1,6 @@
 package com.asap.application.letter.service
 
+import com.asap.application.letter.port.`in`.GetAllLetterCountUsecase
 import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
@@ -212,7 +213,10 @@ class LetterQueryServiceTest :
                 )
             } returns space
             every {
-                mockSpaceLetterManagementPort.countLetterBySpaceId(spaceLetter.spaceId)
+                mockSpaceLetterManagementPort.countSpaceLetterBy(
+                    spaceLetter.spaceId,
+                    spaceLetter.receiver.receiverId,
+                )
             } returns 3
             every {
                 mockSpaceLetterManagementPort.getNearbyLetter(
@@ -343,6 +347,21 @@ class LetterQueryServiceTest :
                         this.letterId shouldBe nextIndependentLetter.id.value
                         this.senderName shouldBe nextIndependentLetter.sender.senderName
                     }
+                }
+            }
+        }
+
+        given("전체 편지 조회 요청이 들어올 떄") {
+            val independentLetterCount = 10L
+            val spaceLetterCount = 20L
+            val query = GetAllLetterCountUsecase.Query("userId")
+            every { mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId)) } returns
+                independentLetterCount
+            every { mockSpaceLetterManagementPort.countAllSpaceLetterBy(DomainId(query.userId)) } returns spaceLetterCount
+            `when`("유저 아이디가 주어진다면") {
+                val response = letterQueryService.get(query)
+                then("전체 편지 개수를 반환한다") {
+                    response.count shouldBe independentLetterCount + spaceLetterCount
                 }
             }
         }

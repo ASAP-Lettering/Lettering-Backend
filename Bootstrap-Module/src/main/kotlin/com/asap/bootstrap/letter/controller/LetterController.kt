@@ -15,6 +15,7 @@ class LetterController(
     private val getIndependentLettersUsecase: GetIndependentLettersUsecase,
     private val removeLetterUsecase: RemoveLetterUsecase,
     private val updateLetterUsecase: UpdateLetterUsecase,
+    private val getAllLetterCountUsecase: GetAllLetterCountUsecase,
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -181,6 +182,18 @@ class LetterController(
             )
         return SendLetterResponse(
             letterCode = response.letterCode,
+        )
+    }
+
+    override fun getLetterCount(userId: String): AllLetterCountResponse {
+        val response =
+            getAllLetterCountUsecase.get(
+                GetAllLetterCountUsecase.Query(
+                    userId = userId,
+                ),
+            )
+        return AllLetterCountResponse(
+            count = response.count,
         )
     }
 }

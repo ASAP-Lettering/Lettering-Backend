@@ -46,4 +46,7 @@ abstract class LetterAcceptanceSupporter : AcceptanceSupporter() {
 
     @MockBean
     lateinit var updateLetterUsecase: UpdateLetterUsecase
+
+    @MockBean
+    lateinit var getAllLetterCountUsecase: GetAllLetterCountUsecase
 }
