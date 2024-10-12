@@ -46,7 +46,7 @@ class SpaceQueryService(
                 spaces.map {
                     SpaceGetUsecase.SpaceDetail(
                         spaceName = it.name,
-                        letterCount = spaceLetterManagementPort.countLetterBySpaceId(it.id),
+                        letterCount = spaceLetterManagementPort.countSpaceLetterBy(it.id, DomainId(query.userId)),
                         isMainSpace = it.isMain(),
                         spaceIndex = it.index,
                         spaceId = it.id.value,

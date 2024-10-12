@@ -87,21 +87,45 @@ interface ReceiveLetterJpaRepository : JpaRepository<ReceiveLetterEntity, String
         entityStatus: EntityStatus,
     ): ReceiveLetterEntity?
 
-    fun countBySpaceId(spaceId: String): Int
-
     @Query(
         """
         SELECT COUNT(r.id)
         FROM ReceiveLetterEntity r
         WHERE r.receiverId = :receiverId
+        and ((r.spaceId is not null and r.spaceId = :spaceId) or (r.spaceId is null and r.spaceId is null))
         and r.entityStatus = :entityStatus
-        and r.spaceId is null
     """,
     )
-    fun countIndependentByReceiverId(
+    fun countBy(
+        spaceId: String?,
         receiverId: String,
         entityStatus: EntityStatus,
-    ): Int
+    ): Long
+
+    @Query(
+        """
+        SELECT COUNT(r.id)
+        FROM ReceiveLetterEntity r
+        where ((r.spaceId is not null and :isSpaceLetter = true) or (r.spaceId is null and :isSpaceLetter = false))
+        and r.receiverId = :receiverId
+        and r.entityStatus = :entityStatus
+    """,
+    )
+    fun countAllBy(
+        receiverId: String,
+        isSpaceLetter: Boolean,
+        entityStatus: EntityStatus,
+    ): Long
+
+    @Query(
+        """
+        SELECT COUNT(r.id)
+        FROM ReceiveLetterEntity r
+        WHERE r.spaceId = :spaceId
+        and r.entityStatus = :entityStatus
+        """,
+    )
+    fun countBySpaceId(spaceId: String): Int
 
     @Modifying
     @Query(
@@ -147,5 +171,11 @@ fun ReceiveLetterJpaRepository.deleteByLetterId(id: String) {
     updateEntityStatusById(id, EntityStatus.DELETED)
 }
 
-fun ReceiveLetterJpaRepository.countActiveIndependentByReceiverId(receiverId: String): Int =
-    countIndependentByReceiverId(receiverId, EntityStatus.ACTIVE)
+fun ReceiveLetterJpaRepository.countActiveIndependentByReceiverId(receiverId: String): Long = countBy(null, receiverId, EntityStatus.ACTIVE)
+
+fun ReceiveLetterJpaRepository.countActiveSpaceLetterBy(
+    spaceId: String,
+    receiverId: String,
+): Long = countBy(spaceId, receiverId, EntityStatus.ACTIVE)
+
+fun ReceiveLetterJpaRepository.countAllActiveSpaceLetterBy(receiverId: String): Long = countAllBy(receiverId, true, EntityStatus.ACTIVE)

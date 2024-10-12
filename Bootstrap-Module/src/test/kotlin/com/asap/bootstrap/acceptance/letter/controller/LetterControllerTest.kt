@@ -1,9 +1,6 @@
 package com.asap.bootstrap.acceptance.letter.controller
 
-import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
-import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
-import com.asap.application.letter.port.`in`.SendLetterUsecase
-import com.asap.application.letter.port.`in`.VerifyLetterAccessibleUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
 import com.asap.bootstrap.letter.dto.*
 import org.junit.jupiter.api.Test
@@ -377,6 +374,36 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun getAllLetterCount()  {
+        // given
+        val accessToken = jwtMockManager.generateAccessToken()
+        val response = GetAllLetterCountUsecase.Response(5)
+        BDDMockito
+            .given(
+                getAllLetterCountUsecase.get(
+                    GetAllLetterCountUsecase.Query(
+                        userId = "userId",
+                    ),
+                ),
+            ).willReturn(response)
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/count") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.count") {
+                exists()
+                isNumber()
+                value(5)
+            }
         }
     }
 }

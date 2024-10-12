@@ -1,9 +1,6 @@
 package com.asap.application.letter.service
 
-import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
-import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
-import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
-import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
@@ -25,7 +22,8 @@ class LetterQueryService(
 ) : GetVerifiedLetterUsecase,
     GetIndependentLettersUsecase,
     GetSpaceLettersUsecase,
-    GetSpaceLetterDetailUsecase {
+    GetSpaceLetterDetailUsecase,
+    GetAllLetterCountUsecase {
     override fun get(query: GetVerifiedLetterUsecase.Query): GetVerifiedLetterUsecase.Response {
         sendLetterManagementPort
             .getReadLetterNotNull(
@@ -60,10 +58,14 @@ class LetterQueryService(
     @Transactional
     override fun get(query: GetIndependentLettersUsecase.Query): GetIndependentLettersUsecase.Response.One {
         val letter =
-            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(query.letterId), DomainId(query.userId)).apply {
-                read()
-                independentLetterManagementPort.save(this)
-            }
+            independentLetterManagementPort
+                .getIndependentLetterByIdNotNull(
+                    DomainId(query.letterId),
+                    DomainId(query.userId),
+                ).apply {
+                    read()
+                    independentLetterManagementPort.save(this)
+                }
         val letterCount = independentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
         val (prevLetter, nextLetter) =
             independentLetterManagementPort.getNearbyLetter(DomainId(query.userId), DomainId(query.letterId))
@@ -93,7 +95,7 @@ class LetterQueryService(
 
     override fun get(query: GetSpaceLettersUsecase.Query): GetSpaceLettersUsecase.Response {
         val letters =
-            spaceLetterManagementPort.getAllBySpaceId(
+            spaceLetterManagementPort.getAllBy(
                 spaceId = DomainId(query.spaceId),
                 userId = DomainId(query.userId),
                 pageRequest =
@@ -123,10 +125,14 @@ class LetterQueryService(
             spaceLetterManagementPort.getSpaceLetterNotNull(DomainId(query.letterId), DomainId(query.userId))
         val space =
             spaceManagementPort.getSpaceNotNull(
-                spaceLetter.receiver.receiverId,
-                spaceLetter.spaceId,
+                userId = spaceLetter.receiver.receiverId,
+                spaceId = spaceLetter.spaceId,
             )
-        val letterCount = spaceLetterManagementPort.countLetterBySpaceId(spaceLetter.spaceId)
+        val letterCount =
+            spaceLetterManagementPort.countSpaceLetterBy(
+                spaceId = spaceLetter.spaceId,
+                receiverId = spaceLetter.receiver.receiverId,
+            )
         val (prevLetter, nextLetter) =
             spaceLetterManagementPort.getNearbyLetter(
                 spaceId = spaceLetter.spaceId,
@@ -155,6 +161,14 @@ class LetterQueryService(
                         senderName = it.sender.senderName,
                     )
                 },
+        )
+    }
+
+    override fun get(query: GetAllLetterCountUsecase.Query): GetAllLetterCountUsecase.Response {
+        val independentLetterCount = independentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
+        val spaceLetterCount = spaceLetterManagementPort.countAllSpaceLetterBy(DomainId(query.userId))
+        return GetAllLetterCountUsecase.Response(
+            count = independentLetterCount + spaceLetterCount,
         )
     }
 }

@@ -628,4 +628,34 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             status { isOk() }
         }
     }
+
+    @Test
+    fun getAllLetterCount() {
+        // given
+        val senderId = userMockManager.settingUser()
+        val receiverId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
+        (0..3).forEach {
+            letterMockManager.generateMockIndependentLetter(
+                senderId = senderId,
+                receiverId = receiverId,
+                senderName = "senderUsername",
+            )
+        }
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/count") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.count") {
+                exists()
+                isNumber()
+                value(4)
+            }
+        }
+    }
 }

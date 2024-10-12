@@ -15,7 +15,7 @@ interface IndependentLetterManagementPort {
         userId: DomainId,
     ): IndependentLetter
 
-    fun countIndependentLetterByReceiverId(receiverId: DomainId): Int
+    fun countIndependentLetterByReceiverId(receiverId: DomainId): Long
 
     fun getNearbyLetter(
         userId: DomainId,
