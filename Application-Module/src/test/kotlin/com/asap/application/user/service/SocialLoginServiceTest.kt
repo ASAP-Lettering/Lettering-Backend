@@ -84,11 +84,11 @@ class SocialLoginServiceTest :
             } returns null
             every {
                 mockUserTokenConvertPort.generateRegisterToken(
-                    authInfo.socialId,
-                    authInfo.socialLoginProvider.name,
-                    authInfo.username,
-                    authInfo.profileImage,
-                    authInfo.email,
+                    socialId = authInfo.socialId,
+                    socialLoginProvider = authInfo.socialLoginProvider.name,
+                    username = authInfo.username,
+                    email = authInfo.email,
+                    profileImage = authInfo.profileImage,
                 )
             } returns "registerToken"
             `when`("가입되지 않았다면") {
