@@ -6,4 +6,8 @@ sealed class UserEvent {
     data class UserCreatedEvent(
         val user: User,
     )
+
+    data class UserDeletedEvent(
+        val user: User,
+    )
 }

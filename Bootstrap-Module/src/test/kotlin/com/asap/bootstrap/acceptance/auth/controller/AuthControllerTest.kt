@@ -1,7 +1,9 @@
 package com.asap.bootstrap.acceptance.auth.controller
 
+import com.asap.application.user.port.`in`.LogoutUsecase
 import com.asap.application.user.port.`in`.ReissueTokenUsecase
 import com.asap.application.user.port.`in`.SocialLoginUsecase
+import com.asap.application.user.port.`in`.TokenResolveUsecase
 import com.asap.bootstrap.AcceptanceSupporter
 import com.asap.bootstrap.auth.dto.ReissueRequest
 import com.asap.bootstrap.auth.dto.SocialLoginRequest
@@ -17,6 +19,12 @@ class AuthControllerTest : AcceptanceSupporter() {
 
     @MockBean
     private lateinit var reissueTokenUsecase: ReissueTokenUsecase
+
+    @MockBean
+    private lateinit var tokenResolveUsecase: TokenResolveUsecase
+
+    @MockBean
+    private lateinit var logoutUsecase: LogoutUsecase
 
     @Test
     fun socialLoginSuccessTest() {

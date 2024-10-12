@@ -61,13 +61,10 @@ class RegisterUserService(
         userManagementPort.saveUser(registerUser)
         userAuthManagementPort.saveUserAuth(userAuth)
 
-        // TODO 더 좋은 방법 없는지 고민해보기
-        applicationEventPublisher.publishEvent(UserEvent.UserCreatedEvent(registerUser))
-
         val accessToken = userTokenConvertPort.generateAccessToken(registerUser)
         val refreshToken = userTokenConvertPort.generateRefreshToken(registerUser)
 
-        userTokenManagementPort.saveUserToken(UserToken(token = refreshToken))
+        userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = registerUser.id))
 
         applicationEventPublisher.publishEvent(UserEvent.UserCreatedEvent(registerUser))
 

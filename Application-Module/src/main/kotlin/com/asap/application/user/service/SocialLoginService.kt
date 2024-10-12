@@ -25,7 +25,7 @@ class SocialLoginService(
             userManagementPort.getUser(userAuth.userId)?.let {
                 val accessToken = userTokenConvertPort.generateAccessToken(it)
                 val refreshToken = userTokenConvertPort.generateRefreshToken(it)
-                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken))
+                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = it.id))
                 SocialLoginUsecase.Success(accessToken, refreshToken)
             } ?: run {
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")

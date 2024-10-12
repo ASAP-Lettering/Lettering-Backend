@@ -36,7 +36,7 @@ class JwtSecuredTest : IntegrationSupporter() {
     @Test
     fun `should return 401 when expired token is provided`() {
         // Arrange
-        val expiredToken = testJwtDataGenerator.generateExpiredToken(TokenType.ACCESS)
+        val expiredToken = jwtMockManager.generateExpiredToken(TokenType.ACCESS)
         // Act Assert
         mockMvc
             .get("/security") {
@@ -51,7 +51,7 @@ class JwtSecuredTest : IntegrationSupporter() {
     @Test
     fun `should return 401 when expired token is provided with AccessUser`() {
         // Arrange
-        val expiredToken = testJwtDataGenerator.generateExpiredToken(TokenType.ACCESS)
+        val expiredToken = jwtMockManager.generateExpiredToken(TokenType.ACCESS)
         // Act Assert
         mockMvc
             .get("/security/secured") {

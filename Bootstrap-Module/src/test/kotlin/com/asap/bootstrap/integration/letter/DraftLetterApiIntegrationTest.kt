@@ -18,7 +18,7 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `get draft key`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         // when
         val response =
             mockMvc.post("/api/v1/letters/drafts/key") {
@@ -36,7 +36,7 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `update draft`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val draftId = letterMockManager.generateMockDraftLetter(userId)
         val request =
             UpdateDraftLetterRequest(
@@ -62,8 +62,8 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `get all drafts`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        val draftId = letterMockManager.generateMockDraftLetter(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+        letterMockManager.generateMockDraftLetter(userId)
         // when
         val response =
             mockMvc.get("/api/v1/letters/drafts") {
@@ -84,7 +84,7 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `get draft letter`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val draftId = letterMockManager.generateMockDraftLetter(userId)
         // when
         val response =
@@ -106,7 +106,7 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `get draft count`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         letterMockManager.generateMockDraftLetter(userId)
         // when
         val response =
@@ -128,7 +128,7 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
     fun `delete draft`() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val draftId = letterMockManager.generateMockDraftLetter(userId)
         // when
         val response =

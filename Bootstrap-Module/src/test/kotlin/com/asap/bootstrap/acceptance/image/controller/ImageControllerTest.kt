@@ -21,7 +21,7 @@ class ImageControllerTest : AcceptanceSupporter() {
     @Test
     fun uploadImage() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val mockFile = MockMultipartFile("image", "test.jpg", "image/jpeg", "test".toByteArray())
         val mockFileMetaData = FileMetaData("test.jpg", 4, "image/jpeg", mockFile.inputStream)
         BDDMockito

@@ -17,7 +17,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun moveLetterToSpace() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val request = MoveLetterToSpaceRequest("spaceId")
         val letterId = "letterId"
         // when
@@ -36,7 +36,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun moveLetterToIndependentLetter() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val letterId = "letterId"
         // when
         val response =
@@ -53,7 +53,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getAllSpaceLetters() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val spaceId = "spaceId"
         val page = 0
         val size = 10
@@ -105,7 +105,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getLetterDetail() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val details =
             GetSpaceLetterDetailUsecase.Response(
                 senderName = "senderName",
@@ -200,7 +200,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun deleteSpaceLetter() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val letterId = "letterId"
         // when
         val response =
@@ -217,7 +217,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun updateSpaceLetter() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val letterId = "letterId"
         val request =
             ModifyLetterRequest(
