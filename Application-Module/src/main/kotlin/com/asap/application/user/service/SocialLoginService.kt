@@ -33,11 +33,11 @@ class SocialLoginService(
         } ?: run {
             val registerToken =
                 userTokenConvertPort.generateRegisterToken(
-                    authInfo.socialId,
-                    authInfo.socialLoginProvider.name,
-                    authInfo.username,
-                    authInfo.profileImage,
-                    authInfo.email,
+                    socialId = authInfo.socialId,
+                    socialLoginProvider = authInfo.socialLoginProvider.name,
+                    username = authInfo.username,
+                    profileImage = authInfo.profileImage,
+                    email = authInfo.email,
                 )
             userTokenManagementPort.saveUserToken(UserToken(token = registerToken))
             SocialLoginUsecase.NonRegistered(registerToken)
