@@ -15,8 +15,8 @@ class JwtTestConfig(
     fun userJwtProperties(): UserJwtProperties = UserJwtProperties(TEST_SECRET)
 
     @Bean
-    fun testJwtDataGenerator(userJwtProperties: UserJwtProperties): TestJwtDataGenerator =
-        TestJwtDataGenerator(userJwtProperties, userTokenManagementPort)
+    fun testJwtDataGenerator(userJwtProperties: UserJwtProperties): JwtMockManager =
+        JwtMockManager(userJwtProperties, userTokenManagementPort)
 
     companion object {
         const val TEST_SECRET = "hdcksljdfaklsdjfnakjcbvzcnxvbaikaklsjdflhiuasdvbzmxncbvaksd"

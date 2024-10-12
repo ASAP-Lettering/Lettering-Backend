@@ -11,8 +11,7 @@ class ImageApiIntegrationTest : IntegrationSupporter() {
     fun uploadImage() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-        userMockManager.settingToken(accessToken)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val mockFile = MockMultipartFile("image", "test.jpg", "image/jpeg", "test".toByteArray())
         // when
         val response =

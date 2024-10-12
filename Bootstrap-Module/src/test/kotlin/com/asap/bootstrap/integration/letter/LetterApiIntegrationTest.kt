@@ -30,7 +30,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
                 letterMockManager.generateMockSendLetter("username", senderId = senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
@@ -57,7 +57,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         fun verifyLetter_With_InvalidLetterCode() {
             // given
             val userId = userMockManager.settingUser(username = "username")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val request = LetterVerifyRequest("invalidLetterCode")
             // when
             val response =
@@ -81,7 +81,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
                 letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
@@ -108,7 +108,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val userId = userMockManager.settingUser(username = "username")
             val otherUserId = userMockManager.settingUser(username = "otherUser")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
                 letterMockManager.generateMockReadLetter("username", otherUserId, senderId)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
@@ -134,7 +134,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser(username = "username")
             val sender = userMockManager.settingUser(username = "senderUsername")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
                 letterMockManager.generateMockReadLetter("username", userId, senderId = sender)["letterCode"] as String
             val request = LetterVerifyRequest(letterCode)
@@ -169,7 +169,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 draftId = null,
             )
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         // when
         val response =
             mockMvc.post("/api/v1/letters/send") {
@@ -192,7 +192,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
     fun sendLetter_With_DraftId() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val draftId = letterMockManager.generateMockDraftLetter(userId)
 
         val request =
@@ -226,7 +226,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterId =
                 letterMockManager.generateMockReadLetter("username", userId, senderId)["letterId"] as String
             // when
@@ -269,8 +269,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         fun getVerifiedLetter_With_InvalidLetterId() {
             // given
             val userId = userMockManager.settingUser(username = "username")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
-            userMockManager.settingToken(accessToken)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterId = "invalidLetterId"
             // when
             val response =
@@ -296,7 +295,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterId =
                 letterMockManager.generateMockReadLetter(
                     receiverName = "username",
@@ -322,7 +321,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         fun addVerifiedLetter_With_InvalidLetterId() {
             // given
             val userId = userMockManager.settingUser(username = "username")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterId = "invalidLetterId"
             val request = AddVerifiedLetterRequest(letterId)
             // when
@@ -347,7 +346,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,
@@ -393,7 +392,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,
@@ -440,7 +439,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,
@@ -487,7 +486,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,
@@ -553,7 +552,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 templateType = 1,
             )
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         // when
         val response =
             mockMvc.post("/api/v1/letters/physical/receive") {
@@ -572,7 +571,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,
@@ -603,7 +602,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val receiverId = userMockManager.settingUser()
         val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = testJwtDataGenerator.generateAccessToken(receiverId)
+        val accessToken = jwtMockManager.generateAccessToken(receiverId)
         val independentLetter =
             letterMockManager.generateMockIndependentLetter(
                 senderId = senderId,

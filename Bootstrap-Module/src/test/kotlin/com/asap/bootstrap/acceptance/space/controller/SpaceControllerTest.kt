@@ -38,7 +38,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun getMainSpaceId() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken("userId")
+        val accessToken = jwtMockManager.generateAccessToken("userId")
         BDDMockito
             .given(
                 mainSpaceGetUsecase.get(
@@ -78,7 +78,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun createSpace() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken("userId")
+        val accessToken = jwtMockManager.generateAccessToken("userId")
         val request =
             CreateSpaceRequest(
                 spaceName = "spaceName",
@@ -100,7 +100,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun updateSpaceName() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken("userId")
+        val accessToken = jwtMockManager.generateAccessToken("userId")
         val request =
             UpdateSpaceNameRequest(
                 spaceName = "spaceName",
@@ -121,7 +121,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun getSpaces() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         BDDMockito
             .given(
                 spaceGetUsecase.getAll(
@@ -193,7 +193,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun deleteSpace() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val spaceId = "spaceId"
         // when
         val response =
@@ -210,7 +210,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun deleteSpaces() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val request = DeleteMultipleSpacesRequest(listOf("spaceId1", "spaceId2"))
         // when
         val response =
@@ -228,7 +228,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun updateSpaceOrder() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val request =
             UpdateSpaceOrderRequest(
                 orders =
@@ -253,7 +253,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun getSpace() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val spaceId = "spaceId"
         BDDMockito
             .given(

@@ -16,7 +16,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft key`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
 
         BDDMockito
             .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command("userId")))
@@ -38,7 +38,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `update draft`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
         val request =
             UpdateDraftLetterRequest(
                 content = "content",
@@ -62,7 +62,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get all drafts`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
 
         BDDMockito
             .given(getDraftLetterUsecase.getAll(GetDraftLetterUsecase.Query.All("userId")))
@@ -101,7 +101,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft letter`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
 
         BDDMockito
             .given(getDraftLetterUsecase.getByKey(GetDraftLetterUsecase.Query.ByKey("draftKey", "userId")))
@@ -137,7 +137,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft count`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
 
         BDDMockito
             .given(getDraftLetterUsecase.count(GetDraftLetterUsecase.Query.All("userId")))
@@ -160,7 +160,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `delete draft`() {
         // given
-        val accessToken = testJwtDataGenerator.generateAccessToken()
+        val accessToken = jwtMockManager.generateAccessToken()
 
         // when
         val response =

@@ -62,11 +62,13 @@ object UserMapper {
         UserTokenEntity(
             id = userToken.id.value,
             token = userToken.token,
+            userId = userToken.userId?.value,
         )
 
     fun toUserToken(userTokenEntity: UserTokenEntity): UserToken =
         UserToken(
             id = DomainId(userTokenEntity.id),
             token = userTokenEntity.token,
+            userId = userTokenEntity.userId?.let { DomainId(it) },
         )
 }

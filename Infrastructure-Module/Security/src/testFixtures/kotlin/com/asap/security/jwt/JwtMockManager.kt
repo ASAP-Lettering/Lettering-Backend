@@ -1,6 +1,7 @@
 package com.asap.security.jwt
 
 import com.asap.application.user.port.out.UserTokenManagementPort
+import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.enums.SocialLoginProvider
 import com.asap.security.jwt.user.TokenType
@@ -9,7 +10,7 @@ import com.asap.security.jwt.user.UserJwtProperties
 import com.asap.security.jwt.user.UserRegisterJwtClaims
 import java.util.*
 
-class TestJwtDataGenerator(
+class JwtMockManager(
     private val userJwtProperties: UserJwtProperties,
     private val userTokenManagementPort: UserTokenManagementPort,
 ) {
@@ -19,23 +20,26 @@ class TestJwtDataGenerator(
         username: String = "username",
         issuedAt: Date = Date(),
     ): String =
-        JwtProvider.createToken(
-            JwtPayload(
-                issuedAt = issuedAt,
-                issuer = UserJwtProperties.ISSUER,
-                subject = UserJwtProperties.SUBJECT,
-                expireTime = UserJwtProperties.REGISTER_TOKEN_EXPIRE_TIME,
-                claims =
-                    UserRegisterJwtClaims(
-                        socialId = socialId,
-                        socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
-                        username = username,
-                        profileImage = "profileImage",
-                        email = "email",
-                    ),
-            ),
-            userJwtProperties.secret,
-        )
+        JwtProvider
+            .createToken(
+                JwtPayload(
+                    issuedAt = issuedAt,
+                    issuer = UserJwtProperties.ISSUER,
+                    subject = UserJwtProperties.SUBJECT,
+                    expireTime = UserJwtProperties.REGISTER_TOKEN_EXPIRE_TIME,
+                    claims =
+                        UserRegisterJwtClaims(
+                            socialId = socialId,
+                            socialLoginProvider = SocialLoginProvider.parse(socialLoginProvider),
+                            username = username,
+                            profileImage = "profileImage",
+                            email = "email",
+                        ),
+                ),
+                userJwtProperties.secret,
+            ).apply {
+                userTokenManagementPort.saveUserToken(UserToken(token = this))
+            }
 
     fun generateAccessToken(
         userId: String = "userId",
@@ -75,27 +79,40 @@ class TestJwtDataGenerator(
                 ),
                 userJwtProperties.secret,
             ).apply {
-                userTokenManagementPort.saveUserToken(UserToken(token = this))
+                userTokenManagementPort.saveUserToken(UserToken(token = this, userId = DomainId(userId)))
             }
 
     fun generateExpiredToken(
         tokenType: TokenType,
         userId: String = "userId",
     ): String =
-        JwtProvider.createToken(
-            JwtPayload(
-                issuedAt = Date(System.currentTimeMillis() - tokenTypeExpireTime(tokenType)),
-                issuer = UserJwtProperties.ISSUER,
-                subject = UserJwtProperties.SUBJECT,
-                expireTime = 1,
-                claims =
-                    UserJwtClaims(
-                        userId = userId,
-                        tokenType = tokenType,
-                    ),
-            ),
-            userJwtProperties.secret,
-        )
+        JwtProvider
+            .createToken(
+                JwtPayload(
+                    issuedAt = Date(System.currentTimeMillis() - tokenTypeExpireTime(tokenType)),
+                    issuer = UserJwtProperties.ISSUER,
+                    subject = UserJwtProperties.SUBJECT,
+                    expireTime = 1,
+                    claims =
+                        UserJwtClaims(
+                            userId = userId,
+                            tokenType = tokenType,
+                        ),
+                ),
+                userJwtProperties.secret,
+            ).also {
+                when (tokenType) {
+                    TokenType.REFRESH ->
+                        userTokenManagementPort.saveUserToken(
+                            UserToken(
+                                token = it,
+                                userId = DomainId(userId),
+                            ),
+                        )
+
+                    else -> {}
+                }
+            }
 
     private fun tokenTypeExpireTime(tokenType: TokenType): Long =
         when (tokenType) {

@@ -1,7 +1,7 @@
 package com.asap.bootstrap
 
 import com.asap.application.user.UserMockManager
-import com.asap.security.jwt.TestJwtDataGenerator
+import com.asap.security.jwt.JwtMockManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -17,7 +17,7 @@ abstract class AcceptanceSupporter {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var testJwtDataGenerator: TestJwtDataGenerator
+    lateinit var jwtMockManager: JwtMockManager
 
     @Autowired
     lateinit var objectMapper: ObjectMapper

@@ -6,7 +6,6 @@ import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
-import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.enums.SocialLoginProvider
 import com.asap.domain.user.vo.UserPermission
 import java.time.LocalDate
@@ -16,14 +15,6 @@ class UserMockManager(
     private val userManagementPort: UserManagementPort,
     private val userAuthManagementPort: UserAuthManagementPort,
 ) {
-    fun settingToken(token: String) {
-        tokenManagementPort.saveUserToken(
-            UserToken(
-                token = token,
-            ),
-        )
-    }
-
     fun settingUser(
         userId: String = DomainId.generate().value,
         username: String = "nickname",

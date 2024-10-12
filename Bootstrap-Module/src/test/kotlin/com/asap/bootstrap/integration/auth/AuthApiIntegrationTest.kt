@@ -97,7 +97,7 @@ class AuthApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val refreshToken =
-                testJwtDataGenerator.generateRefreshToken(
+                jwtMockManager.generateRefreshToken(
                     userId,
                     issuedAt =
                         Date(
@@ -136,8 +136,7 @@ class AuthApiIntegrationTest : IntegrationSupporter() {
         fun reissueTokenTest_With_Expired_Token() {
             // given
             val userId = userMockManager.settingUser()
-            val refreshToken = testJwtDataGenerator.generateExpiredToken(TokenType.REFRESH, userId)
-            userMockManager.settingToken(refreshToken)
+            val refreshToken = jwtMockManager.generateExpiredToken(TokenType.REFRESH, userId)
             val request = ReissueRequest(refreshToken)
             // when
             val response =

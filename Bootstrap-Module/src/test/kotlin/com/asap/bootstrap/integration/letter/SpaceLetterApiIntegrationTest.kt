@@ -25,7 +25,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     fun moveLetterToSpace() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val independentLetterId =
             letterMockManager
@@ -51,7 +51,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     fun moveLetterToIndependentLetter() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val spaceLetterId =
             letterMockManager.generateMockSpaceLetter(
@@ -75,7 +75,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     fun getAllSpaceLetters() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val letterIds =
             (0..30).map {
@@ -132,7 +132,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceId = spaceMockManager.settingSpace(userId)
             val letters =
                 (0..3).map {
@@ -220,7 +220,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         fun deleteSpaceLetter() {
             // given
             val userId = userMockManager.settingUser()
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceId = spaceMockManager.settingSpace(userId)
             val spaceLetter =
                 letterMockManager.generateMockSpaceLetter(
@@ -251,7 +251,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         fun deleteSpaceLetter_not_found_in_letter_list() {
             // given
             val userId = userMockManager.settingUser()
-            val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceId = spaceMockManager.settingSpace(userId)
             val spaceLetter =
                 letterMockManager.generateMockSpaceLetter(
@@ -287,7 +287,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     fun updateSpaceLetter() {
         // given
         val userId = userMockManager.settingUser()
-        val accessToken = testJwtDataGenerator.generateAccessToken(userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = spaceMockManager.settingSpace(userId)
         val spaceLetter =
             letterMockManager.generateMockSpaceLetter(

@@ -1,10 +1,7 @@
 package com.asap.persistence.jpa.user.entity
 
 import com.asap.persistence.jpa.common.AggregateRoot
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Index
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(
@@ -16,7 +13,15 @@ import jakarta.persistence.Table
 class UserTokenEntity(
     id: String,
     token: String,
+    userId: String?,
 ) : AggregateRoot<UserTokenEntity>(id) {
     @Column(nullable = false, unique = true, length = 500)
     val token: String = token
+
+    @Column(length = 500, name = "user_id")
+    val userId: String? = userId
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    var user: UserEntity? = null
 }
