@@ -32,6 +32,8 @@
 │       ├── vo
 │       └── {service}
 └── Infrastructure-Module/
+    ├── AWS
+    ├── Persistence
     ├── Client
     └── Security
 ```
