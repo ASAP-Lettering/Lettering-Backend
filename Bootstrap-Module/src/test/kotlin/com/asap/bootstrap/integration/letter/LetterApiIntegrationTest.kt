@@ -32,7 +32,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
-                letterMockManager.generateMockSendLetter("username", senderId = senderId)["letterCode"] as String
+                letterMockManager.generateMockSendLetter("username", senderId = senderId).letterCode!!
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -83,7 +83,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             val userId = userMockManager.settingUser(username = "username")
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val letterCode =
-                letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId)["letterCode"] as String
+                letterMockManager.generateMockSendLetter("otherUsername_invalidUser", senderId).letterCode!!
             val request = LetterVerifyRequest(letterCode)
             // when
             val response =
@@ -655,6 +655,54 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 exists()
                 isNumber()
                 value(4)
+            }
+        }
+    }
+
+    @Test
+    fun getAllSendLetterHistory() {
+        // given
+        val senderId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(senderId)
+        val sendLetters =
+            (0..3).map {
+                letterMockManager.generateMockSendLetter(
+                    receiverName = "receiverName",
+                    senderId = senderId,
+                )
+            }
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/send") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                (0..3).forEach {
+                    jsonPath("$.content[$it].letterId") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                        value(sendLetters[it].id.value)
+                    }
+                    jsonPath("$.content[$it].receiverName") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                        value(sendLetters[it].receiverName)
+                    }
+                    jsonPath("$.content[$it].sendDate") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                        value(sendLetters[it].createdDate.toString())
+                    }
+                }
             }
         }
     }

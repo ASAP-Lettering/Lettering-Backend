@@ -378,7 +378,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     }
 
     @Test
-    fun getAllLetterCount()  {
+    fun getAllLetterCount() {
         // given
         val accessToken = jwtMockManager.generateAccessToken()
         val response = GetAllLetterCountUsecase.Response(5)
@@ -403,6 +403,60 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 exists()
                 isNumber()
                 value(5)
+            }
+        }
+    }
+
+    @Test
+    fun getAllSendLetterHistory() {
+        // given
+        val accessToken = jwtMockManager.generateAccessToken()
+        val response =
+            (0..2).map {
+                GetSendLetterUsecase.Response.History(
+                    letterId = "letterId$it",
+                    receiverName = "receiverName$it",
+                    sendDate = LocalDate.now(),
+                )
+            }
+        BDDMockito
+            .given(
+                getSendLetterUsecase.getHistory(
+                    GetSendLetterUsecase.Query.AllHistory(
+                        userId = "userId",
+                    ),
+                ),
+            ).willReturn(response)
+
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/send") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.content") {
+                exists()
+                isArray()
+                (0..2).forEach {
+                    jsonPath("$.content[$it].letterId") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.content[$it].receiverName") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                    jsonPath("$.content[$it].sendDate") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                    }
+                }
             }
         }
     }

@@ -61,4 +61,9 @@ class SendLetterManagementJpaAdapter(
             letterCode = letterCode,
             receiverId = receiverId.value,
         )
+
+    override fun getAllSendLetter(senderId: DomainId): List<SendLetter> =
+        sendLetterJpaRepository
+            .findAllActiveSendLetterBySenderId(senderId.value)
+            .map { SendLetterMapper.toSendLetter(it) }
 }
