@@ -3,6 +3,7 @@ package com.asap.bootstrap.letter.controller
 import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.letter.api.LetterApi
 import com.asap.bootstrap.letter.dto.*
+import com.asap.common.page.ListResponse
 import com.asap.common.page.SliceResponse
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,6 +17,7 @@ class LetterController(
     private val removeLetterUsecase: RemoveLetterUsecase,
     private val updateLetterUsecase: UpdateLetterUsecase,
     private val getAllLetterCountUsecase: GetAllLetterCountUsecase,
+    private val getSendLetterUsecase: GetSendLetterUsecase,
 ) : LetterApi {
     override fun verifyLetter(
         request: LetterVerifyRequest,
@@ -194,6 +196,25 @@ class LetterController(
             )
         return AllLetterCountResponse(
             count = response.count,
+        )
+    }
+
+    override fun getSendLetterHistory(userId: String): ListResponse<SendLetterHistoryResponse> {
+        val response =
+            getSendLetterUsecase.getHistory(
+                GetSendLetterUsecase.Query.AllHistory(
+                    userId = userId,
+                ),
+            )
+        return ListResponse.of(
+            content =
+                response.map {
+                    SendLetterHistoryResponse(
+                        letterId = it.letterId,
+                        receiverName = it.receiverName,
+                        sendDate = it.sendDate,
+                    )
+                },
         )
     }
 }

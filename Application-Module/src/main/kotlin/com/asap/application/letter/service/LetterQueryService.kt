@@ -23,7 +23,8 @@ class LetterQueryService(
     GetIndependentLettersUsecase,
     GetSpaceLettersUsecase,
     GetSpaceLetterDetailUsecase,
-    GetAllLetterCountUsecase {
+    GetAllLetterCountUsecase,
+    GetSendLetterUsecase {
     override fun get(query: GetVerifiedLetterUsecase.Query): GetVerifiedLetterUsecase.Response {
         sendLetterManagementPort
             .getReadLetterNotNull(
@@ -171,4 +172,13 @@ class LetterQueryService(
             count = independentLetterCount + spaceLetterCount,
         )
     }
+
+    override fun getHistory(query: GetSendLetterUsecase.Query.AllHistory): List<GetSendLetterUsecase.Response.History> =
+        sendLetterManagementPort.getAllSendLetter(DomainId(query.userId)).map {
+            GetSendLetterUsecase.Response.History(
+                letterId = it.id.value,
+                receiverName = it.receiverName,
+                sendDate = it.createdDate,
+            )
+        }
 }

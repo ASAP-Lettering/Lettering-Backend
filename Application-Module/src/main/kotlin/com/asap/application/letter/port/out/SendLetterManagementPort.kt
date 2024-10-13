@@ -34,4 +34,6 @@ interface SendLetterManagementPort {
         receiverId: DomainId,
         letterCode: String,
     ): Boolean
+
+    fun getAllSendLetter(senderId: DomainId): List<SendLetter>
 }

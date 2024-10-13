@@ -1,14 +1,12 @@
 package com.asap.application.letter.service
 
-import com.asap.application.letter.port.`in`.GetAllLetterCountUsecase
-import com.asap.application.letter.port.`in`.GetIndependentLettersUsecase
-import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
-import com.asap.application.letter.port.`in`.GetVerifiedLetterUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.LetterFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
@@ -362,6 +360,21 @@ class LetterQueryServiceTest :
                 val response = letterQueryService.get(query)
                 then("전체 편지 개수를 반환한다") {
                     response.count shouldBe independentLetterCount + spaceLetterCount
+                }
+            }
+        }
+
+        given("작성한 편지에 대해 조회할 떄") {
+            val sender = UserFixture.createUser()
+            val query = GetSendLetterUsecase.Query.AllHistory(sender.id.value)
+            val sendLetters = LetterFixture.generateSendLetter(senderId = sender.id)
+            every { mockSendLetterManagementPort.getAllSendLetter(sender.id) } returns listOf(sendLetters)
+            `when`("전체 편지 조회 요청이 들어오면") {
+                val response = letterQueryService.getHistory(query)
+                then("전체 편지를 반환한다") {
+                    response[0].letterId shouldBe sendLetters.id.value
+                    response[0].receiverName shouldBe sendLetters.receiverName
+                    response[0].sendDate shouldBe sendLetters.createdDate
                 }
             }
         }

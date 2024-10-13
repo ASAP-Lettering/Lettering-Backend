@@ -27,7 +27,7 @@ class LetterMockManager(
     fun generateMockSendLetter(
         receiverName: String,
         senderId: String = DomainId.generate().value,
-    ): Map<String, Any> {
+    ): SendLetter {
         val sendLetter =
             SendLetter(
                 receiverName = receiverName,
@@ -45,10 +45,7 @@ class LetterMockManager(
                     ),
             )
         sendLetterManagementPort.save(sendLetter)
-        return mapOf(
-            "letterCode" to sendLetter.letterCode!!,
-            "letterId" to sendLetter.id.value,
-        )
+        return sendLetter
     }
 
     fun generateMockReadLetter(
