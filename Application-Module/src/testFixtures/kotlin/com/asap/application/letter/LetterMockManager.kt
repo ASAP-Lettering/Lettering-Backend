@@ -114,7 +114,7 @@ class LetterMockManager(
         receiverId: String,
         senderName: String,
         spaceId: String,
-    ): Map<String, Any> {
+    ): SpaceLetter {
         val spaceLetter =
             SpaceLetter(
                 sender =
@@ -138,10 +138,7 @@ class LetterMockManager(
         spaceLetterManagementPort.save(
             spaceLetter,
         )
-        return mapOf(
-            "letterId" to spaceLetter.id.value,
-            "senderName" to senderName,
-        )
+        return spaceLetter
     }
 
     fun isExistSpaceLetter(

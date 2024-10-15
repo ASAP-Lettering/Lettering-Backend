@@ -18,22 +18,22 @@ import org.springframework.test.web.servlet.put
 
 class SpaceControllerTest : AcceptanceSupporter() {
     @MockBean
-    lateinit var mainSpaceGetUsecase: MainSpaceGetUsecase
+    lateinit var getMainSpaceUsecase: GetMainSpaceUsecase
 
     @MockBean
-    lateinit var spaceUpdateNameUsecase: SpaceUpdateNameUsecase
+    lateinit var updateSpaceNameUsecase: UpdateSpaceNameUsecase
 
     @MockBean
-    lateinit var spaceCreateUsecase: SpaceCreateUsecase
+    lateinit var spaceCreateUsecase: CreateSpaceUsecase
 
     @MockBean
-    lateinit var spaceGetUsecase: SpaceGetUsecase
+    lateinit var getSpaceUsecase: GetSpaceUsecase
 
     @MockBean
-    lateinit var spaceDeleteUsecase: SpaceDeleteUsecase
+    lateinit var deleteSpaceUsecase: DeleteSpaceUsecase
 
     @MockBean
-    lateinit var spaceUpdateIndexUsecase: SpaceUpdateIndexUsecase
+    lateinit var updateSpaceIndexUsecase: UpdateSpaceIndexUsecase
 
     @Test
     fun getMainSpaceId() {
@@ -41,10 +41,10 @@ class SpaceControllerTest : AcceptanceSupporter() {
         val accessToken = jwtMockManager.generateAccessToken("userId")
         BDDMockito
             .given(
-                mainSpaceGetUsecase.get(
-                    MainSpaceGetUsecase.Query("userId"),
+                getMainSpaceUsecase.get(
+                    GetMainSpaceUsecase.Query("userId"),
                 ),
-            ).willReturn(MainSpaceGetUsecase.Response("spaceId", "username", 0, "spaceName"))
+            ).willReturn(GetMainSpaceUsecase.Response("spaceId", "username", 0, "spaceName"))
         // when
         val response =
             mockMvc.get("/api/v1/spaces/main") {
@@ -124,20 +124,20 @@ class SpaceControllerTest : AcceptanceSupporter() {
         val accessToken = jwtMockManager.generateAccessToken()
         BDDMockito
             .given(
-                spaceGetUsecase.getAll(
-                    SpaceGetUsecase.GetAllQuery("userId"),
+                getSpaceUsecase.getAll(
+                    GetSpaceUsecase.GetAllQuery("userId"),
                 ),
             ).willReturn(
-                SpaceGetUsecase.GetAllResponse(
+                GetSpaceUsecase.GetAllResponse(
                     listOf(
-                        SpaceGetUsecase.SpaceDetail(
+                        GetSpaceUsecase.SpaceDetail(
                             spaceName = "spaceName",
                             letterCount = 0,
                             isMainSpace = true,
                             spaceIndex = 0,
                             spaceId = "spaceId",
                         ),
-                        SpaceGetUsecase.SpaceDetail(
+                        GetSpaceUsecase.SpaceDetail(
                             spaceName = "spaceName",
                             letterCount = 0,
                             isMainSpace = false,
@@ -257,11 +257,11 @@ class SpaceControllerTest : AcceptanceSupporter() {
         val spaceId = "spaceId"
         BDDMockito
             .given(
-                spaceGetUsecase.get(
-                    SpaceGetUsecase.GetQuery("userId", spaceId),
+                getSpaceUsecase.get(
+                    GetSpaceUsecase.GetQuery("userId", spaceId),
                 ),
             ).willReturn(
-                SpaceGetUsecase.GetResponse(
+                GetSpaceUsecase.GetResponse(
                     spaceId = "spaceId",
                     spaceName = "spaceName",
                     templateType = 0,

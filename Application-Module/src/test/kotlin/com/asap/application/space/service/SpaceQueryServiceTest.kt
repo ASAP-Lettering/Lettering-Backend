@@ -1,8 +1,8 @@
 package com.asap.application.space.service
 
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
-import com.asap.application.space.port.`in`.MainSpaceGetUsecase
-import com.asap.application.space.port.`in`.SpaceGetUsecase
+import com.asap.application.space.port.`in`.GetMainSpaceUsecase
+import com.asap.application.space.port.`in`.GetSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.UserFixture
@@ -36,7 +36,7 @@ class SpaceQueryServiceTest :
                     id = DomainId.generate(),
                 )
             val query =
-                MainSpaceGetUsecase.Query(
+                GetMainSpaceUsecase.Query(
                     userId = "userId",
                 )
             val user = UserFixture.createUser("userId")
@@ -88,7 +88,7 @@ class SpaceQueryServiceTest :
                 )
             val indexedSpaceMap = indexedSpaces.associateBy { it.id }
             val query =
-                SpaceGetUsecase.GetAllQuery(
+                GetSpaceUsecase.GetAllQuery(
                     userId = "userId",
                 )
             every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
@@ -137,7 +137,7 @@ class SpaceQueryServiceTest :
                 )
             val indexedSpaceMap = indexedSpaces.associateBy { it.id }
             val query =
-                SpaceGetUsecase.GetAllQuery(
+                GetSpaceUsecase.GetAllQuery(
                     userId = "userId",
                 )
             every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
@@ -167,7 +167,7 @@ class SpaceQueryServiceTest :
                     templateType = 1,
                 )
             val query =
-                SpaceGetUsecase.GetQuery(
+                GetSpaceUsecase.GetQuery(
                     userId = "userId",
                     spaceId = space.id.value,
                 )

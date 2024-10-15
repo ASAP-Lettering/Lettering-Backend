@@ -70,7 +70,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceIndexes =
                 (0..3).map {
-                    val spaceId = spaceMockManager.settingSpace(userId)
+                    val spaceId = spaceMockManager.settingSpace(userId).id.value
                     UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                 }
             mockMvc.put("/api/v1/spaces/order") {
@@ -140,7 +140,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         val request =
             UpdateSpaceNameRequest(
                 spaceName = "change space name",
@@ -234,7 +234,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceIndexes =
                 (0..3).map {
-                    val spaceId = spaceMockManager.settingSpace(userId)
+                    val spaceId = spaceMockManager.settingSpace(userId).id.value
                     UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                 }
             val deleteSpaceId = spaceIndexes[1].spaceId
@@ -289,7 +289,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId) }
+            val spaceIds = (0..2).map { spaceMockManager.settingSpace(userId).id.value }
             val request = DeleteMultipleSpacesRequest(spaceIds)
             // when
             val response =
@@ -311,7 +311,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceIndexes =
                 (0..3).map {
-                    val spaceId = spaceMockManager.settingSpace(userId)
+                    val spaceId = spaceMockManager.settingSpace(userId).id.value
                     UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                 }
             val deleteSpaceIds = spaceIndexes.subList(1, 3).map { it.spaceId }
@@ -375,7 +375,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val accessToken = jwtMockManager.generateAccessToken(userId)
             val spaceIndexes =
                 (0..3).map {
-                    val spaceId = spaceMockManager.settingSpace(userId)
+                    val spaceId = spaceMockManager.settingSpace(userId).id.value
                     UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                 }
             // when
@@ -404,7 +404,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val spaceIndexes =
                 (0..3)
                     .map {
-                        val spaceId = spaceMockManager.settingSpace(userId)
+                        val spaceId = spaceMockManager.settingSpace(userId).id.value
                         UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                     }.toMutableList()
             val invalidSpaceId = UUID.randomUUID().toString()
@@ -431,7 +431,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val spaceIndexes =
                 (0..3)
                     .map {
-                        val spaceId = spaceMockManager.settingSpace(userId)
+                        val spaceId = spaceMockManager.settingSpace(userId).id.value
                         UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                     }.toMutableList()
             spaceIndexes[0] = UpdateSpaceOrderRequest.SpaceOrder(spaceIndexes[0].spaceId, 4)
@@ -457,7 +457,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val spaceIndexes =
                 (0..3)
                     .map {
-                        val spaceId = spaceMockManager.settingSpace(userId)
+                        val spaceId = spaceMockManager.settingSpace(userId).id.value
                         UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                     }.toMutableList()
             spaceIndexes.add(UpdateSpaceOrderRequest.SpaceOrder(UUID.randomUUID().toString(), 4))
@@ -483,7 +483,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val spaceIndexes =
                 (0..3)
                     .map {
-                        val spaceId = spaceMockManager.settingSpace(userId)
+                        val spaceId = spaceMockManager.settingSpace(userId).id.value
                         UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                     }.toMutableList()
             spaceIndexes.removeLast()
@@ -509,7 +509,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             val spaceIndexes =
                 (0..3)
                     .map {
-                        val spaceId = spaceMockManager.settingSpace(userId)
+                        val spaceId = spaceMockManager.settingSpace(userId).id.value
                         UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
                     }.toMutableList()
             spaceIndexes[0] = UpdateSpaceOrderRequest.SpaceOrder(spaceIndexes[0].spaceId, 0)
@@ -532,7 +532,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         // when
         val response =
             mockMvc.get("/api/v1/spaces/$spaceId") {

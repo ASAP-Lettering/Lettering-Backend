@@ -1,8 +1,8 @@
 package com.asap.application.space.service
 
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
-import com.asap.application.space.port.`in`.MainSpaceGetUsecase
-import com.asap.application.space.port.`in`.SpaceGetUsecase
+import com.asap.application.space.port.`in`.GetMainSpaceUsecase
+import com.asap.application.space.port.`in`.GetSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
@@ -15,9 +15,9 @@ class SpaceQueryService(
     private val spaceManagementPort: SpaceManagementPort,
     private val userManagementPort: UserManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
-) : MainSpaceGetUsecase,
-    SpaceGetUsecase {
-    override fun get(query: MainSpaceGetUsecase.Query): MainSpaceGetUsecase.Response {
+) : GetMainSpaceUsecase,
+    GetSpaceUsecase {
+    override fun get(query: GetMainSpaceUsecase.Query): GetMainSpaceUsecase.Response {
         val mainSpace =
             spaceManagementPort.getMainSpace(
                 userId = DomainId(query.userId),
@@ -27,7 +27,7 @@ class SpaceQueryService(
                 userId = DomainId(query.userId),
                 spaceId = mainSpace.id,
             )
-        return MainSpaceGetUsecase.Response(
+        return GetMainSpaceUsecase.Response(
             id = mainSpace.id.value,
             username = userManagementPort.getUserNotNull(DomainId(query.userId)).username,
             templateType = space.templateType,
@@ -35,16 +35,16 @@ class SpaceQueryService(
         )
     }
 
-    override fun getAll(query: SpaceGetUsecase.GetAllQuery): SpaceGetUsecase.GetAllResponse {
+    override fun getAll(query: GetSpaceUsecase.GetAllQuery): GetSpaceUsecase.GetAllResponse {
         val spaces =
             spaceManagementPort.getAllIndexedSpace(
                 userId = DomainId(query.userId),
             )
 
-        return SpaceGetUsecase.GetAllResponse(
+        return GetSpaceUsecase.GetAllResponse(
             spaces =
                 spaces.map {
-                    SpaceGetUsecase.SpaceDetail(
+                    GetSpaceUsecase.SpaceDetail(
                         spaceName = it.name,
                         letterCount = spaceLetterManagementPort.countSpaceLetterBy(it.id, DomainId(query.userId)),
                         isMainSpace = it.isMain(),
@@ -55,13 +55,13 @@ class SpaceQueryService(
         )
     }
 
-    override fun get(query: SpaceGetUsecase.GetQuery): SpaceGetUsecase.GetResponse {
+    override fun get(query: GetSpaceUsecase.GetQuery): GetSpaceUsecase.GetResponse {
         val space =
             spaceManagementPort.getSpaceNotNull(
                 userId = DomainId(query.userId),
                 spaceId = DomainId(query.spaceId),
             )
-        return SpaceGetUsecase.GetResponse(
+        return GetSpaceUsecase.GetResponse(
             spaceName = space.name,
             spaceId = space.id.value,
             templateType = space.templateType,
