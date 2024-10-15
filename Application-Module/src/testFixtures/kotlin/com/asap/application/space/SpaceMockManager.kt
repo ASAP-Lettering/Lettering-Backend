@@ -7,17 +7,15 @@ import com.asap.domain.space.entity.Space
 class SpaceMockManager(
     private val spaceManagementPort: SpaceManagementPort,
 ) {
-    fun settingSpace(userId: String): String  {
+    fun settingSpace(userId: String): Space {
         val space =
             Space.create(
                 userId = DomainId(userId),
                 name = "test",
                 templateType = 0,
             )
-        return spaceManagementPort.save(space).id.value
+        return spaceManagementPort.save(space)
     }
-
-    fun getSpaceCount(userId: String): Int = spaceManagementPort.getAllIndexedSpace(DomainId(userId)).size
 
     fun getSpaceIndexes(userId: String): List<Pair<String, Int>> =
         spaceManagementPort.getAllIndexedSpace(DomainId(userId)).map {

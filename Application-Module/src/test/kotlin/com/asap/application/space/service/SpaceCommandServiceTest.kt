@@ -1,10 +1,10 @@
 package com.asap.application.space.service
 
 import com.asap.application.space.exception.SpaceException
-import com.asap.application.space.port.`in`.SpaceCreateUsecase
-import com.asap.application.space.port.`in`.SpaceDeleteUsecase
-import com.asap.application.space.port.`in`.SpaceUpdateIndexUsecase
-import com.asap.application.space.port.`in`.SpaceUpdateNameUsecase
+import com.asap.application.space.port.`in`.CreateSpaceUsecase
+import com.asap.application.space.port.`in`.DeleteSpaceUsecase
+import com.asap.application.space.port.`in`.UpdateSpaceIndexUsecase
+import com.asap.application.space.port.`in`.UpdateSpaceNameUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.IndexedSpace
@@ -14,20 +14,23 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.springframework.context.ApplicationEventPublisher
 
 class SpaceCommandServiceTest :
     BehaviorSpec({
 
         val spaceManagementPort = mockk<SpaceManagementPort>(relaxed = true)
+        val applicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val spaceCommandService =
             SpaceCommandService(
                 spaceManagementPort,
+                applicationEventPublisher,
             )
 
         given("스페이스 생성 요청이 들어왔을 때") {
             val spaceCreateCommand =
-                SpaceCreateUsecase.Command(
+                CreateSpaceUsecase.Command(
                     userId = "userId",
                     spaceName = "spaceName",
                     templateType = 1,
@@ -44,7 +47,7 @@ class SpaceCommandServiceTest :
 
         given("스페이스 이름 변경 요청이 들어왔을 때") {
             val spaceUpdateNameCommand =
-                SpaceUpdateNameUsecase.Command(
+                UpdateSpaceNameUsecase.Command(
                     userId = "userId",
                     spaceId = "spaceId",
                     name = "newName",
@@ -80,7 +83,7 @@ class SpaceCommandServiceTest :
 
         given("스페이스 삭제 요청이 들어왔을 때") {
             val spaceDeleteOneCommand =
-                SpaceDeleteUsecase.DeleteOneCommand(
+                DeleteSpaceUsecase.DeleteOneCommand(
                     userId = "userId",
                     spaceId = "spaceId",
                 )
@@ -97,7 +100,7 @@ class SpaceCommandServiceTest :
             }
 
             val spaceDeleteAllCommand =
-                SpaceDeleteUsecase.DeleteAllCommand(
+                DeleteSpaceUsecase.DeleteAllCommand(
                     userId = "userId",
                     spaceIds = listOf("spaceId1", "spaceId2"),
                 )
@@ -116,12 +119,12 @@ class SpaceCommandServiceTest :
 
         given("스페이스 인덱스 수정 요청이 들어올 때") {
             val spaceUpdateIndexCommand =
-                SpaceUpdateIndexUsecase.Command(
+                UpdateSpaceIndexUsecase.Command(
                     userId = "userId",
                     orders =
                         listOf(
-                            SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId1", 1),
-                            SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId2", 0),
+                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId1", 1),
+                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId2", 0),
                         ),
                 )
             val indexedSpaces =
@@ -161,13 +164,13 @@ class SpaceCommandServiceTest :
             }
 
             val invalidCommand =
-                SpaceUpdateIndexUsecase.Command(
+                UpdateSpaceIndexUsecase.Command(
                     userId = "userId",
                     orders =
                         listOf(
-                            SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId1", 1),
-                            SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId2", 2),
-                            SpaceUpdateIndexUsecase.Command.SpaceOrder("spaceId3", 3),
+                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId1", 1),
+                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId2", 2),
+                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId3", 3),
                         ),
                 )
             every {

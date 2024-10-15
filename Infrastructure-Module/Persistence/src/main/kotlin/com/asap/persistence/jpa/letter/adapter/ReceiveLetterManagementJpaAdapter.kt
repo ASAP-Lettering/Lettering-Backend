@@ -38,7 +38,7 @@ class ReceiveLetterManagementJpaAdapter(
 
     override fun getAllByReceiverId(receiverId: DomainId): List<IndependentLetter> =
         receiveLetterJpaRepository
-            .findAllIndependentByReceiverId(receiverId.value)
+            .findAllIndependentLetterBy(receiverId.value)
             .map { ReceiverLetterMapper.toIndependentLetter(it) }
 
     override fun getIndependentLetterByIdNotNull(id: DomainId): IndependentLetter =
@@ -66,7 +66,7 @@ class ReceiveLetterManagementJpaAdapter(
     ): Pair<IndependentLetter?, IndependentLetter?> {
         val letters =
             receiveLetterJpaRepository
-                .findAllIndependentByReceiverId(userId.value)
+                .findAllIndependentLetterBy(userId.value)
                 .sortedBy { it.receiveDate }
         val index = letters.indexOfFirst { it.id == letterId.value }
         return Pair(
@@ -125,7 +125,7 @@ class ReceiveLetterManagementJpaAdapter(
     ): Pair<SpaceLetter?, SpaceLetter?> {
         val letters =
             receiveLetterJpaRepository
-                .findAllSpaceBySpaceIdAndReceiverId(spaceId.value, userId.value)
+                .findAllActiveSpaceLetterBy(spaceId.value, userId.value)
                 .sortedBy { it.receiveDate }
         val index = letters.indexOfFirst { it.id == letterId.value }
         return Pair(
@@ -164,6 +164,17 @@ class ReceiveLetterManagementJpaAdapter(
             size = letters.size,
             page = pageRequest.page,
         )
+    }
+
+    override fun getAllBy(
+        spaceId: DomainId,
+        userId: DomainId,
+    ): List<SpaceLetter> {
+        val letters =
+            receiveLetterJpaRepository
+                .findAllActiveSpaceLetterBy(spaceId.value, userId.value)
+                .map { ReceiverLetterMapper.toSpaceLetter(it) }
+        return letters
     }
 
     override fun delete(letter: SpaceLetter) {

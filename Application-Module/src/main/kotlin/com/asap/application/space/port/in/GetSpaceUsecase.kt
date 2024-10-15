@@ -1,6 +1,6 @@
 package com.asap.application.space.port.`in`
 
-interface SpaceGetUsecase {
+interface GetSpaceUsecase {
     fun getAll(query: GetAllQuery): GetAllResponse
 
     fun get(query: GetQuery): GetResponse

@@ -26,7 +26,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         val independentLetterId =
             letterMockManager
                 .generateMockIndependentLetter(
@@ -52,13 +52,14 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         val spaceLetterId =
-            letterMockManager.generateMockSpaceLetter(
-                receiverId = userId,
-                senderName = "senderName",
-                spaceId = spaceId,
-            )["letterId"] as String
+            letterMockManager
+                .generateMockSpaceLetter(
+                    receiverId = userId,
+                    senderName = "senderName",
+                    spaceId = spaceId,
+                ).id.value
         // when
         val response =
             mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
@@ -76,7 +77,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         val letterIds =
             (0..30).map {
                 val letter =
@@ -85,7 +86,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                         senderName = "senderName$it",
                         spaceId = spaceId,
                     )
-                return@map letter["letterId"] as String to letter["senderName"] as String
+                return@map letter.id.value to letter.sender.senderName
             }
         val page = 1
         val size = 10
@@ -133,7 +134,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
             val userId = userMockManager.settingUser(username = "username")
             val senderId = userMockManager.settingUser(username = "senderUsername")
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceId = spaceMockManager.settingSpace(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
             val letters =
                 (0..3).map {
                     letterMockManager.generateMockSpaceLetter(
@@ -143,7 +144,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                         senderName = "senderUsername",
                     )
                 }
-            val letterId = letters[1]["letterId"] as String
+            val letterId = letters[1].id.value
             // when
             val response =
                 mockMvc.get("/api/v1/spaces/letters/$letterId") {
@@ -190,7 +191,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                     jsonPath("$.prevLetter.letterId") {
                         exists()
                         isString()
-                        value(letters[0]["letterId"] as String)
+                        value(letters[0].id.value)
                     }
                     jsonPath("$.prevLetter.senderName") {
                         exists()
@@ -202,7 +203,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                     jsonPath("$.nextLetter.letterId") {
                         exists()
                         isString()
-                        value(letters[2]["letterId"] as String)
+                        value(letters[2].id.value)
                     }
                     jsonPath("$.nextLetter.senderName") {
                         exists()
@@ -221,14 +222,14 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceId = spaceMockManager.settingSpace(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
             val spaceLetter =
                 letterMockManager.generateMockSpaceLetter(
                     receiverId = userId,
                     senderName = "senderName",
                     spaceId = spaceId,
                 )
-            val letterId = spaceLetter["letterId"] as String
+            val letterId = spaceLetter.id.value
             // when
             mockMvc.delete("/api/v1/spaces/letters/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
@@ -252,14 +253,14 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceId = spaceMockManager.settingSpace(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
             val spaceLetter =
                 letterMockManager.generateMockSpaceLetter(
                     receiverId = userId,
                     senderName = "senderName",
                     spaceId = spaceId,
                 )
-            val letterId = spaceLetter["letterId"] as String
+            val letterId = spaceLetter.id.value
             // when
             mockMvc.delete("/api/v1/spaces/letters/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
@@ -288,14 +289,14 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId)
+        val spaceId = spaceMockManager.settingSpace(userId).id.value
         val spaceLetter =
             letterMockManager.generateMockSpaceLetter(
                 receiverId = userId,
                 senderName = "senderName",
                 spaceId = spaceId,
             )
-        val letterId = spaceLetter["letterId"] as String
+        val letterId = spaceLetter.id.value
         val request =
             ModifyLetterRequest(
                 content = "updateContent",

@@ -161,6 +161,16 @@ class LetterCommandService(
         spaceLetterManagementPort.delete(spaceLetter)
     }
 
+    override fun removeSpaceLetterBy(command: RemoveLetterUsecase.Command.SpaceId) {
+        spaceLetterManagementPort
+            .getAllBy(
+                spaceId = DomainId(command.spaceId),
+                userId = DomainId(command.userId),
+            ).forEach {
+                spaceLetterManagementPort.delete(it)
+            }
+    }
+
     override fun removeIndependentLetter(command: RemoveLetterUsecase.Command.IndependentLetter) {
         val independentLetter =
             independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))

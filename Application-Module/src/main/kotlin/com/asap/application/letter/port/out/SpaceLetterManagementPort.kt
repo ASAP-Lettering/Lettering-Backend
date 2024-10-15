@@ -39,5 +39,10 @@ interface SpaceLetterManagementPort {
         pageRequest: PageRequest,
     ): Page<SpaceLetter>
 
+    fun getAllBy(
+        spaceId: DomainId,
+        userId: DomainId,
+    ): List<SpaceLetter>
+
     fun delete(letter: SpaceLetter)
 }

@@ -629,32 +629,158 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun getAllLetterCount() {
-        // given
-        val senderId = userMockManager.settingUser()
-        val receiverId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(receiverId)
-        (0..3).forEach {
-            letterMockManager.generateMockIndependentLetter(
-                senderId = senderId,
-                receiverId = receiverId,
-                senderName = "senderUsername",
-            )
+    @Nested
+    inner class GetAllLetterCount {
+        @Test
+        fun getAllLetterCount() {
+            // given
+            val senderId = userMockManager.settingUser()
+            val receiverId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            (0..3).forEach {
+                letterMockManager.generateMockIndependentLetter(
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    senderName = "senderUsername",
+                )
+            }
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/count") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.count") {
+                    exists()
+                    isNumber()
+                    value(4)
+                }
+            }
         }
-        // when
-        val response =
-            mockMvc.get("/api/v1/letters/count") {
+
+        @Test
+        fun getAllLetterCount_with_letter_delete_independent() {
+            // given
+            val senderId = userMockManager.settingUser()
+            val receiverId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            val letters =
+                (0..3).map {
+                    letterMockManager.generateMockIndependentLetter(
+                        senderId = senderId,
+                        receiverId = receiverId,
+                        senderName = "senderUsername",
+                    )
+                }
+
+            mockMvc.delete("/api/v1/letters/independent/${letters[0].id.value}") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
-            jsonPath("$.count") {
-                exists()
-                isNumber()
-                value(4)
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/count") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.count") {
+                    exists()
+                    isNumber()
+                    value(3)
+                }
+            }
+        }
+
+        @Test
+        fun getAllLetterCount_with_letter_delete_space() {
+            // given
+            val senderId = userMockManager.settingUser()
+            val receiverId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            val space = spaceMockManager.settingSpace(receiverId)
+            val letters =
+                (0..3).map {
+                    letterMockManager.generateMockSpaceLetter(
+                        senderId = senderId,
+                        receiverId = receiverId,
+                        senderName = "senderUsername",
+                        spaceId = space.id.value,
+                    )
+                }
+
+            mockMvc.delete("/api/v1/spaces/letters/${letters[0].id.value}") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/count") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.count") {
+                    exists()
+                    isNumber()
+                    value(3)
+                }
+            }
+        }
+
+        @Test
+        fun getAllLetterCount_with_letter_delete_send() {
+            // given
+            val senderId = userMockManager.settingUser()
+            val receiverId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            val space = spaceMockManager.settingSpace(receiverId)
+            val spaceLetters =
+                (0..3).map {
+                    letterMockManager.generateMockSpaceLetter(
+                        senderId = senderId,
+                        receiverId = receiverId,
+                        senderName = "senderUsername",
+                        spaceId = space.id.value,
+                    )
+                }
+            val independentLetters =
+                (0..3).map {
+                    letterMockManager.generateMockIndependentLetter(
+                        senderId = senderId,
+                        receiverId = receiverId,
+                        senderName = "senderUsername",
+                    )
+                }
+
+            mockMvc.delete("/api/v1/spaces/letters/${spaceLetters[0].id.value}") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/count") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.count") {
+                    exists()
+                    isNumber()
+                    value(7)
+                }
             }
         }
     }

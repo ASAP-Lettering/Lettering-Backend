@@ -7,25 +7,25 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SpaceController(
-    private val mainSpaceGetUsecase: MainSpaceGetUsecase,
-    private val spaceCreateUsecase: SpaceCreateUsecase,
-    private val spaceUpdateNameUsecase: SpaceUpdateNameUsecase,
-    private val spaceGetUsecase: SpaceGetUsecase,
-    private val spaceDeleteUsecase: SpaceDeleteUsecase,
-    private val spaceUpdateIndexUsecase: SpaceUpdateIndexUsecase,
+    private val getMainSpaceUsecase: GetMainSpaceUsecase,
+    private val spaceCreateUsecase: CreateSpaceUsecase,
+    private val updateSpaceNameUsecase: UpdateSpaceNameUsecase,
+    private val getSpaceUsecase: GetSpaceUsecase,
+    private val deleteSpaceUsecase: DeleteSpaceUsecase,
+    private val updateSpaceIndexUsecase: UpdateSpaceIndexUsecase,
 ) : SpaceApi {
     override fun getMainSpace(userId: String): MainSpaceInfoResponse {
         val response =
-            mainSpaceGetUsecase.get(
-                MainSpaceGetUsecase.Query(userId),
+            getMainSpaceUsecase.get(
+                GetMainSpaceUsecase.Query(userId),
             )
         return MainSpaceInfoResponse(response.id, response.username, response.templateType, response.spaceName)
     }
 
     override fun getSpaces(userId: String): GetAllSpaceResponse {
         val response =
-            spaceGetUsecase.getAll(
-                SpaceGetUsecase.GetAllQuery(userId),
+            getSpaceUsecase.getAll(
+                GetSpaceUsecase.GetAllQuery(userId),
             )
         return GetAllSpaceResponse(
             response.spaces.map {
@@ -45,7 +45,7 @@ class SpaceController(
         userId: String,
     ) {
         spaceCreateUsecase.create(
-            SpaceCreateUsecase.Command(
+            CreateSpaceUsecase.Command(
                 userId,
                 request.spaceName,
                 request.templateType,
@@ -58,8 +58,8 @@ class SpaceController(
         request: UpdateSpaceNameRequest,
         userId: String,
     ) {
-        spaceUpdateNameUsecase.update(
-            SpaceUpdateNameUsecase.Command(
+        updateSpaceNameUsecase.update(
+            UpdateSpaceNameUsecase.Command(
                 userId = userId,
                 spaceId = spaceId,
                 name = request.spaceName,
@@ -71,8 +71,8 @@ class SpaceController(
         spaceId: String,
         userId: String,
     ) {
-        spaceDeleteUsecase.deleteOne(
-            SpaceDeleteUsecase.DeleteOneCommand(
+        deleteSpaceUsecase.deleteOne(
+            DeleteSpaceUsecase.DeleteOneCommand(
                 userId = userId,
                 spaceId = spaceId,
             ),
@@ -83,10 +83,10 @@ class SpaceController(
         request: UpdateSpaceOrderRequest,
         userId: String,
     ) {
-        spaceUpdateIndexUsecase.update(
-            SpaceUpdateIndexUsecase.Command(
+        updateSpaceIndexUsecase.update(
+            UpdateSpaceIndexUsecase.Command(
                 userId = userId,
-                orders = request.orders.map { SpaceUpdateIndexUsecase.Command.SpaceOrder(it.spaceId, it.index) },
+                orders = request.orders.map { UpdateSpaceIndexUsecase.Command.SpaceOrder(it.spaceId, it.index) },
             ),
         )
     }
@@ -95,8 +95,8 @@ class SpaceController(
         request: DeleteMultipleSpacesRequest,
         userId: String,
     ) {
-        spaceDeleteUsecase.deleteAll(
-            SpaceDeleteUsecase.DeleteAllCommand(
+        deleteSpaceUsecase.deleteAll(
+            DeleteSpaceUsecase.DeleteAllCommand(
                 userId = userId,
                 spaceIds = request.spaceIds,
             ),
@@ -108,8 +108,8 @@ class SpaceController(
         userId: String,
     ): GetSpaceResponse {
         val response =
-            spaceGetUsecase.get(
-                SpaceGetUsecase.GetQuery(
+            getSpaceUsecase.get(
+                GetSpaceUsecase.GetQuery(
                     userId = userId,
                     spaceId = spaceId,
                 ),
