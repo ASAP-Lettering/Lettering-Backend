@@ -22,6 +22,7 @@ data class IndependentLetter(
             receiverId: DomainId,
         ): IndependentLetter =
             IndependentLetter(
+                id = spaceLetter.id,
                 content = spaceLetter.content,
                 sender = spaceLetter.sender,
                 receiver = ReceiverInfo(receiverId),

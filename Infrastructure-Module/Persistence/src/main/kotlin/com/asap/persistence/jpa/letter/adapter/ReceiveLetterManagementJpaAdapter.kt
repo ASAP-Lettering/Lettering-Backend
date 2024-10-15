@@ -31,8 +31,9 @@ class ReceiveLetterManagementJpaAdapter(
             receiveDate = letter.receiveDate,
             movedAt = letter.movedAt,
             isOpened = letter.isOpened,
-        ).apply {
-            receiveLetterJpaRepository.save(this)
+            spaceId = null,
+        ).also {
+            receiveLetterJpaRepository.save(it)
         }
     }
 

@@ -10,6 +10,7 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
+import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.service.LetterCodeGenerator
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
@@ -132,13 +133,11 @@ class LetterCommandService(
     }
 
     override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
-        val independentLetter =
-            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
-        spaceLetterManagementPort.saveByIndependentLetter(
-            independentLetter,
-            DomainId(command.spaceId),
-            DomainId(command.userId),
-        )
+        independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId)).apply {
+            val spaceLetter = SpaceLetter.createByIndependentLetter(this, DomainId(command.spaceId))
+
+            spaceLetterManagementPort.save(spaceLetter)
+        }
     }
 
     override fun moveToIndependent(command: MoveLetterUsecase.Command.ToIndependent) {

@@ -212,11 +212,7 @@ class LetterCommandServiceTest :
                 letterCommandService.moveToSpace(command)
                 then("편지가 이동되어야 한다") {
                     verify {
-                        mockSpaceLetterManagementPort.saveByIndependentLetter(
-                            independentLetter,
-                            DomainId("space-id"),
-                            DomainId("user-id"),
-                        )
+                        mockSpaceLetterManagementPort.save(any())
                     }
                 }
             }
@@ -392,7 +388,12 @@ class LetterCommandServiceTest :
                     receiveDate = LocalDate.now(),
                     spaceId = DomainId("space-id"),
                 )
-            every { mockSpaceLetterManagementPort.getSpaceLetterNotNull(DomainId("letter-id"), DomainId("user-id")) } returns spaceLetter
+            every {
+                mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                    DomainId("letter-id"),
+                    DomainId("user-id"),
+                )
+            } returns spaceLetter
             `when`("편지를 수정하면") {
                 letterCommandService.updateSpaceLetter(command)
                 then("편지가 수정되어야 한다") {
