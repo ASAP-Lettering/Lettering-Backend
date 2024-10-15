@@ -40,6 +40,7 @@ interface SpaceLetterApi {
         @AccessUser userId: String,
     ): PageResponse<GetSpaceLettersResponse>
 
+    // TODO: LetterApi로 이동
     @Operation(summary = "궤도 편지 행성으로 이동")
     @PutMapping("/letters/{letterId}")
     @ApiResponses(

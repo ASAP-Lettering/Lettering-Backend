@@ -14,6 +14,21 @@ data class SpaceLetter(
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
 ) {
+    companion object {
+        fun createByIndependentLetter(
+            independentLetter: IndependentLetter,
+            spaceId: DomainId,
+        ): SpaceLetter =
+            SpaceLetter(
+                id = independentLetter.id,
+                spaceId = spaceId,
+                content = independentLetter.content,
+                sender = independentLetter.sender,
+                receiver = independentLetter.receiver,
+                receiveDate = independentLetter.receiveDate,
+            )
+    }
+
     fun update(
         senderName: String,
         content: String,

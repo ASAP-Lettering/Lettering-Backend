@@ -21,54 +21,131 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
     @Autowired
     lateinit var letterMockManager: LetterMockManager
 
-    @Test
-    fun moveLetterToSpace() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId).id.value
-        val independentLetterId =
-            letterMockManager
-                .generateMockIndependentLetter(
-                    receiverId = userId,
-                    senderName = "senderName",
-                ).id.value
-        val request = MoveLetterToSpaceRequest(spaceId)
-        // when
-        val response =
+    @Nested
+    inner class MoveLetterToSpace {
+        @Test
+        fun moveLetterToSpace() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            val independentLetterId =
+                letterMockManager
+                    .generateMockIndependentLetter(
+                        receiverId = userId,
+                        senderName = "senderName",
+                    ).id.value
+            val request = MoveLetterToSpaceRequest(spaceId)
+            // when
+            val response =
+                mockMvc.put("/api/v1/spaces/letters/$independentLetterId") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+        @Test
+        fun moveLetterToSpace_not_found_in_letter_list() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            val independentLetterId =
+                letterMockManager
+                    .generateMockIndependentLetter(
+                        receiverId = userId,
+                        senderName = "senderName",
+                    ).id.value
+            val request = MoveLetterToSpaceRequest(spaceId)
+            // when
             mockMvc.put("/api/v1/spaces/letters/$independentLetterId") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+
+            val response =
+                mockMvc.get("/api/v1/letters/independent") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    isArray()
+                    isEmpty()
+                }
+            }
         }
     }
 
-    @Test
-    fun moveLetterToIndependentLetter() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId).id.value
-        val spaceLetterId =
-            letterMockManager
-                .generateMockSpaceLetter(
-                    receiverId = userId,
-                    senderName = "senderName",
-                    spaceId = spaceId,
-                ).id.value
-        // when
-        val response =
+    @Nested
+    inner class MoveLetterToIndependent {
+        @Test
+        fun moveLetterToIndependentLetter() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            val spaceLetterId =
+                letterMockManager
+                    .generateMockSpaceLetter(
+                        receiverId = userId,
+                        senderName = "senderName",
+                        spaceId = spaceId,
+                    ).id.value
+            // when
+            val response =
+                mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+        @Test
+        fun moveLetterToIndependentLetter_not_found_in_letter_list() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            val spaceLetterId =
+                letterMockManager
+                    .generateMockSpaceLetter(
+                        receiverId = userId,
+                        senderName = "senderName",
+                        spaceId = spaceId,
+                    ).id.value
+            // when
             mockMvc.put("/api/v1/spaces/letters/$spaceLetterId/independent") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+
+            val response =
+                mockMvc.get("/api/v1/spaces/$spaceId/letters?page=0&size=10") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    isArray()
+                    isEmpty()
+                }
+            }
         }
     }
 
