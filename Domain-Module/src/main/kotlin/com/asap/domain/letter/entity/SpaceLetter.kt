@@ -5,6 +5,7 @@ import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class SpaceLetter(
     val id: DomainId = DomainId.generate(),
@@ -13,6 +14,7 @@ data class SpaceLetter(
     val sender: SenderInfo,
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
+    val movedAt: LocalDateTime? = null,
 ) {
     companion object {
         fun createByIndependentLetter(
@@ -26,6 +28,7 @@ data class SpaceLetter(
                 sender = independentLetter.sender,
                 receiver = independentLetter.receiver,
                 receiveDate = independentLetter.receiveDate,
+                movedAt = LocalDateTime.now(),
             )
     }
 

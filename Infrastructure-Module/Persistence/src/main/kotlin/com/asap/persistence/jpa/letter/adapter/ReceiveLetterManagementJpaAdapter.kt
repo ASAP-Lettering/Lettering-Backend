@@ -8,6 +8,7 @@ import com.asap.common.page.PageRequest
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SpaceLetter
+import com.asap.persistence.jpa.common.PageUtils.toJpaSort
 import com.asap.persistence.jpa.letter.ReceiverLetterMapper
 import com.asap.persistence.jpa.letter.entity.ReceiveLetterEntity
 import com.asap.persistence.jpa.letter.repository.*
@@ -156,6 +157,7 @@ class ReceiveLetterManagementJpaAdapter(
                     org.springframework.data.domain.PageRequest.of(
                         pageRequest.page,
                         pageRequest.size,
+                        pageRequest.sorts.toJpaSort(),
                     ),
                 ).map { ReceiverLetterMapper.toSpaceLetter(it) }
         return Page.of(
