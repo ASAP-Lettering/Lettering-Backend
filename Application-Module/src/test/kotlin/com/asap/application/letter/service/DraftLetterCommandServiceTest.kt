@@ -55,7 +55,7 @@ class DraftLetterCommandServiceTest :
         }
 
         given("임시 저장 편지를 삭제할 때") {
-            val command = RemoveDraftLetterUsecase.Command(draftId = "draftId", userId = "userId")
+            val command = RemoveDraftLetterUsecase.Command.Draft(draftId = "draftId", userId = "userId")
             val draftLetter = DraftLetter.default(DomainId(command.userId))
             every {
                 mockGenerateDraftKeyUsecase.getDraftLetterNotNull(
