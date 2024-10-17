@@ -4,7 +4,6 @@ import com.asap.persistence.jpa.user.entity.UserAuthEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserAuthJpaRepository : JpaRepository<UserAuthEntity, String> {
-
     fun findBySocialIdAndSocialLoginProvider(
         socialId: String,
         socialLoginProvider: String,
@@ -14,4 +13,6 @@ interface UserAuthJpaRepository : JpaRepository<UserAuthEntity, String> {
         socialId: String,
         socialLoginProvider: String,
     ): Boolean
+
+    fun findByUserId(userId: String): UserAuthEntity?
 }

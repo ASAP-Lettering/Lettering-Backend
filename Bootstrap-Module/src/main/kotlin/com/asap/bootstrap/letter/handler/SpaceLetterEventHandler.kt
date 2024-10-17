@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class SpaceLetterHandler(
+class SpaceLetterEventHandler(
     private val removeLetterUsecase: RemoveLetterUsecase,
 ) {
     @EventListener

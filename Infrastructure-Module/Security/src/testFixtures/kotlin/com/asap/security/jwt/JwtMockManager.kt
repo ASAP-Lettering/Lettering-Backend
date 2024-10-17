@@ -42,7 +42,7 @@ class JwtMockManager(
             }
 
     fun generateAccessToken(
-        userId: String = "userId",
+        userId: String = DomainId.generate().value,
         issuedAt: Date = Date(),
     ): String =
         JwtProvider.createToken(

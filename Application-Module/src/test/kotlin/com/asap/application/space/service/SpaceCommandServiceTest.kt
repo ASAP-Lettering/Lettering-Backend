@@ -105,7 +105,7 @@ class SpaceCommandServiceTest :
                     spaceIds = listOf("spaceId1", "spaceId2"),
                 )
             `when`("여러 스페이스 아이디가 주어진다면") {
-                spaceCommandService.deleteAll(spaceDeleteAllCommand)
+                spaceCommandService.deleteAllBy(spaceDeleteAllCommand)
                 then("여러 스페이스를 삭제한다") {
                     verify {
                         spaceManagementPort.deleteAllBySpaceIds(

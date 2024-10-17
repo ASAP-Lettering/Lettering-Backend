@@ -28,8 +28,8 @@ class RegisterUserServiceTest :
         val mockUserTokenManagementPort = mockk<UserTokenManagementPort>(relaxed = true)
         val mockEventApplicationPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
-        val registerUserService =
-            RegisterUserService(
+        val userCommandService =
+            UserCommandService(
                 mockUserTokenConvertPort,
                 mockUserAuthManagementPort,
                 mockUserManagementPort,
@@ -60,7 +60,7 @@ class RegisterUserServiceTest :
             every { mockUserTokenConvertPort.generateAccessToken(any()) } returns "accessToken"
             every { mockUserTokenConvertPort.generateRefreshToken(any()) } returns "refreshToken"
             `when`("회원 가입이 성공하면") {
-                val response = registerUserService.registerUser(successCommand)
+                val response = userCommandService.registerUser(successCommand)
                 then("access token과 refresh token을 반환한다.") {
                     response.accessToken.isNotEmpty() shouldBe true
                     response.refreshToken.isNotEmpty() shouldBe true
@@ -91,7 +91,7 @@ class RegisterUserServiceTest :
                     )
                 then("UserAlreadyRegisteredException 예외가 발생한다.") {
                     shouldThrow<UserException.UserAlreadyRegisteredException> {
-                        registerUserService.registerUser(failCommand)
+                        userCommandService.registerUser(failCommand)
                     }
                 }
             }
@@ -103,7 +103,7 @@ class RegisterUserServiceTest :
                     RegisterUserUsecase.Command("invalid", true, true, true, LocalDate.now(), "test")
                 then("예외가 발생한다.") {
                     shouldThrow<Exception> {
-                        registerUserService.registerUser(failCommandWithoutRegisterToken)
+                        userCommandService.registerUser(failCommandWithoutRegisterToken)
                     }
                 }
             }
@@ -114,7 +114,7 @@ class RegisterUserServiceTest :
                     RegisterUserUsecase.Command("non-saved", true, true, true, LocalDate.now(), "test")
                 then("UserPermissionDeniedException 예외가 발생한다.") {
                     shouldThrow<UserException.UserPermissionDeniedException> {
-                        registerUserService.registerUser(failCommandWithoutRegisterToken)
+                        userCommandService.registerUser(failCommandWithoutRegisterToken)
                     }
                 }
             }
@@ -134,7 +134,7 @@ class RegisterUserServiceTest :
                     RegisterUserUsecase.Command("valid", false, true, true, LocalDate.now(), "test")
                 then("InvalidPropertyException 예외가 발생한다.") {
                     shouldThrow<DefaultException.InvalidDefaultException> {
-                        registerUserService.registerUser(failCommandWithoutServicePermission)
+                        userCommandService.registerUser(failCommandWithoutServicePermission)
                     }
                 }
             }
@@ -144,7 +144,7 @@ class RegisterUserServiceTest :
                     RegisterUserUsecase.Command("valid", true, false, true, LocalDate.now(), "test")
                 then("InvalidPropertyException 예외가 발생한다.") {
                     shouldThrow<DefaultException.InvalidDefaultException> {
-                        registerUserService.registerUser(failCommandWithoutPrivatePermission)
+                        userCommandService.registerUser(failCommandWithoutPrivatePermission)
                     }
                 }
             }

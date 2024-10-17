@@ -176,7 +176,7 @@ class LetterQueryService(
     }
 
     override fun getHistory(query: GetSendLetterUsecase.Query.AllHistory): List<GetSendLetterUsecase.Response.History> =
-        sendLetterManagementPort.getAllSendLetter(DomainId(query.userId)).map {
+        sendLetterManagementPort.getAllBy(DomainId(query.userId)).map {
             GetSendLetterUsecase.Response.History(
                 letterId = it.id.value,
                 receiverName = it.receiverName,

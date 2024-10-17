@@ -6,9 +6,17 @@ import java.time.LocalDate
 
 data class User(
     val id: DomainId = DomainId.generate(),
-    val username: String,
-    val profileImage: String,
-    val email: String,
+    var username: String,
+    var profileImage: String,
+    var email: String,
     val permission: UserPermission,
-    val birthday: LocalDate?,
-)
+    var birthday: LocalDate?,
+) {
+
+    fun delete()  {
+        this.username = "UNKNOWN"
+        this.profileImage = "UNKNOWN"
+        this.email = "UNKNOWN"
+        this.birthday = null
+    }
+}

@@ -47,4 +47,9 @@ data class IndependentLetter(
         this.content.updateContent(content)
         this.content.updateImages(images.toMutableList())
     }
+
+    fun delete() {
+        this.content.delete()
+        this.sender.delete()
+    }
 }

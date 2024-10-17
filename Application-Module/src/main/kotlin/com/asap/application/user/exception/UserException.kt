@@ -19,6 +19,7 @@ sealed class UserException(
     ) : UserException(
             errorCode = 2,
             message = message,
+            httpStatus = 404,
         )
 
     class UserNotFoundException :

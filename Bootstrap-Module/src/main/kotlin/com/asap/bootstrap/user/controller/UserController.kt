@@ -1,5 +1,6 @@
 package com.asap.bootstrap.user.controller
 
+import com.asap.application.user.port.`in`.DeleteUserUsecase
 import com.asap.application.user.port.`in`.LogoutUsecase
 import com.asap.application.user.port.`in`.RegisterUserUsecase
 import com.asap.bootstrap.user.api.UserApi
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val registerUserUsecase: RegisterUserUsecase,
     private val logoutUsecase: LogoutUsecase,
+    private val deleteUserUsecase: DeleteUserUsecase,
 ) : UserApi {
     override fun registerUser(request: RegisterUserRequest): RegisterUserResponse {
         val response =
@@ -36,6 +38,14 @@ class UserController(
             LogoutUsecase.Command(
                 userId = userId,
                 refreshToken = request.refreshToken,
+            ),
+        )
+    }
+
+    override fun deleteUser(userId: String) {
+        deleteUserUsecase.delete(
+            DeleteUserUsecase.Command(
+                userId = userId,
             ),
         )
     }

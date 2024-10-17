@@ -6,6 +6,10 @@ import com.asap.domain.user.enums.SocialLoginProvider
 data class UserAuth(
     val id: DomainId = DomainId.generate(),
     val userId: DomainId,
-    val socialId: String,
+    var socialId: String,
     val socialLoginProvider: SocialLoginProvider,
-)
+) {
+    fun delete()  {
+        this.socialId = "UNKNOWN"
+    }
+}

@@ -56,4 +56,22 @@ interface UserApi {
         @AccessUser userId: String,
         @RequestBody request: LogoutRequest,
     )
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "회원 탈퇴 성공",
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "회원 탈퇴 실패 - 토큰 없음",
+            ),
+        ],
+    )
+    fun deleteUser(
+        @AccessUser userId: String,
+    )
 }

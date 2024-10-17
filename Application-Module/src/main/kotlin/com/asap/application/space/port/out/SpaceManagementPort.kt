@@ -35,4 +35,6 @@ interface SpaceManagementPort {
         userId: DomainId,
         spaceIds: List<DomainId>,
     )
+
+    fun deleteAllByUserId(userId: DomainId)
 }

@@ -171,9 +171,30 @@ class LetterCommandService(
     }
 
     override fun removeIndependentLetter(command: RemoveLetterUsecase.Command.IndependentLetter) {
-        val independentLetter =
-            independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))
-        independentLetterManagementPort.delete(independentLetter)
+        independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId)).apply {
+            delete()
+            independentLetterManagementPort.delete(this)
+        }
+    }
+
+    override fun removeAllIndependentLetterBy(command: RemoveLetterUsecase.Command.User) {
+        independentLetterManagementPort
+            .getAllByReceiverId(DomainId(command.userId))
+            .forEach {
+                it.delete()
+                independentLetterManagementPort.save(it)
+                independentLetterManagementPort.delete(it)
+            }
+    }
+
+    override fun removeAllSenderLetterBy(command: RemoveLetterUsecase.Command.User) {
+        sendLetterManagementPort
+            .getAllBy(DomainId(command.userId))
+            .forEach {
+                it.delete()
+                sendLetterManagementPort.save(it)
+                sendLetterManagementPort.delete(it)
+            }
     }
 
     override fun updateIndependentLetter(command: UpdateLetterUsecase.Command.Independent) {

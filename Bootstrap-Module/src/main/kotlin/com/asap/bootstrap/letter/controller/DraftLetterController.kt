@@ -81,8 +81,8 @@ class DraftLetterController(
         draftId: String,
         userId: String,
     ) {
-        removeDraftLetterUsecase.command(
-            RemoveDraftLetterUsecase.Command(
+        removeDraftLetterUsecase.deleteBy(
+            RemoveDraftLetterUsecase.Command.Draft(
                 draftId = draftId,
                 userId = userId,
             ),

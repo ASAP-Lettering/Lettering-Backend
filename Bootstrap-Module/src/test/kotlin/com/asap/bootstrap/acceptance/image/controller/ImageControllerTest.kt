@@ -21,7 +21,8 @@ class ImageControllerTest : AcceptanceSupporter() {
     @Test
     fun uploadImage() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val mockFile = MockMultipartFile("image", "test.jpg", "image/jpeg", "test".toByteArray())
         val mockFileMetaData = FileMetaData("test.jpg", 4, "image/jpeg", mockFile.inputStream)
         BDDMockito
@@ -32,7 +33,7 @@ class ImageControllerTest : AcceptanceSupporter() {
                 uploadImageUsecase.upload(
                     UploadImageUsecase.Command(
                         image = mockFileMetaData,
-                        "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(UploadImageUsecase.Response("imageUrl"))

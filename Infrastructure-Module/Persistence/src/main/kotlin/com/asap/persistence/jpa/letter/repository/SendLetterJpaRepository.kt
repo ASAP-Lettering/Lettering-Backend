@@ -4,6 +4,7 @@ import com.asap.domain.letter.enums.LetterStatus
 import com.asap.persistence.jpa.common.EntityStatus
 import com.asap.persistence.jpa.letter.entity.SendLetterEntity
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface SendLetterJpaRepository : JpaRepository<SendLetterEntity, String> {
@@ -84,6 +85,19 @@ interface SendLetterJpaRepository : JpaRepository<SendLetterEntity, String> {
         letterCode: String,
         receiverId: String,
     ): Boolean
+
+    @Modifying
+    @Query(
+        """
+        UPDATE SendLetterEntity s
+        SET s.entityStatus = :entityStatus
+        WHERE s.id = :id
+    """,
+    )
+    fun updateEntityStatus(
+        id: String,
+        entityStatus: EntityStatus,
+    )
 }
 
 fun SendLetterJpaRepository.findActiveSendLetterById(id: String): SendLetterEntity? = findBy(id, EntityStatus.ACTIVE)
@@ -105,3 +119,7 @@ fun SendLetterJpaRepository.findActiveSendLetterByIdAndReceiverIdAndLetterStatus
 
 fun SendLetterJpaRepository.findAllActiveSendLetterBySenderId(senderId: String): List<SendLetterEntity> =
     findAllBy(senderId, EntityStatus.ACTIVE)
+
+fun SendLetterJpaRepository.deleteBy(sendLetterEntity: SendLetterEntity) {
+    updateEntityStatus(sendLetterEntity.id, EntityStatus.DELETED)
+}

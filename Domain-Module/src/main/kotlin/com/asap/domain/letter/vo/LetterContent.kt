@@ -5,12 +5,17 @@ data class LetterContent(
     val images: MutableList<String>,
     val templateType: Int,
 ) {
-    fun updateContent(content: String)  {
+    fun updateContent(content: String) {
         this.content = content
     }
 
-    fun updateImages(images: MutableList<String>)  {
+    fun updateImages(images: MutableList<String>) {
         this.images.clear()
         this.images.addAll(images)
+    }
+
+    fun delete()  {
+        this.content = ""
+        this.images.clear()
     }
 }

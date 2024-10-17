@@ -55,7 +55,7 @@ class DraftLetterCommandServiceTest :
         }
 
         given("임시 저장 편지를 삭제할 때") {
-            val command = RemoveDraftLetterUsecase.Command(draftId = "draftId", userId = "userId")
+            val command = RemoveDraftLetterUsecase.Command.Draft(draftId = "draftId", userId = "userId")
             val draftLetter = DraftLetter.default(DomainId(command.userId))
             every {
                 mockGenerateDraftKeyUsecase.getDraftLetterNotNull(
@@ -64,7 +64,7 @@ class DraftLetterCommandServiceTest :
                 )
             } returns draftLetter
             `when`("사용자 아이디와 임시 저장 편지 아이디를 입력하면") {
-                draftLetterCommandService.command(command)
+                draftLetterCommandService.deleteBy(command)
                 then("임시 저장 편지를 삭제한다") {
                     verify { mockGenerateDraftKeyUsecase.remove(any()) }
                 }

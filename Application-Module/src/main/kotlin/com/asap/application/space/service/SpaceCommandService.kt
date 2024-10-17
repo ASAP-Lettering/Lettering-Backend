@@ -61,7 +61,7 @@ class SpaceCommandService(
         reIndexingSpaceOrder(DomainId(command.userId))
     }
 
-    override fun deleteAll(command: DeleteSpaceUsecase.DeleteAllCommand) {
+    override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllCommand) {
         spaceManagementPort.deleteAllBySpaceIds(
             userId = DomainId(command.userId),
             spaceIds = command.spaceIds.map { DomainId(it) },
@@ -75,6 +75,10 @@ class SpaceCommandService(
             )
         }
         reIndexingSpaceOrder(DomainId(command.userId))
+    }
+
+    override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllUser) {
+        spaceManagementPort.deleteAllByUserId(DomainId(command.userId))
     }
 
     override fun update(command: UpdateSpaceIndexUsecase.Command) {

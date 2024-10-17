@@ -121,11 +121,12 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun getSpaces() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         BDDMockito
             .given(
                 getSpaceUsecase.getAll(
-                    GetSpaceUsecase.GetAllQuery("userId"),
+                    GetSpaceUsecase.GetAllQuery(userId),
                 ),
             ).willReturn(
                 GetSpaceUsecase.GetAllResponse(
@@ -253,12 +254,13 @@ class SpaceControllerTest : AcceptanceSupporter() {
     @Test
     fun getSpace() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = "spaceId"
         BDDMockito
             .given(
                 getSpaceUsecase.get(
-                    GetSpaceUsecase.GetQuery("userId", spaceId),
+                    GetSpaceUsecase.GetQuery(userId, spaceId),
                 ),
             ).willReturn(
                 GetSpaceUsecase.GetResponse(
