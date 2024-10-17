@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class LetterHandler(
+class LetterEventHandler(
     private val removeLetterUsecase: RemoveLetterUsecase,
 ) {
     @EventListener

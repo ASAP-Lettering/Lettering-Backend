@@ -256,7 +256,16 @@ interface LetterApi {
         @AccessUser userId: String,
     ): AllLetterCountResponse
 
+    @Operation(summary = "보낸 편지 목록 조회")
     @GetMapping("/send")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "보낸 편지 목록 조회 성공",
+            ),
+        ],
+    )
     fun getSendLetterHistory(
         @AccessUser userId: String,
     ): ListResponse<SendLetterHistoryResponse>

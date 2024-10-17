@@ -11,7 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 
-class SpaceLetterHandlerTest : IntegrationSupporter() {
+class SpaceLetterEventHandlerTest : IntegrationSupporter() {
     @Autowired
     private lateinit var spaceMockManager: SpaceMockManager
 

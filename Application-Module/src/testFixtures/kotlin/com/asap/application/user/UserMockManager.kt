@@ -18,20 +18,25 @@ class UserMockManager(
     fun settingUser(
         userId: String = DomainId.generate().value,
         username: String = "nickname",
-    ): String {
-        val user =
-            userManagementPort.saveUser(
-                User(
-                    id = DomainId(userId),
-                    username = username,
-                    profileImage = "profileImage",
-                    permission = UserPermission(true, true, true),
-                    birthday = LocalDate.now(),
-                    email = "email",
-                ),
-            )
-        return user.id.value
-    }
+    ): String =
+        settingUserWithUserDomain(
+            userId = userId,
+            username = username,
+        ).id.value
+
+    fun settingUserWithUserDomain(
+        userId: String = DomainId.generate().value,
+        username: String = "nickname",
+    ) = userManagementPort.saveUser(
+        User(
+            id = DomainId(userId),
+            username = username,
+            profileImage = "profileImage",
+            permission = UserPermission(true, true, true),
+            birthday = LocalDate.now(),
+            email = "email",
+        ),
+    )
 
     fun settingUserAuth(
         userId: String,

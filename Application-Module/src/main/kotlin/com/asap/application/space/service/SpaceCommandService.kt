@@ -78,6 +78,7 @@ class SpaceCommandService(
     }
 
     override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllUser) {
+        spaceManagementPort.deleteAllByUserId(DomainId(command.userId))
     }
 
     override fun update(command: UpdateSpaceIndexUsecase.Command) {

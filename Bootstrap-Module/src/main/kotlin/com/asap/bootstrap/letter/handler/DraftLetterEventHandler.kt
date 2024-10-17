@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class DraftLetterHandler(
+class DraftLetterEventHandler(
     private val removeDraftLetterUsecase: RemoveDraftLetterUsecase,
 ) {
     @EventListener
