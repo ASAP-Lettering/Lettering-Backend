@@ -1,1 +1,1 @@
-alter table user_token modify column token varchar(1000) not null;
+alter table user_token modify column token text not null;
