@@ -1,0 +1,1 @@
+alter table user_token modify column token varchar(1000) not null;
