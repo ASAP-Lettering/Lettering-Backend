@@ -52,5 +52,6 @@ object ReceiverLetterMapper {
                 ),
             receiveDate = receiveLetterEntity.receiveDate,
             spaceId = receiveLetterEntity.spaceId!!.let { DomainId(it) },
+            movedAt = receiveLetterEntity.movedAt,
         )
 }

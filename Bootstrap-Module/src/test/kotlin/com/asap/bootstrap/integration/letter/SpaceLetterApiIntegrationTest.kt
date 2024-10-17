@@ -84,6 +84,55 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                 }
             }
         }
+
+        @Test
+        fun moveLetterToSpace_inserted_last() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            letterMockManager.generateMockSpaceLetter(
+                receiverId = userId,
+                senderName = "senderName",
+                spaceId = spaceId,
+            )
+            val independentLetterId =
+                letterMockManager
+                    .generateMockIndependentLetter(
+                        receiverId = userId,
+                        senderName = "senderName",
+                    ).id.value
+            letterMockManager.generateMockSpaceLetter(
+                receiverId = userId,
+                senderName = "senderName",
+                spaceId = spaceId,
+            )
+            val request = MoveLetterToSpaceRequest(spaceId)
+
+            // when
+            mockMvc.put("/api/v1/spaces/letters/$independentLetterId") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+                header("Authorization", "Bearer $accessToken")
+            }
+
+            val response =
+                mockMvc.get("/api/v1/spaces/$spaceId/letters?page=0&size=10") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    isArray()
+                    jsonPath("$.content[2].letterId") {
+                        value(independentLetterId)
+                    }
+                }
+            }
+        }
     }
 
     @Nested

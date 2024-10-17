@@ -7,6 +7,7 @@ import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.common.page.PageRequest
+import com.asap.common.page.Sort
 import com.asap.domain.common.DomainId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -103,6 +104,7 @@ class LetterQueryService(
                     PageRequest(
                         page = query.page,
                         size = query.size,
+                        sorts = Sort("movedAt", Sort.Direction.ASC),
                     ),
             )
         return GetSpaceLettersUsecase.Response(
