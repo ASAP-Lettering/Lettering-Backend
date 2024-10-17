@@ -2,6 +2,7 @@ package com.asap.bootstrap.letter.handler
 
 import com.asap.application.letter.event.DraftLetterSendEvent
 import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
+import com.asap.application.user.event.UserEvent
 import org.springframework.context.event.EventListener
 import org.springframework.web.bind.annotation.RestController
 
@@ -11,10 +12,19 @@ class DraftLetterEventHandler(
 ) {
     @EventListener
     fun deleteDraftLetter(event: DraftLetterSendEvent) {
-        removeDraftLetterUsecase.command(
-            RemoveDraftLetterUsecase.Command(
+        removeDraftLetterUsecase.deleteBy(
+            RemoveDraftLetterUsecase.Command.Draft(
                 userId = event.userId,
                 draftId = event.draftLetterId,
+            ),
+        )
+    }
+
+    @EventListener
+    fun onUserDelete(event: UserEvent.UserDeletedEvent) {
+        removeDraftLetterUsecase.deleteBy(
+            RemoveDraftLetterUsecase.Command.User(
+                userId = event.user.id.value,
             ),
         )
     }
