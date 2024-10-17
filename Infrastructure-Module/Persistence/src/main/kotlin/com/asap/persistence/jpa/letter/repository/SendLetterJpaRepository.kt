@@ -84,6 +84,18 @@ interface SendLetterJpaRepository : JpaRepository<SendLetterEntity, String> {
         letterCode: String,
         receiverId: String,
     ): Boolean
+
+    @Query(
+        """
+        UPDATE SendLetterEntity s
+        SET s.entityStatus = :entityStatus
+        WHERE s.id = :id
+    """,
+    )
+    fun updateEntityStatus(
+        id: String,
+        entityStatus: EntityStatus,
+    )
 }
 
 fun SendLetterJpaRepository.findActiveSendLetterById(id: String): SendLetterEntity? = findBy(id, EntityStatus.ACTIVE)
@@ -105,3 +117,7 @@ fun SendLetterJpaRepository.findActiveSendLetterByIdAndReceiverIdAndLetterStatus
 
 fun SendLetterJpaRepository.findAllActiveSendLetterBySenderId(senderId: String): List<SendLetterEntity> =
     findAllBy(senderId, EntityStatus.ACTIVE)
+
+fun SendLetterJpaRepository.deleteBy(sendLetterEntity: SendLetterEntity) {
+    updateEntityStatus(sendLetterEntity.id, EntityStatus.DELETED)
+}

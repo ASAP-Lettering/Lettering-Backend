@@ -96,4 +96,11 @@ class SpaceManagementJpaAdapter(
             ids = spaceIds.map { it.value },
         )
     }
+
+    override fun deleteAllByUserId(userId: DomainId) {
+        spaceJpaRepository.deleteAllByUserIdAndIds(
+            userId = userId.value,
+            ids = spaceJpaRepository.findAllActiveSpaceByUserId(userId.value).map { it.id },
+        )
+    }
 }

@@ -7,6 +7,10 @@ interface RemoveLetterUsecase {
 
     fun removeIndependentLetter(command: Command.IndependentLetter)
 
+    fun removeAllIndependentLetterBy(command: Command.User)
+
+    fun removeAllSenderLetterBy(command: Command.User)
+
     sealed class Command {
         data class SpaceLetter(
             val letterId: String,
@@ -20,6 +24,10 @@ interface RemoveLetterUsecase {
 
         data class IndependentLetter(
             val letterId: String,
+            val userId: String,
+        ) : Command()
+
+        data class User(
             val userId: String,
         ) : Command()
     }

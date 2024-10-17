@@ -53,7 +53,8 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getAllSpaceLetters() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val spaceId = "spaceId"
         val page = 0
         val size = 10
@@ -73,7 +74,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                 totalPages = 1,
             )
         BDDMockito
-            .given(getSpaceLettersUsecase.get(GetSpaceLettersUsecase.Query(page, size, spaceId, "userId")))
+            .given(getSpaceLettersUsecase.get(GetSpaceLettersUsecase.Query(page, size, spaceId, userId)))
             .willReturn(pageResponse)
         // when
         val response =
@@ -105,7 +106,8 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getLetterDetail() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val details =
             GetSpaceLetterDetailUsecase.Response(
                 senderName = "senderName",
@@ -123,7 +125,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                 getSpaceLetterDetailUsecase.get(
                     GetSpaceLetterDetailUsecase.Query(
                         letterId = "letterId",
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(details)

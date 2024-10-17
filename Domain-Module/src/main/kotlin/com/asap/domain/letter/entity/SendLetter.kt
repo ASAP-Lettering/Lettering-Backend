@@ -11,7 +11,7 @@ data class SendLetter(
     val id: DomainId = DomainId.generate(),
     val content: LetterContent,
     val senderId: DomainId,
-    val receiverName: String,
+    var receiverName: String,
     var letterCode: String?,
     var status: LetterStatus = LetterStatus.SENDING,
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -19,7 +19,7 @@ data class SendLetter(
 ) {
     val createdDate: LocalDate = createdAt.toLocalDate()
 
-    fun isSameReceiver(receiver: () -> User): Boolean  {
+    fun isSameReceiver(receiver: () -> User): Boolean {
         val receiverUser = receiver()
         return receiverName == receiverUser.username && (receiverId == null || receiverId == receiverUser.id)
     }
@@ -32,5 +32,12 @@ data class SendLetter(
     fun receiveLetter() {
         status = LetterStatus.RECEIVED
         letterCode = null
+    }
+
+    fun delete() {
+        this.content.delete()
+        this.receiverName = ""
+        this.letterCode = null
+        this.receiverId = null
     }
 }

@@ -368,7 +368,7 @@ class LetterQueryServiceTest :
             val sender = UserFixture.createUser()
             val query = GetSendLetterUsecase.Query.AllHistory(sender.id.value)
             val sendLetters = LetterFixture.generateSendLetter(senderId = sender.id)
-            every { mockSendLetterManagementPort.getAllSendLetter(sender.id) } returns listOf(sendLetters)
+            every { mockSendLetterManagementPort.getAllBy(sender.id) } returns listOf(sendLetters)
             `when`("전체 편지 조회 요청이 들어오면") {
                 val response = letterQueryService.getHistory(query)
                 then("전체 편지를 반환한다") {

@@ -36,7 +36,7 @@ class UserMockManager(
     fun settingUserAuth(
         userId: String,
         socialId: String = "socialId",
-        provider: String = "provider",
+        provider: String = "KAKAO",
     ) {
         userAuthManagementPort.saveUserAuth(
             UserAuth(

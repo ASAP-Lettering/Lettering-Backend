@@ -16,10 +16,11 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft key`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
 
         BDDMockito
-            .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command("userId")))
+            .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command(userId)))
             .willReturn(GenerateDraftKeyUsecase.Response("draftId"))
 
         // when
@@ -38,7 +39,8 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `update draft`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val request =
             UpdateDraftLetterRequest(
                 content = "content",
@@ -62,10 +64,11 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get all drafts`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
 
         BDDMockito
-            .given(getDraftLetterUsecase.getAll(GetDraftLetterUsecase.Query.All("userId")))
+            .given(getDraftLetterUsecase.getAll(GetDraftLetterUsecase.Query.All(userId)))
             .willReturn(
                 GetDraftLetterUsecase.Response.All(
                     drafts =
@@ -101,10 +104,11 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft letter`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
 
         BDDMockito
-            .given(getDraftLetterUsecase.getByKey(GetDraftLetterUsecase.Query.ByKey("draftKey", "userId")))
+            .given(getDraftLetterUsecase.getByKey(GetDraftLetterUsecase.Query.ByKey("draftKey", userId)))
             .willReturn(
                 GetDraftLetterUsecase.Response.ByKey(
                     draftKey = "draftKey",
@@ -137,10 +141,11 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `get draft count`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
 
         BDDMockito
-            .given(getDraftLetterUsecase.count(GetDraftLetterUsecase.Query.All("userId")))
+            .given(getDraftLetterUsecase.count(GetDraftLetterUsecase.Query.All(userId)))
             .willReturn(GetDraftLetterUsecase.Response.Count(1))
 
         // when
@@ -160,7 +165,8 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun `delete draft`() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
 
         // when
         val response =

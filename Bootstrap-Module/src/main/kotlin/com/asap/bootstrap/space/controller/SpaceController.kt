@@ -95,7 +95,7 @@ class SpaceController(
         request: DeleteMultipleSpacesRequest,
         userId: String,
     ) {
-        deleteSpaceUsecase.deleteAll(
+        deleteSpaceUsecase.deleteAllBy(
             DeleteSpaceUsecase.DeleteAllCommand(
                 userId = userId,
                 spaceIds = request.spaceIds,

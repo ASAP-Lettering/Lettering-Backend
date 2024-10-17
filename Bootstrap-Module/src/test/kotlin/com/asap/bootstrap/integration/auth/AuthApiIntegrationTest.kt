@@ -86,7 +86,7 @@ class AuthApiIntegrationTest : IntegrationSupporter() {
             }
         // then
         response.andExpect {
-            status { isBadRequest() }
+            status { isNotFound() }
         }
     }
 

@@ -182,4 +182,24 @@ class UserApiIntegrationTest : IntegrationSupporter() {
             }
         }
     }
+
+    @Test
+    fun deleteUser() {
+        // given
+        val userId = userMockManager.settingUser()
+        userMockManager.settingUserAuth(userId = userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        // when
+        val response =
+            mockMvc.delete("/api/v1/users") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
 }

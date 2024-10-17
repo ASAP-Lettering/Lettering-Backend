@@ -16,14 +16,16 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun verifyLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val request = LetterVerifyRequest("letterCode")
         BDDMockito
             .given(
                 verifyLetterAccessibleUsecase.verify(
                     VerifyLetterAccessibleUsecase.Command(
                         letterCode = request.letterCode,
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(VerifyLetterAccessibleUsecase.Response("letterId"))
@@ -56,12 +58,13 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 templateType = 1,
                 draftId = "draftId",
             )
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         BDDMockito
             .given(
                 sendLetterUsecase.send(
                     SendLetterUsecase.Command(
-                        userId = "userId",
+                        userId = userId,
                         receiverName = request.receiverName,
                         content = request.content,
                         images = request.images,
@@ -91,7 +94,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getVerifiedLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val verifiedLetterInfoResponse =
             GetVerifiedLetterUsecase.Response(
                 senderName = "sendName",
@@ -105,7 +110,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 getVerifiedLetterUsecase.get(
                     GetVerifiedLetterUsecase.Query(
                         letterId = "letterId",
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(verifiedLetterInfoResponse)
@@ -147,7 +152,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun addReceiveLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val request =
             AddVerifiedLetterRequest(
                 letterId = "letterId",
@@ -168,7 +175,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getIndependentLetters() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val letterInfo =
             GetIndependentLettersUsecase.LetterInfo(
                 letterId = "letterId",
@@ -183,7 +192,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             .given(
                 getIndependentLettersUsecase.getAll(
                     GetIndependentLettersUsecase.QueryAll(
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(response)
@@ -220,7 +229,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getIndependentLetterDetail() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val response =
             GetIndependentLettersUsecase.Response.One(
                 senderName = "senderName",
@@ -244,7 +255,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             .given(
                 getIndependentLettersUsecase.get(
                     GetIndependentLettersUsecase.Query(
-                        userId = "userId",
+                        userId = userId,
                         letterId = "letterId",
                     ),
                 ),
@@ -317,7 +328,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun addPhysicalLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val request =
             AddPhysicalLetterRequest(
                 senderName = "senderName",
@@ -341,7 +354,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun deleteIndependentLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         // when
         val response =
             mockMvc.delete("/api/v1/letters/independent/{letterId}", "letterId") {
@@ -357,7 +372,9 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun updateIndependentLetter() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val request =
             ModifyLetterRequest(
                 senderName = "senderName",
@@ -380,13 +397,15 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getAllLetterCount() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
         val response = GetAllLetterCountUsecase.Response(5)
         BDDMockito
             .given(
                 getAllLetterCountUsecase.get(
                     GetAllLetterCountUsecase.Query(
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(response)
@@ -410,7 +429,8 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     @Test
     fun getAllSendLetterHistory() {
         // given
-        val accessToken = jwtMockManager.generateAccessToken()
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
         val response =
             (0..2).map {
                 GetSendLetterUsecase.Response.History(
@@ -423,7 +443,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             .given(
                 getSendLetterUsecase.getHistory(
                     GetSendLetterUsecase.Query.AllHistory(
-                        userId = "userId",
+                        userId = userId,
                     ),
                 ),
             ).willReturn(response)
