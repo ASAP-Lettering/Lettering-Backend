@@ -341,49 +341,104 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun getIndependentLetters() {
-        // given
-        val receiverId = userMockManager.settingUser()
-        val senderId = userMockManager.settingUser(username = "senderUsername")
-        val accessToken = jwtMockManager.generateAccessToken(receiverId)
-        val independentLetter =
-            letterMockManager.generateMockIndependentLetter(
-                senderId = senderId,
-                receiverId = receiverId,
-                senderName = "senderUsername",
-            )
-        val letterId = independentLetter.id.value
-        // when
-        val result =
-            mockMvc.get("/api/v1/letters/independent") {
+    @Nested
+    inner class GetIndependentLetters {
+        @Test
+        fun getIndependentLetters() {
+            // given
+            val receiverId = userMockManager.settingUser()
+            val senderId = userMockManager.settingUser(username = "senderUsername")
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            val independentLetter =
+                letterMockManager.generateMockIndependentLetter(
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    senderName = "senderUsername",
+                )
+            val letterId = independentLetter.id.value
+            // when
+            val result =
+                mockMvc.get("/api/v1/letters/independent") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            result.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    exists()
+                    isArray()
+                    jsonPath("$.content[0].letterId") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                        value(letterId)
+                    }
+                    jsonPath("$.content[0].senderName") {
+                        exists()
+                        isString()
+                        isNotEmpty()
+                        value("senderUsername")
+                    }
+                    jsonPath("$.content[0].isNew") {
+                        exists()
+                        isBoolean()
+                        value(true)
+                    }
+                }
+            }
+        }
+
+        @Test
+        fun getIndependentLetters_get_movedAt_sorted() {
+            // given
+            val receiverId = userMockManager.settingUser()
+            val senderId = userMockManager.settingUser(username = "senderUsername")
+            val space = spaceMockManager.settingSpace(receiverId)
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+
+            val spaceLetter =
+                letterMockManager.generateMockSpaceLetter(
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    senderName = "senderUsername",
+                    spaceId = space.id.value,
+                )
+
+            (0..1).forEach { _ ->
+                letterMockManager.generateMockIndependentLetter(
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    senderName = "senderUsername",
+                )
+            }
+
+            mockMvc.put("/api/v1/spaces/letters/${spaceLetter.id.value}/independent") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        result.andExpect {
-            status { isOk() }
-            jsonPath("$.content") {
-                exists()
-                isArray()
-                jsonPath("$.content[0].letterId") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                    value(letterId)
+
+            // when
+            val result =
+                mockMvc.get("/api/v1/letters/independent") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
                 }
-                jsonPath("$.content[0].senderName") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                    value("senderUsername")
-                }
-                jsonPath("$.content[0].isNew") {
-                    exists()
-                    isBoolean()
-                    value(true)
-                }
-            }
+            // then
+            result
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.content") {
+                        exists()
+                        isArray()
+                        jsonPath("$.content[0].letterId") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                            value(spaceLetter.id.value)
+                        }
+                    }
+                }.andDo { print() }
         }
     }
 
@@ -753,14 +808,13 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                         spaceId = space.id.value,
                     )
                 }
-            val independentLetters =
-                (0..3).map {
-                    letterMockManager.generateMockIndependentLetter(
-                        senderId = senderId,
-                        receiverId = receiverId,
-                        senderName = "senderUsername",
-                    )
-                }
+            (0..3).forEach { _ ->
+                letterMockManager.generateMockIndependentLetter(
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    senderName = "senderUsername",
+                )
+            }
 
             mockMvc.delete("/api/v1/spaces/letters/${spaceLetters[0].id.value}") {
                 contentType = MediaType.APPLICATION_JSON

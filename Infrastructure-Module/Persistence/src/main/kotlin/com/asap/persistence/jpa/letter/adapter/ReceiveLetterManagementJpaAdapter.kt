@@ -42,6 +42,7 @@ class ReceiveLetterManagementJpaAdapter(
         receiveLetterJpaRepository
             .findAllIndependentLetterBy(receiverId.value)
             .map { ReceiverLetterMapper.toIndependentLetter(it) }
+            .sortedByDescending { it.receiveDate }
 
     override fun getIndependentLetterByIdNotNull(id: DomainId): IndependentLetter =
         receiveLetterJpaRepository
