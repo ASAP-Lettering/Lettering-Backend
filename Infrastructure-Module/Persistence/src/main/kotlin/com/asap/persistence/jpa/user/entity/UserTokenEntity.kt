@@ -17,7 +17,6 @@ class UserTokenEntity(
 ) : AggregateRoot<UserTokenEntity>(id) {
     @Column(
         nullable = false,
-        unique = true,
         columnDefinition = "text",
     )
     val token: String = token
