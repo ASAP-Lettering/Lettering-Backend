@@ -31,6 +31,15 @@ class SpaceManagementJpaAdapter(
             SpaceMapper.toSpace(it)
         } ?: throw SpaceException.SpaceNotFoundException()
 
+    override fun getIndexedSpaceNotNull(
+        userId: DomainId,
+        spaceId: DomainId,
+    ): IndexedSpace {
+        spaceJpaRepository.findActiveSpaceByIdAndUserId(spaceId.value, userId.value)?.let {
+            return SpaceMapper.toIndexedSpace(it)
+        } ?: throw SpaceException.SpaceNotFoundException()
+    }
+
     override fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace> =
         spaceJpaRepository
             .findAllActiveSpaceByUserId(userId.value)
@@ -42,7 +51,7 @@ class SpaceManagementJpaAdapter(
         val entity =
             SpaceMapper.toSpaceEntity(
                 space = space,
-                index = spaceJpaRepository.countActiveSpaceByUserId(space.userId.value).toInt(),
+                index = -1,
             )
         return spaceJpaRepository.save(entity).let {
             SpaceMapper.toSpace(it)

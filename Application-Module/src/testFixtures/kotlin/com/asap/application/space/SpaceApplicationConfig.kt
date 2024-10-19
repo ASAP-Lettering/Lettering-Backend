@@ -6,11 +6,8 @@ import org.springframework.context.annotation.Bean
 
 @TestConfiguration
 class SpaceApplicationConfig(
-    private val spaceManagementPort: SpaceManagementPort
+    private val spaceManagementPort: SpaceManagementPort,
 ) {
-
     @Bean
-    fun spaceMockManager(): SpaceMockManager {
-        return SpaceMockManager(spaceManagementPort)
-    }
+    fun spaceMockManager(): SpaceMockManager = SpaceMockManager(spaceManagementPort)
 }
