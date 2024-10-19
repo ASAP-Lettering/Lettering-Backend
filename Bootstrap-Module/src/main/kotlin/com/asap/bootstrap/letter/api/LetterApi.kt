@@ -269,4 +269,25 @@ interface LetterApi {
     fun getSendLetterHistory(
         @AccessUser userId: String,
     ): ListResponse<SendLetterHistoryResponse>
+
+    @Operation(summary = "보낸 편지 상세 조회")
+    @GetMapping("/send/{letterId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "보낸 편지 상세 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = SendLetterDetailResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getSendLetterDetail(
+        @PathVariable letterId: String,
+        @AccessUser userId: String,
+    ): SendLetterDetailResponse
 }

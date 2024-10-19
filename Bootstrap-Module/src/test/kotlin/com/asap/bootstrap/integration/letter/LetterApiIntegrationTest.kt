@@ -891,4 +891,51 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             }
         }
     }
+
+    @Test
+    fun getSendLetterDetail()  {
+        // given
+        val senderId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(senderId)
+        val sendLetter =
+            letterMockManager.generateMockSendLetter(
+                receiverName = "receiverName",
+                senderId = senderId,
+            )
+        val letterId = sendLetter.id.value
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/send/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.receiverName") {
+                exists()
+                isString()
+                isNotEmpty()
+                value("receiverName")
+            }
+            jsonPath("$.sendDate") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.content") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.images") {
+                exists()
+                isArray()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+        }
+    }
 }

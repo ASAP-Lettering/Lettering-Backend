@@ -369,14 +369,32 @@ class LetterQueryServiceTest :
         given("작성한 편지에 대해 조회할 떄") {
             val sender = UserFixture.createUser()
             val query = GetSendLetterUsecase.Query.AllHistory(sender.id.value)
-            val sendLetters = LetterFixture.generateSendLetter(senderId = sender.id)
-            every { mockSendLetterManagementPort.getAllBy(sender.id) } returns listOf(sendLetters)
+            val sendLetter = LetterFixture.generateSendLetter(senderId = sender.id)
             `when`("전체 편지 조회 요청이 들어오면") {
+                every { mockSendLetterManagementPort.getAllBy(sender.id) } returns listOf(sendLetter)
                 val response = letterQueryService.getHistory(query)
                 then("전체 편지를 반환한다") {
-                    response[0].letterId shouldBe sendLetters.id.value
-                    response[0].receiverName shouldBe sendLetters.receiverName
-                    response[0].sendDate shouldBe sendLetters.createdDate
+                    response[0].letterId shouldBe sendLetter.id.value
+                    response[0].receiverName shouldBe sendLetter.receiverName
+                    response[0].sendDate shouldBe sendLetter.createdDate
+                }
+            }
+
+            `when`("상세 편지 조회 요청이 들어오면") {
+                val queryDetail = GetSendLetterUsecase.Query.Detail(sender.id.value, sendLetter.id.value)
+                every {
+                    mockSendLetterManagementPort.getSendLetterBy(
+                        letterId = DomainId(queryDetail.letterId),
+                        senderId = DomainId(queryDetail.userId),
+                    )
+                } returns sendLetter
+                val response = letterQueryService.getDetail(queryDetail)
+                then("상세 편지를 반환한다") {
+                    response.receiverName shouldBe sendLetter.receiverName
+                    response.sendDate shouldBe sendLetter.createdDate
+                    response.content shouldBe sendLetter.content.content
+                    response.images shouldBe sendLetter.content.images
+                    response.templateType shouldBe sendLetter.content.templateType
                 }
             }
         }

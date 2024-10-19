@@ -185,4 +185,19 @@ class LetterQueryService(
                 sendDate = it.createdDate,
             )
         }
+
+    override fun getDetail(query: GetSendLetterUsecase.Query.Detail): GetSendLetterUsecase.Response.Detail {
+        val letter =
+            sendLetterManagementPort.getSendLetterBy(
+                letterId = DomainId(query.letterId),
+                senderId = DomainId(query.userId),
+            )
+        return GetSendLetterUsecase.Response.Detail(
+            receiverName = letter.receiverName,
+            sendDate = letter.createdDate,
+            content = letter.content.content,
+            images = letter.content.images,
+            templateType = letter.content.templateType,
+        )
+    }
 }

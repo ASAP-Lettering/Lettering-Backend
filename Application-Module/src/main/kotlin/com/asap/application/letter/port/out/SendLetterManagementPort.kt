@@ -37,5 +37,10 @@ interface SendLetterManagementPort {
 
     fun getAllBy(senderId: DomainId): List<SendLetter>
 
+    fun getSendLetterBy(
+        senderId: DomainId,
+        letterId: DomainId,
+    ): SendLetter
+
     fun delete(sendLetter: SendLetter)
 }
