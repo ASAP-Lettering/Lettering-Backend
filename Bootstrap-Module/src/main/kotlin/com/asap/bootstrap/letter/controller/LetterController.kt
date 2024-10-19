@@ -218,4 +218,24 @@ class LetterController(
                 },
         )
     }
+
+    override fun getSendLetterDetail(
+        letterId: String,
+        userId: String,
+    ): SendLetterDetailResponse {
+        val response =
+            getSendLetterUsecase.getDetail(
+                GetSendLetterUsecase.Query.Detail(
+                    userId = userId,
+                    letterId = letterId,
+                ),
+            )
+        return SendLetterDetailResponse(
+            receiverName = response.receiverName,
+            sendDate = response.sendDate,
+            content = response.content,
+            images = response.images,
+            templateType = response.templateType,
+        )
+    }
 }

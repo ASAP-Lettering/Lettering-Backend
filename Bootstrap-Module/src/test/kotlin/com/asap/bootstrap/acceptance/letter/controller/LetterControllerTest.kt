@@ -485,4 +485,61 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             }
         }
     }
+
+    @Test
+    fun getSendLetterDetail() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+        val response =
+            GetSendLetterUsecase.Response.Detail(
+                receiverName = "receiverName",
+                sendDate = LocalDate.now(),
+                content = "content",
+                images = listOf("images"),
+                templateType = 1,
+            )
+        BDDMockito
+            .given(
+                getSendLetterUsecase.getDetail(
+                    GetSendLetterUsecase.Query.Detail(
+                        userId = userId,
+                        letterId = "letterId",
+                    ),
+                ),
+            ).willReturn(response)
+        // when
+        val result =
+            mockMvc.get("/api/v1/letters/send/{letterId}", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.receiverName") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.sendDate") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.content") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+            jsonPath("$.images") {
+                exists()
+                isArray()
+            }
+            jsonPath("$.templateType") {
+                exists()
+                isNumber()
+            }
+        }
+    }
 }

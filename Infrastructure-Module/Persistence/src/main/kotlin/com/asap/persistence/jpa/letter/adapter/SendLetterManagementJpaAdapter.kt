@@ -67,6 +67,17 @@ class SendLetterManagementJpaAdapter(
             .findAllActiveSendLetterBySenderId(senderId.value)
             .map { SendLetterMapper.toSendLetter(it) }
 
+    override fun getSendLetterBy(
+        senderId: DomainId,
+        letterId: DomainId,
+    ): SendLetter =
+        sendLetterJpaRepository
+            .findActiveSendLetterByIdAndSenderId(
+                senderId = senderId.value,
+                letterId = letterId.value,
+            )?.let { SendLetterMapper.toSendLetter(it) }
+            ?: throw LetterException.SendLetterNotFoundException()
+
     override fun delete(sendLetter: SendLetter) {
         sendLetterJpaRepository.deleteBy(SendLetterMapper.toSendLetterEntity(sendLetter))
     }
