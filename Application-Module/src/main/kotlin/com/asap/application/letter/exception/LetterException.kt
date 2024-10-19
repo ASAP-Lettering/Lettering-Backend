@@ -13,6 +13,7 @@ sealed class LetterException(
     ) : LetterException(
             errorCode = 1,
             message = message,
+            httpStatus = 404,
         )
 
     class InvalidLetterAccessException(
