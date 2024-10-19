@@ -27,7 +27,7 @@ class UserMockManager(
     fun settingUserWithUserDomain(
         userId: String = DomainId.generate().value,
         username: String = "nickname",
-    ) = userManagementPort.saveUser(
+    ) = userManagementPort.save(
         User(
             id = DomainId(userId),
             username = username,

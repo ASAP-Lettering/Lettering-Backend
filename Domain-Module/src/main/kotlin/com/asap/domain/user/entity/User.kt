@@ -12,11 +12,14 @@ data class User(
     val permission: UserPermission,
     var birthday: LocalDate?,
 ) {
-
-    fun delete()  {
+    fun delete() {
         this.username = "UNKNOWN"
         this.profileImage = "UNKNOWN"
         this.email = "UNKNOWN"
         this.birthday = null
+    }
+
+    fun updateBirthday(birthday: LocalDate) {
+        this.birthday = birthday
     }
 }
