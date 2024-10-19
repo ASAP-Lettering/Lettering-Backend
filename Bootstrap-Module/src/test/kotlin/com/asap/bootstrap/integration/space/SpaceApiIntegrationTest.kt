@@ -112,26 +112,81 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun createSpace() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        val request =
-            CreateSpaceRequest(
-                spaceName = "spaceName",
-                templateType = 0,
-            )
-        // when
-        val response =
+    @Nested
+    inner class CreateSpace {
+        @Test
+        fun createSpace() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val request =
+                CreateSpaceRequest(
+                    spaceName = "spaceName",
+                    templateType = 0,
+                )
+            // when
+            val response =
+                mockMvc.post("/api/v1/spaces") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+        @Test
+        fun createSpace_and_get_main_space() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            (0..2).forEach {
+                spaceMockManager.settingSpace(userId)
+            }
+            val request =
+                CreateSpaceRequest(
+                    spaceName = "createdSpace",
+                    templateType = 0,
+                )
+            // when
             mockMvc.post("/api/v1/spaces") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+            val response =
+                mockMvc.get("/api/v1/spaces/main") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.spaceId") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.username") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+                jsonPath("$.templateType") {
+                    exists()
+                    isNumber()
+                    value(request.templateType)
+                }
+                jsonPath("$.spaceName") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                    value(request.spaceName)
+                }
+            }
         }
     }
 

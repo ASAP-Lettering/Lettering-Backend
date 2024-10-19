@@ -32,9 +32,10 @@ class SpaceCommandService(
                 userId = DomainId(command.userId),
                 name = command.spaceName,
                 templateType = command.templateType,
-            ).let {
-                spaceManagementPort.save(it)
+            ).apply {
+                spaceManagementPort.save(this)
             }
+        reIndexingSpaceOrder(DomainId(command.userId))
     }
 
     override fun update(command: UpdateSpaceNameUsecase.Command) {

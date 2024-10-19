@@ -13,6 +13,11 @@ interface SpaceManagementPort {
         spaceId: DomainId,
     ): Space
 
+    fun getIndexedSpaceNotNull(
+        userId: DomainId,
+        spaceId: DomainId,
+    ): IndexedSpace
+
     fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace>
 
     fun save(space: Space): Space
