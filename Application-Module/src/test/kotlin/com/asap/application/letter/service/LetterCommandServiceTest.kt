@@ -404,16 +404,31 @@ class LetterCommandServiceTest :
         }
 
         given("보낸 편지 삭제 요청이 들어올 때") {
-            val command = RemoveLetterUsecase.Command.SendLetter("letter-id", "user-id")
-            val sendLetter = LetterFixture.generateSendLetter()
-            every {
-                mockSendLetterManagementPort.getSendLetterBy(
-                    DomainId(command.letterId),
-                    DomainId(command.userId),
-                )
-            } returns sendLetter
+            val userId = "user-id"
+            val sendLetters =
+                (0..3).map {
+                    LetterFixture.generateSendLetter()
+                }
             `when`("하나의 편지만 삭제하면") {
+                val command = RemoveLetterUsecase.Command.SendLetter(sendLetters[0].id.value, userId)
+                every {
+                    mockSendLetterManagementPort.getSendLetterBy(
+                        DomainId(command.letterId),
+                        DomainId(command.userId),
+                    )
+                } returns sendLetters[0]
                 letterCommandService.removeSenderLetterBy(command)
+                then("편지가 삭제되어야 한다") {
+                    verify { mockSendLetterManagementPort.delete(any()) }
+                    verify { mockSendLetterManagementPort.save(any()) }
+                }
+            }
+
+            `when`("여러 편지를 삭제하면") {
+                val ids = sendLetters.map { it.id }
+                val command = RemoveLetterUsecase.Command.SendLetters(ids.map { it.value }, userId)
+                every { mockSendLetterManagementPort.getAllBy(DomainId(userId), ids) } returns sendLetters
+                letterCommandService.removeAllSenderLetterBy(command)
                 then("편지가 삭제되어야 한다") {
                     verify { mockSendLetterManagementPort.delete(any()) }
                     verify { mockSendLetterManagementPort.save(any()) }

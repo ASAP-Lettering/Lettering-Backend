@@ -3,6 +3,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
 import com.asap.bootstrap.letter.dto.*
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType
@@ -543,20 +544,42 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
         }
     }
 
-    @Test
-    fun deleteSendLetter()  {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        // when
-        val response =
-            mockMvc.delete("/api/v1/letters/send/{letterId}", "letterId") {
-                contentType = MediaType.APPLICATION_JSON
-                header("Authorization", "Bearer $accessToken")
+    @Nested
+    inner class DeleteSendLetter  {
+        @Test
+        fun deleteSendLetter() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            // when
+            val response =
+                mockMvc.delete("/api/v1/letters/send/{letterId}", "letterId") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+        }
+
+        @Test
+        fun deleteSendLetters()  {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val request = DeleteSendLettersRequest(listOf("letterId1", "letterId2"))
+            // when
+            val response =
+                mockMvc.delete("/api/v1/letters/send") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                    content = objectMapper.writeValueAsString(request)
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
         }
     }
 }

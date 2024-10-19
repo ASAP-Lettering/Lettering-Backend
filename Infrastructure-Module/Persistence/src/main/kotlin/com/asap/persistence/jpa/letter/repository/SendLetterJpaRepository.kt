@@ -85,6 +85,21 @@ interface SendLetterJpaRepository : JpaRepository<SendLetterEntity, String> {
         """
         SELECT s
         FROM SendLetterEntity s
+        WHERE s.senderId = :senderId
+        AND s.id IN :letterIds
+        AND s.entityStatus = :entityStatus
+    """,
+    )
+    fun findAllBy(
+        senderId: String,
+        letterIds: List<String>,
+        entityStatus: EntityStatus,
+    ): List<SendLetterEntity>
+
+    @Query(
+        """
+        SELECT s
+        FROM SendLetterEntity s
         WHERE s.id = :letterId
         AND s.senderId = :senderId
         AND s.entityStatus = :entityStatus
@@ -139,6 +154,11 @@ fun SendLetterJpaRepository.findActiveSendLetterByIdAndSenderId(
 
 fun SendLetterJpaRepository.findAllActiveSendLetterBySenderId(senderId: String): List<SendLetterEntity> =
     findAllBy(senderId, EntityStatus.ACTIVE)
+
+fun SendLetterJpaRepository.findAllActiveSendLetterBySenderIdAndLetterIds(
+    senderId: String,
+    letterIds: List<String>,
+): List<SendLetterEntity> = findAllBy(senderId, letterIds, EntityStatus.ACTIVE)
 
 fun SendLetterJpaRepository.deleteBy(sendLetterEntity: SendLetterEntity) {
     updateEntityStatus(sendLetterEntity.id, EntityStatus.DELETED)

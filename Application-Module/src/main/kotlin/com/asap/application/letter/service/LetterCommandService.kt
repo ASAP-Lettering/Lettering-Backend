@@ -209,6 +209,16 @@ class LetterCommandService(
             }
     }
 
+    override fun removeAllSenderLetterBy(command: RemoveLetterUsecase.Command.SendLetters) {
+        sendLetterManagementPort
+            .getAllBy(DomainId(command.userId), command.letterIds.map { DomainId(it) })
+            .forEach {
+                it.delete()
+                sendLetterManagementPort.save(it)
+                sendLetterManagementPort.delete(it)
+            }
+    }
+
     override fun updateIndependentLetter(command: UpdateLetterUsecase.Command.Independent) {
         val independentLetter =
             independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId))

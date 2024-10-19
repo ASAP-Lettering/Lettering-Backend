@@ -297,4 +297,11 @@ interface LetterApi {
         @PathVariable letterId: String,
         @AccessUser userId: String,
     )
+
+    @Operation(summary = "여러개의 보낸 편지 삭제")
+    @DeleteMapping("/send")
+    fun deleteSendLetters(
+        @RequestBody request: DeleteSendLettersRequest,
+        @AccessUser userId: String,
+    )
 }
