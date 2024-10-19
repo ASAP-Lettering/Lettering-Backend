@@ -3,15 +3,18 @@ package com.asap.application.user.service
 import com.asap.application.user.event.UserEvent
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.RegisterUserUsecase
+import com.asap.application.user.port.`in`.UpdateUserUsecase
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.application.user.port.out.UserTokenConvertPort
 import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.application.user.vo.UserClaims
 import com.asap.common.exception.DefaultException
+import com.asap.domain.UserFixture
 import com.asap.domain.user.enums.SocialLoginProvider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -19,7 +22,7 @@ import io.mockk.verify
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
-class RegisterUserServiceTest :
+class UserCommandServiceTest :
     BehaviorSpec({
 
         val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
@@ -64,7 +67,7 @@ class RegisterUserServiceTest :
                 then("access token과 refresh token을 반환한다.") {
                     response.accessToken.isNotEmpty() shouldBe true
                     response.refreshToken.isNotEmpty() shouldBe true
-                    verify { mockUserManagementPort.saveUser(any()) }
+                    verify { mockUserManagementPort.save(any()) }
                     verify { mockEventApplicationPublisher.publishEvent(any(UserEvent.UserCreatedEvent::class)) }
                 }
             }
@@ -146,6 +149,27 @@ class RegisterUserServiceTest :
                     shouldThrow<DefaultException.InvalidDefaultException> {
                         userCommandService.registerUser(failCommandWithoutPrivatePermission)
                     }
+                }
+            }
+        }
+
+        given("사용자 정보 수정 요청이 들어올 때") {
+            val user =
+                UserFixture.createUser().apply {
+                    this.birthday = null
+                }
+
+            val command =
+                UpdateUserUsecase.Command.Birthday(
+                    userId = user.id.value,
+                    birthday = LocalDate.now(),
+                )
+            every { mockUserManagementPort.getUserNotNull(any()) } returns user
+            `when`("생일 수정일 경우") {
+                userCommandService.executeFor(command)
+                then("생일이 수정된다.") {
+                    user.birthday.shouldNotBeNull()
+                    verify { mockUserManagementPort.save(any()) }
                 }
             }
         }

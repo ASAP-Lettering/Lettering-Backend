@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository
 class UserManagementJpaAdapter(
     private val userJpaRepository: UserJpaRepository,
 ) : UserManagementPort {
-    override fun saveUser(user: User): User {
+    override fun save(user: User): User {
         val userEntity = UserMapper.toUserEntity(user)
         userJpaRepository.save(userEntity)
         return user

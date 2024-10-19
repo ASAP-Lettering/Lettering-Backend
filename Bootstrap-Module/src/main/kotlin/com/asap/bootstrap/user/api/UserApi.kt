@@ -1,19 +1,14 @@
 package com.asap.bootstrap.user.api
 
 import com.asap.bootstrap.common.security.annotation.AccessUser
-import com.asap.bootstrap.user.dto.LogoutRequest
-import com.asap.bootstrap.user.dto.RegisterUserRequest
-import com.asap.bootstrap.user.dto.RegisterUserResponse
+import com.asap.bootstrap.user.dto.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "User", description = "User API")
 @RequestMapping("/api/v1/users")
@@ -73,5 +68,36 @@ interface UserApi {
     )
     fun deleteUser(
         @AccessUser userId: String,
+    )
+
+    @Operation(summary = "내 정보 조회")
+    @GetMapping("/info/me")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "내 정보 조회 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = UserInfoResponse::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "내 정보 조회 실패 - 토큰 없음",
+            ),
+        ],
+    )
+    fun getRequestUserInfo(
+        @AccessUser userId: String,
+    ): UserInfoResponse
+
+    @Operation(summary = "내 생일 수정")
+    @PutMapping("/info/me/birthday")
+    fun updateBirthday(
+        @AccessUser userId: String,
+        @RequestBody request: UpdateBirthdayRequest,
     )
 }

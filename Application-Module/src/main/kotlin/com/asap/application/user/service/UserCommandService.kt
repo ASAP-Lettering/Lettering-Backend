@@ -4,6 +4,7 @@ import com.asap.application.user.event.UserEvent
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.DeleteUserUsecase
 import com.asap.application.user.port.`in`.RegisterUserUsecase
+import com.asap.application.user.port.`in`.UpdateUserUsecase
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.application.user.port.out.UserTokenConvertPort
@@ -26,7 +27,8 @@ class UserCommandService(
     private val userTokenManagementPort: UserTokenManagementPort,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) : RegisterUserUsecase,
-    DeleteUserUsecase {
+    DeleteUserUsecase,
+    UpdateUserUsecase {
     override fun registerUser(command: RegisterUserUsecase.Command): RegisterUserUsecase.Response {
         if (!userTokenManagementPort.isExistsToken(command.registerToken)) {
             throw UserException.UserPermissionDeniedException("존재하지 않는 가입 토큰입니다.")
@@ -55,7 +57,7 @@ class UserCommandService(
                 socialLoginProvider = userClaims.socialLoginProvider,
             )
 
-        userManagementPort.saveUser(registerUser)
+        userManagementPort.save(registerUser)
         userAuthManagementPort.saveUserAuth(userAuth)
 
         val accessToken = userTokenConvertPort.generateAccessToken(registerUser)
@@ -74,13 +76,22 @@ class UserCommandService(
             .getUserNotNull(DomainId(command.userId))
             .apply {
                 this.delete()
-                userManagementPort.saveUser(this)
+                userManagementPort.save(this)
                 applicationEventPublisher.publishEvent(UserEvent.UserDeletedEvent(this))
             }.also {
                 userAuthManagementPort.getNotNull(it.id).apply {
                     this.delete()
                     userAuthManagementPort.saveUserAuth(this)
                 }
+            }
+    }
+
+    override fun executeFor(command: UpdateUserUsecase.Command.Birthday) {
+        userManagementPort
+            .getUserNotNull(DomainId(command.userId))
+            .apply {
+                this.updateBirthday(command.birthday)
+                userManagementPort.save(this)
             }
     }
 }

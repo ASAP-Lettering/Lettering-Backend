@@ -2,6 +2,8 @@ package com.asap.domain
 
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
+import com.asap.domain.user.entity.UserAuth
+import com.asap.domain.user.enums.SocialLoginProvider
 import com.asap.domain.user.vo.UserPermission
 import java.time.LocalDate
 
@@ -20,4 +22,15 @@ object UserFixture {
             email = "email",
         )
     }
+
+    fun createUserAuth(
+        userId: String = "userId",
+        socialId: String = "socialId",
+        socialLoginProvider: SocialLoginProvider = SocialLoginProvider.KAKAO,
+    ): UserAuth =
+        UserAuth(
+            userId = DomainId(userId),
+            socialId = socialId,
+            socialLoginProvider = socialLoginProvider,
+        )
 }
