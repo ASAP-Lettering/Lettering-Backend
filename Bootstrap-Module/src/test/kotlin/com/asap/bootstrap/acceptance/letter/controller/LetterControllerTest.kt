@@ -400,7 +400,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
 
-        val response = GetAllLetterCountUsecase.Response(5)
+        val response = GetAllLetterCountUsecase.Response(5, 5)
         BDDMockito
             .given(
                 getAllLetterCountUsecase.get(
@@ -418,7 +418,12 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
         // then
         result.andExpect {
             status { isOk() }
-            jsonPath("$.count") {
+            jsonPath("$.letterCount") {
+                exists()
+                isNumber()
+                value(5)
+            }
+            jsonPath("$.spaceCount") {
                 exists()
                 isNumber()
                 value(5)

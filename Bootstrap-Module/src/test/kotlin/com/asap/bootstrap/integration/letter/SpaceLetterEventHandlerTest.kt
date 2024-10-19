@@ -51,7 +51,10 @@ class SpaceLetterEventHandlerTest : IntegrationSupporter() {
         response.andExpect {
             status { isOk() }
             content {
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
+                    value(0)
+                }
+                jsonPath("$.spaceCount") {
                     value(0)
                 }
             }
@@ -100,8 +103,11 @@ class SpaceLetterEventHandlerTest : IntegrationSupporter() {
         response.andExpect {
             status { isOk() }
             content {
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
                     value(10)
+                }
+                jsonPath("$.spaceCount") {
+                    value(1)
                 }
             }
         }

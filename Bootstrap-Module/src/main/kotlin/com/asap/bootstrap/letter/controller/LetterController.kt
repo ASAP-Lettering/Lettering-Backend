@@ -195,7 +195,8 @@ class LetterController(
                 ),
             )
         return AllLetterCountResponse(
-            count = response.count,
+            letterCount = response.letterCount,
+            spaceCount = response.spaceCount,
         )
     }
 

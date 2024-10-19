@@ -33,7 +33,7 @@ interface SpaceJpaRepository : JpaRepository<SpaceEntity, String> {
     fun countByUserId(
         userId: String,
         entityStatus: EntityStatus,
-    ): Int
+    ): Long
 
     @Query(
         """
@@ -85,8 +85,4 @@ fun SpaceJpaRepository.findActiveSpaceByIdAndUserId(
     userId: String,
 ): SpaceEntity? = findByIdAndUserId(id, userId, EntityStatus.ACTIVE)
 
-fun SpaceJpaRepository.countActiveSpaceByUserId(userId: String): Int = countByUserId(userId, EntityStatus.ACTIVE)
-
-// fun SpaceJpaRepository.findActiveSpaceByUserId(
-//    userId: String,
-// ): List<SpaceEntity> = findAllByUserId(userId, EntityStatus.ACTIVE)
+fun SpaceJpaRepository.countActiveSpaceByUserId(userId: String): Long = countByUserId(userId, EntityStatus.ACTIVE)

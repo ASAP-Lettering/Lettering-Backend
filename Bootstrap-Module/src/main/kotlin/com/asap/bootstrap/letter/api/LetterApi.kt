@@ -236,7 +236,7 @@ interface LetterApi {
         @AccessUser userId: String,
     ): SendLetterResponse
 
-    @Operation(summary = "모든 편지 수 조회")
+    @Operation(summary = "모든 편지 수, 행성 수 조회")
     @GetMapping("/count")
     @ApiResponses(
         value = [

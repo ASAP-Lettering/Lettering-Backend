@@ -356,10 +356,12 @@ class LetterQueryServiceTest :
             every { mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId)) } returns
                 independentLetterCount
             every { mockSpaceLetterManagementPort.countAllSpaceLetterBy(DomainId(query.userId)) } returns spaceLetterCount
+            every { mockSpaceManagementPort.countByUserId(DomainId(query.userId)) } returns 10
             `when`("유저 아이디가 주어진다면") {
                 val response = letterQueryService.get(query)
                 then("전체 편지 개수를 반환한다") {
-                    response.count shouldBe independentLetterCount + spaceLetterCount
+                    response.letterCount shouldBe independentLetterCount + spaceLetterCount
+                    response.spaceCount shouldBe 10
                 }
             }
         }

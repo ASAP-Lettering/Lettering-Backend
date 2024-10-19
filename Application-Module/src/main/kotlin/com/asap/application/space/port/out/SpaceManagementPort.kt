@@ -37,4 +37,6 @@ interface SpaceManagementPort {
     )
 
     fun deleteAllByUserId(userId: DomainId)
+
+    fun countByUserId(userId: DomainId): Long
 }
