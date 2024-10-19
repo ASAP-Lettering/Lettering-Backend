@@ -170,6 +170,18 @@ class LetterCommandService(
             }
     }
 
+    override fun removeSenderLetterBy(command: RemoveLetterUsecase.Command.SendLetter) {
+        sendLetterManagementPort
+            .getSendLetterBy(
+                letterId = DomainId(command.letterId),
+                senderId = DomainId(command.userId),
+            ).apply {
+                delete()
+                sendLetterManagementPort.save(this)
+                sendLetterManagementPort.delete(this)
+            }
+    }
+
     override fun removeIndependentLetter(command: RemoveLetterUsecase.Command.IndependentLetter) {
         independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId)).apply {
             delete()

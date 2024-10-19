@@ -68,7 +68,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 }
             // then
             response.andExpect {
-                status { isBadRequest() }
+                status { isNotFound() }
                 jsonPath("$.code") {
                     value("LETTER-001")
                 }
@@ -279,7 +279,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 }
             // then
             response.andExpect {
-                status { isBadRequest() }
+                status { isNotFound() }
                 jsonPath("$.code") {
                     value("LETTER-001")
                 }
@@ -333,7 +333,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 }
             // then
             response.andExpect {
-                status { isBadRequest() }
+                status { isNotFound() }
                 jsonPath("$.code") {
                     value("LETTER-001")
                 }
@@ -893,7 +893,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Test
-    fun getSendLetterDetail()  {
+    fun getSendLetterDetail() {
         // given
         val senderId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(senderId)
@@ -936,6 +936,33 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                 exists()
                 isNumber()
             }
+        }
+    }
+
+    @Test
+    fun deleteSendLetter() {
+        // given
+        val senderId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(senderId)
+        val sendLetter =
+            letterMockManager.generateMockSendLetter(
+                receiverName = "receiverName",
+                senderId = senderId,
+            )
+        val letterId = sendLetter.id.value
+        // when
+        mockMvc.delete("/api/v1/letters/send/$letterId") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+        val response =
+            mockMvc.get("/api/v1/letters/send/$letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isNotFound() }
         }
     }
 }

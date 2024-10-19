@@ -542,4 +542,21 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             }
         }
     }
+
+    @Test
+    fun deleteSendLetter()  {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+        // when
+        val response =
+            mockMvc.delete("/api/v1/letters/send/{letterId}", "letterId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
 }

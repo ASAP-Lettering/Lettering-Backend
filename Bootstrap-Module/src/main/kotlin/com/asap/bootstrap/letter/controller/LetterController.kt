@@ -238,4 +238,16 @@ class LetterController(
             templateType = response.templateType,
         )
     }
+
+    override fun deleteSendLetter(
+        letterId: String,
+        userId: String,
+    ) {
+        removeLetterUsecase.removeSenderLetterBy(
+            RemoveLetterUsecase.Command.SendLetter(
+                letterId = letterId,
+                userId = userId,
+            ),
+        )
+    }
 }

@@ -6,6 +6,7 @@ import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.LetterFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
@@ -398,6 +399,24 @@ class LetterCommandServiceTest :
                 letterCommandService.updateSpaceLetter(command)
                 then("편지가 수정되어야 한다") {
                     verify { mockSpaceLetterManagementPort.save(spaceLetter) }
+                }
+            }
+        }
+
+        given("보낸 편지 삭제 요청이 들어올 때") {
+            val command = RemoveLetterUsecase.Command.SendLetter("letter-id", "user-id")
+            val sendLetter = LetterFixture.generateSendLetter()
+            every {
+                mockSendLetterManagementPort.getSendLetterBy(
+                    DomainId(command.letterId),
+                    DomainId(command.userId),
+                )
+            } returns sendLetter
+            `when`("하나의 편지만 삭제하면") {
+                letterCommandService.removeSenderLetterBy(command)
+                then("편지가 삭제되어야 한다") {
+                    verify { mockSendLetterManagementPort.delete(any()) }
+                    verify { mockSendLetterManagementPort.save(any()) }
                 }
             }
         }
