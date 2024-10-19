@@ -939,30 +939,68 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun deleteSendLetter() {
-        // given
-        val senderId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(senderId)
-        val sendLetter =
-            letterMockManager.generateMockSendLetter(
-                receiverName = "receiverName",
-                senderId = senderId,
-            )
-        val letterId = sendLetter.id.value
-        // when
-        mockMvc.delete("/api/v1/letters/send/$letterId") {
-            contentType = MediaType.APPLICATION_JSON
-            header("Authorization", "Bearer $accessToken")
-        }
-        val response =
-            mockMvc.get("/api/v1/letters/send/$letterId") {
+    @Nested
+    inner class DeleteSendLetter  {
+        @Test
+        fun deleteSendLetter() {
+            // given
+            val senderId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(senderId)
+            val sendLetter =
+                letterMockManager.generateMockSendLetter(
+                    receiverName = "receiverName",
+                    senderId = senderId,
+                )
+            val letterId = sendLetter.id.value
+            // when
+            mockMvc.delete("/api/v1/letters/send/$letterId") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isNotFound() }
+            val response =
+                mockMvc.get("/api/v1/letters/send/$letterId") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isNotFound() }
+            }
+        }
+
+        @Test
+        fun deleteSendLetters()  {
+            // given
+            val senderId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(senderId)
+            val sendLetters =
+                (0..3).map {
+                    letterMockManager.generateMockSendLetter(
+                        receiverName = "receiverName",
+                        senderId = senderId,
+                    )
+                }
+            val request = DeleteSendLettersRequest(sendLetters.map { it.id.value })
+            // when
+            mockMvc.delete("/api/v1/letters/send") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+                content = objectMapper.writeValueAsString(request)
+            }
+            val response =
+                mockMvc.get("/api/v1/letters/send") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.content") {
+                    exists()
+                    isArray()
+                    isEmpty()
+                }
+            }
         }
     }
 }

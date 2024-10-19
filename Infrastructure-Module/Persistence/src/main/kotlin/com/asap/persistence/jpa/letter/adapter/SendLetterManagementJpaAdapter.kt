@@ -67,6 +67,16 @@ class SendLetterManagementJpaAdapter(
             .findAllActiveSendLetterBySenderId(senderId.value)
             .map { SendLetterMapper.toSendLetter(it) }
 
+    override fun getAllBy(
+        senderId: DomainId,
+        letterIds: List<DomainId>,
+    ): List<SendLetter> {
+        val letterIdsValue = letterIds.map { it.value }
+        return sendLetterJpaRepository
+            .findAllActiveSendLetterBySenderIdAndLetterIds(senderId.value, letterIdsValue)
+            .map { SendLetterMapper.toSendLetter(it) }
+    }
+
     override fun getSendLetterBy(
         senderId: DomainId,
         letterId: DomainId,

@@ -37,6 +37,11 @@ interface SendLetterManagementPort {
 
     fun getAllBy(senderId: DomainId): List<SendLetter>
 
+    fun getAllBy(
+        senderId: DomainId,
+        letterIds: List<DomainId>,
+    ): List<SendLetter>
+
     fun getSendLetterBy(
         senderId: DomainId,
         letterId: DomainId,

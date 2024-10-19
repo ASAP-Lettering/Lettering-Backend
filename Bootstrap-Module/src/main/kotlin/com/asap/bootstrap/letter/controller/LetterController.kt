@@ -250,4 +250,16 @@ class LetterController(
             ),
         )
     }
+
+    override fun deleteSendLetters(
+        request: DeleteSendLettersRequest,
+        userId: String,
+    ) {
+        removeLetterUsecase.removeAllSenderLetterBy(
+            RemoveLetterUsecase.Command.SendLetters(
+                letterIds = request.letterIds,
+                userId = userId,
+            ),
+        )
+    }
 }
