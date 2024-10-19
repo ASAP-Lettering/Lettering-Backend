@@ -42,7 +42,7 @@ class SpaceManagementJpaAdapter(
         val entity =
             SpaceMapper.toSpaceEntity(
                 space = space,
-                index = spaceJpaRepository.countActiveSpaceByUserId(space.userId.value),
+                index = spaceJpaRepository.countActiveSpaceByUserId(space.userId.value).toInt(),
             )
         return spaceJpaRepository.save(entity).let {
             SpaceMapper.toSpace(it)
@@ -103,4 +103,6 @@ class SpaceManagementJpaAdapter(
             ids = spaceJpaRepository.findAllActiveSpaceByUserId(userId.value).map { it.id },
         )
     }
+
+    override fun countByUserId(userId: DomainId): Long = spaceJpaRepository.countActiveSpaceByUserId(userId.value)
 }

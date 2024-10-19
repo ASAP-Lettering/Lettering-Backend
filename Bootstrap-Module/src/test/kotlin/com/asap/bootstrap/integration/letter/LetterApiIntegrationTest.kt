@@ -708,7 +708,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // then
             response.andExpect {
                 status { isOk() }
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
                     exists()
                     isNumber()
                     value(4)
@@ -745,7 +745,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // then
             response.andExpect {
                 status { isOk() }
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
                     exists()
                     isNumber()
                     value(3)
@@ -784,7 +784,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // then
             response.andExpect {
                 status { isOk() }
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
                     exists()
                     isNumber()
                     value(3)
@@ -830,10 +830,15 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             // then
             response.andExpect {
                 status { isOk() }
-                jsonPath("$.count") {
+                jsonPath("$.letterCount") {
                     exists()
                     isNumber()
                     value(7)
+                }
+                jsonPath("$.spaceCount") {
+                    exists()
+                    isNumber()
+                    value(1)
                 }
             }
         }

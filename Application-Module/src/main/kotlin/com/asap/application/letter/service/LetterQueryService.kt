@@ -168,10 +168,12 @@ class LetterQueryService(
     }
 
     override fun get(query: GetAllLetterCountUsecase.Query): GetAllLetterCountUsecase.Response {
-        val independentLetterCount = independentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
-        val spaceLetterCount = spaceLetterManagementPort.countAllSpaceLetterBy(DomainId(query.userId))
+        val userId = DomainId(query.userId)
+        val independentLetterCount = independentLetterManagementPort.countIndependentLetterByReceiverId(userId)
+        val spaceLetterCount = spaceLetterManagementPort.countAllSpaceLetterBy(userId)
         return GetAllLetterCountUsecase.Response(
-            count = independentLetterCount + spaceLetterCount,
+            letterCount = independentLetterCount + spaceLetterCount,
+            spaceCount = spaceManagementPort.countByUserId(userId),
         )
     }
 

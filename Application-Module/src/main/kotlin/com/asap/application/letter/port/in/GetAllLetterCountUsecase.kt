@@ -8,6 +8,7 @@ interface GetAllLetterCountUsecase {
     )
 
     data class Response(
-        val count: Long,
+        val letterCount: Long,
+        val spaceCount: Long,
     )
 }
