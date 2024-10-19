@@ -215,7 +215,7 @@ class UserApiIntegrationTest : IntegrationSupporter() {
 
         // when
         val response =
-            mockMvc.get("/api/v1/users") {
+            mockMvc.get("/api/v1/users/info/me") {
                 contentType = MediaType.APPLICATION_JSON
                 header("Authorization", "Bearer $accessToken")
             }
