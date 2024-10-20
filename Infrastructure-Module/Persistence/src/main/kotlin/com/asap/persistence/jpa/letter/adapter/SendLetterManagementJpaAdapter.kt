@@ -2,6 +2,7 @@ package com.asap.persistence.jpa.letter.adapter
 
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.out.SendLetterManagementPort
+import com.asap.common.event.EventPublisher
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.enums.LetterStatus
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Repository
 @Repository
 class SendLetterManagementJpaAdapter(
     private val sendLetterJpaRepository: SendLetterJpaRepository,
+    private val eventPublisher: EventPublisher,
 ) : SendLetterManagementPort {
     override fun save(sendLetter: SendLetter) {
         sendLetterJpaRepository.save(SendLetterMapper.toSendLetterEntity(sendLetter))
+        eventPublisher.publishAll(sendLetter.pullEvents())
     }
 
     override fun getLetterNotNull(letterId: DomainId): SendLetter =

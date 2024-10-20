@@ -1,6 +1,5 @@
 package com.asap.application.letter.service
 
-import com.asap.application.letter.event.DraftLetterSendEvent
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.`in`.*
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
@@ -15,7 +14,6 @@ import com.asap.domain.letter.service.LetterCodeGenerator
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -27,7 +25,6 @@ class LetterCommandService(
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val userManagementPort: UserManagementPort,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : SendLetterUsecase,
     VerifyLetterAccessibleUsecase,
     AddLetterUsecase,
@@ -38,7 +35,7 @@ class LetterCommandService(
 
     override fun send(command: SendLetterUsecase.Command): SendLetterUsecase.Response {
         val sendLetter =
-            SendLetter(
+            SendLetter.create(
                 receiverName = command.receiverName,
                 content =
                     LetterContent(
@@ -52,12 +49,9 @@ class LetterCommandService(
                         content = command.content,
                         ownerId = command.userId,
                     ),
+                draftId = command.draftId?.let { DomainId(it) },
             )
         sendLetterManagementPort.save(sendLetter)
-
-        command.draftId?.let {
-            applicationEventPublisher.publishEvent(DraftLetterSendEvent(it, sendLetter.senderId.value))
-        }
 
         return SendLetterUsecase.Response(letterCode = sendLetter.letterCode!!)
     }
@@ -91,7 +85,7 @@ class LetterCommandService(
                 letterId = DomainId(command.letterId),
             )
         val independentLetter =
-            IndependentLetter(
+            IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderId = sendLetter.senderId,
@@ -104,6 +98,7 @@ class LetterCommandService(
                 content = sendLetter.content,
                 receiveDate = sendLetter.createdDate,
             )
+
         sendLetter.receiveLetter()
 
         sendLetterManagementPort.save(sendLetter)
@@ -112,7 +107,7 @@ class LetterCommandService(
 
     override fun addPhysicalLetter(command: AddLetterUsecase.Command.AddPhysicalLetter) {
         val independentLetter =
-            IndependentLetter(
+            IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderName = command.senderName,
