@@ -20,6 +20,13 @@ interface SpaceManagementPort {
 
     fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace>
 
+    fun getAllSpaceBy(
+        userId: DomainId,
+        spaceIds: List<DomainId>,
+    ): List<Space>
+
+    fun getAllSpaceBy(userId: DomainId): List<Space>
+
     fun save(space: Space): Space
 
     fun update(space: Space): Space
@@ -31,17 +38,7 @@ interface SpaceManagementPort {
         orders: List<IndexedSpace>,
     )
 
-    fun deleteById(
-        userId: DomainId,
-        spaceId: DomainId,
-    )
-
-    fun deleteAllBySpaceIds(
-        userId: DomainId,
-        spaceIds: List<DomainId>,
-    )
-
-    fun deleteAllByUserId(userId: DomainId)
+    fun deleteBy(space: Space)
 
     fun countByUserId(userId: DomainId): Long
 }

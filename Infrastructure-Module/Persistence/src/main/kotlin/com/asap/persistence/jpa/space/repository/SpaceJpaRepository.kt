@@ -48,6 +48,21 @@ interface SpaceJpaRepository : JpaRepository<SpaceEntity, String> {
         entityStatus: EntityStatus,
     ): List<SpaceEntity>
 
+    @Query(
+        """
+        SELECT s
+        FROM SpaceEntity s
+        WHERE s.userId = :userId
+        AND s.id in :spaceIds
+        AND s.spaceStatus = :entityStatus
+    """,
+    )
+    fun findAllBy(
+        userId: String,
+        spaceIds: List<String>,
+        entityStatus: EntityStatus,
+    ): List<SpaceEntity>
+
     @Modifying
     @Query(
         """
@@ -65,6 +80,11 @@ interface SpaceJpaRepository : JpaRepository<SpaceEntity, String> {
 }
 
 fun SpaceJpaRepository.findAllActiveSpaceByUserId(userId: String): List<SpaceEntity> = findAllByUserId(userId, EntityStatus.ACTIVE)
+
+fun SpaceJpaRepository.findAllActiveSpaceByUserIdAndIds(
+    userId: String,
+    spaceIds: List<String>,
+): List<SpaceEntity> = findAllBy(userId, spaceIds, EntityStatus.ACTIVE)
 
 fun SpaceJpaRepository.deleteByUserIdAndId(
     userId: String,

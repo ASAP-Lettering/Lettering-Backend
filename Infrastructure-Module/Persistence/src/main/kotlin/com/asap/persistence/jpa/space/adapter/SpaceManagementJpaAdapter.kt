@@ -2,6 +2,7 @@ package com.asap.persistence.jpa.space.adapter
 
 import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.out.SpaceManagementPort
+import com.asap.common.event.EventPublisher
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.MainSpace
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class SpaceManagementJpaAdapter(
     private val spaceJpaRepository: SpaceJpaRepository,
+    private val eventPublisher: EventPublisher,
 ) : SpaceManagementPort {
     override fun getMainSpace(userId: DomainId): MainSpace =
         spaceJpaRepository
@@ -47,21 +49,49 @@ class SpaceManagementJpaAdapter(
                 SpaceMapper.toIndexedSpace(it)
             }.sortedBy { it.index }
 
+    override fun getAllSpaceBy(
+        userId: DomainId,
+        spaceIds: List<DomainId>,
+    ): List<Space> {
+        val spaces =
+            spaceJpaRepository.findAllActiveSpaceByUserIdAndIds(
+                userId = userId.value,
+                spaceIds = spaceIds.map { it.value },
+            )
+        return spaces.map {
+            SpaceMapper.toSpace(it)
+        }
+    }
+
+    override fun getAllSpaceBy(userId: DomainId): List<Space> {
+        val spaces = spaceJpaRepository.findAllActiveSpaceByUserId(userId.value)
+        return spaces.map {
+            SpaceMapper.toSpace(it)
+        }
+    }
+
     override fun save(space: Space): Space {
         val entity =
             SpaceMapper.toSpaceEntity(
                 space = space,
                 index = -1,
             )
-        return spaceJpaRepository.save(entity).let {
-            SpaceMapper.toSpace(it)
-        }
+        return spaceJpaRepository
+            .save(entity)
+            .let {
+                SpaceMapper.toSpace(it)
+            }.also {
+                eventPublisher.publishAll(space.pullEvents())
+            }
     }
 
     override fun update(space: Space): Space =
         spaceJpaRepository.findActiveSpaceByIdAndUserId(space.id.value, space.userId.value)?.let {
             it.update(space)
             spaceJpaRepository.save(it)
+
+            eventPublisher.publishAll(space.pullEvents())
+
             SpaceMapper.toSpace(it)
         } ?: throw SpaceException.SpaceNotFoundException()
 
@@ -70,6 +100,9 @@ class SpaceManagementJpaAdapter(
             it.index = indexedSpace.index
             spaceJpaRepository.save(it)
         } ?: throw SpaceException.SpaceNotFoundException()
+
+        eventPublisher.publishAll(indexedSpace.pullEvents())
+
         return indexedSpace
     }
 
@@ -84,33 +117,16 @@ class SpaceManagementJpaAdapter(
                 spaceJpaRepository.save(it)
             }
         }
+
+        eventPublisher.publishAll(orders.flatMap { it.pullEvents() })
     }
 
-    override fun deleteById(
-        userId: DomainId,
-        spaceId: DomainId,
-    ) {
+    override fun deleteBy(space: Space) {
         spaceJpaRepository.deleteByUserIdAndId(
-            userId = userId.value,
-            id = spaceId.value,
+            userId = space.userId.value,
+            id = space.id.value,
         )
-    }
-
-    override fun deleteAllBySpaceIds(
-        userId: DomainId,
-        spaceIds: List<DomainId>,
-    ) {
-        spaceJpaRepository.deleteAllByUserIdAndIds(
-            userId = userId.value,
-            ids = spaceIds.map { it.value },
-        )
-    }
-
-    override fun deleteAllByUserId(userId: DomainId) {
-        spaceJpaRepository.deleteAllByUserIdAndIds(
-            userId = userId.value,
-            ids = spaceJpaRepository.findAllActiveSpaceByUserId(userId.value).map { it.id },
-        )
+        eventPublisher.publishAll(space.pullEvents())
     }
 
     override fun countByUserId(userId: DomainId): Long = spaceJpaRepository.countActiveSpaceByUserId(userId.value)
