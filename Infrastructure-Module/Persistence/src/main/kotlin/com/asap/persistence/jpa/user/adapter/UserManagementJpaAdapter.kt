@@ -2,6 +2,7 @@ package com.asap.persistence.jpa.user.adapter
 
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.common.event.EventPublisher
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
 import com.asap.persistence.jpa.user.UserMapper
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Repository
 @Repository
 class UserManagementJpaAdapter(
     private val userJpaRepository: UserJpaRepository,
+    private val eventPublisher: EventPublisher,
 ) : UserManagementPort {
     override fun save(user: User): User {
         val userEntity = UserMapper.toUserEntity(user)
         userJpaRepository.save(userEntity)
+        eventPublisher.publishAll(user.pullEvents())
         return user
     }
 

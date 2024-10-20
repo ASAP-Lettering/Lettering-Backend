@@ -18,8 +18,7 @@ class UserApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun registerUserSuccessTest() {
         // given
-        val userId = userMockManager.settingUser()
-        val registerToken = jwtMockManager.generateRegisterToken(userId)
+        val registerToken = jwtMockManager.generateRegisterToken()
         val request = RegisterUserRequest(registerToken, true, true, true, LocalDate.now(), "realName")
         // when
         val response =
@@ -46,8 +45,7 @@ class UserApiIntegrationTest : IntegrationSupporter() {
     @Test
     fun registerUserInvalidTest_with_DuplicateUser() {
         // given
-        val userId = userMockManager.settingUser()
-        val duplicateRegisterToken = jwtMockManager.generateRegisterToken(userId)
+        val duplicateRegisterToken = jwtMockManager.generateRegisterToken()
         val request = RegisterUserRequest(duplicateRegisterToken, true, true, true, LocalDate.now(), "realName")
         mockMvc.post("/api/v1/users") {
             contentType = MediaType.APPLICATION_JSON

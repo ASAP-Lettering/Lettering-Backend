@@ -67,10 +67,11 @@ class LetterCommandServiceTest :
 
         given("편지 검증 시에") {
             val letterCode = "letter-code"
+            val mockUser = UserFixture.createUser(username = "receiver-name")
             val verifyCommand =
                 VerifyLetterAccessibleUsecase.Command(
                     letterCode = letterCode,
-                    userId = "user-id",
+                    userId = mockUser.id.value,
                 )
             val sendLetter =
                 SendLetter(
@@ -84,7 +85,7 @@ class LetterCommandServiceTest :
                     senderId = DomainId("sender-id"),
                     letterCode = letterCode,
                 )
-            val mockUser = UserFixture.createUser("user-id", "receiver-name")
+
             every { mockSendLetterManagementPort.verifiedLetter(any(), letterCode) } returns false
             every { mockSendLetterManagementPort.getLetterByCodeNotNull(any()) } returns sendLetter
             every { mockUserManagementPort.getUserNotNull(any()) } returns mockUser
@@ -107,7 +108,7 @@ class LetterCommandServiceTest :
                 }
             }
 
-            val anotherUser = UserFixture.createUser("another-user-id")
+            val anotherUser = UserFixture.createUser()
             every { mockSendLetterManagementPort.getLetterByCodeNotNull(any()) } returns sendLetter
             every { mockUserManagementPort.getUserNotNull(any()) } returns anotherUser
             `when`("편지의 수신자 이름과 사용자 이름이 다르면") {

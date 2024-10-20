@@ -9,12 +9,12 @@ import java.time.LocalDate
 
 object UserFixture {
     fun createUser(
-        userId: String = "userId",
+        id: DomainId = DomainId.generate(),
         username: String = "nickname",
     ): User {
         // use instancio
-        return User(
-            id = DomainId(userId),
+        return User.create(
+            id = id,
             username = username,
             profileImage = "profileImage",
             permission = UserPermission(true, true, true),

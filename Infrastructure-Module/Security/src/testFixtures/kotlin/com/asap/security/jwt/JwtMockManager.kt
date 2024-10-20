@@ -15,7 +15,7 @@ class JwtMockManager(
     private val userTokenManagementPort: UserTokenManagementPort,
 ) {
     fun generateRegisterToken(
-        socialId: String = UUID.randomUUID().toString(),
+        socialId: String = DomainId.generate().value,
         socialLoginProvider: String = SocialLoginProvider.KAKAO.name,
         username: String = "username",
         issuedAt: Date = Date(),

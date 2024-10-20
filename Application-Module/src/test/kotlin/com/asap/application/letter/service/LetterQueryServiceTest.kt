@@ -60,7 +60,7 @@ class LetterQueryServiceTest :
                     senderId = DomainId.generate(),
                     letterCode = "letter-code",
                 )
-            val mockSender = UserFixture.createUser(mockSendLetter.senderId.value, "sender-name")
+            val mockSender = UserFixture.createUser(mockSendLetter.senderId, "sender-name")
             every {
                 mockSendLetterManagementPort.getReadLetterNotNull(
                     receiverId = DomainId(query.userId),

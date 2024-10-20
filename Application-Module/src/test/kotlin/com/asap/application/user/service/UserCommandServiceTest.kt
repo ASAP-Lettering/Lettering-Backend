@@ -1,6 +1,5 @@
 package com.asap.application.user.service
 
-import com.asap.application.user.event.UserEvent
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.RegisterUserUsecase
 import com.asap.application.user.port.`in`.UpdateUserUsecase
@@ -19,7 +18,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
 class UserCommandServiceTest :
@@ -29,7 +27,6 @@ class UserCommandServiceTest :
         val mockUserAuthManagementPort = mockk<UserAuthManagementPort>(relaxed = true)
         val mockUserTokenConvertPort = mockk<UserTokenConvertPort>()
         val mockUserTokenManagementPort = mockk<UserTokenManagementPort>(relaxed = true)
-        val mockEventApplicationPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val userCommandService =
             UserCommandService(
@@ -37,7 +34,6 @@ class UserCommandServiceTest :
                 mockUserAuthManagementPort,
                 mockUserManagementPort,
                 mockUserTokenManagementPort,
-                mockEventApplicationPublisher,
             )
 
         given("회원 가입 요청이 들어왔을 때") {
@@ -68,7 +64,6 @@ class UserCommandServiceTest :
                     response.accessToken.isNotEmpty() shouldBe true
                     response.refreshToken.isNotEmpty() shouldBe true
                     verify { mockUserManagementPort.save(any()) }
-                    verify { mockEventApplicationPublisher.publishEvent(any(UserEvent.UserCreatedEvent::class)) }
                 }
             }
 

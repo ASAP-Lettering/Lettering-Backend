@@ -35,11 +35,11 @@ class SpaceQueryServiceTest :
                 MainSpace(
                     id = DomainId.generate(),
                 )
+            val user = UserFixture.createUser()
             val query =
                 GetMainSpaceUsecase.Query(
-                    userId = "userId",
+                    userId = user.id.value,
                 )
-            val user = UserFixture.createUser("userId")
             val space =
                 Space(
                     id = mainSpace.id,
