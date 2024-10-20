@@ -1,6 +1,5 @@
 package com.asap.application.user.service
 
-import com.asap.application.user.event.UserEvent
 import com.asap.application.user.exception.UserException
 import com.asap.application.user.port.`in`.DeleteUserUsecase
 import com.asap.application.user.port.`in`.RegisterUserUsecase
@@ -14,7 +13,6 @@ import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
 import com.asap.domain.user.entity.UserToken
 import com.asap.domain.user.vo.UserPermission
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,7 +23,6 @@ class UserCommandService(
     private val userAuthManagementPort: UserAuthManagementPort,
     private val userManagementPort: UserManagementPort,
     private val userTokenManagementPort: UserTokenManagementPort,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : RegisterUserUsecase,
     DeleteUserUsecase,
     UpdateUserUsecase {
@@ -38,7 +35,7 @@ class UserCommandService(
             throw UserException.UserAlreadyRegisteredException()
         }
         val registerUser =
-            User(
+            User.create(
                 username = command.realName,
                 profileImage = userClaims.profileImage,
                 permission =
@@ -65,9 +62,6 @@ class UserCommandService(
 
         userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = registerUser.id))
 
-        // TODO: 이벤트 발행을 이렇게하는게 좋은지 다시 생각해보기
-        applicationEventPublisher.publishEvent(UserEvent.UserCreatedEvent(registerUser))
-
         return RegisterUserUsecase.Response(accessToken, refreshToken)
     }
 
@@ -77,7 +71,6 @@ class UserCommandService(
             .apply {
                 this.delete()
                 userManagementPort.save(this)
-                applicationEventPublisher.publishEvent(UserEvent.UserDeletedEvent(this))
             }.also {
                 userAuthManagementPort.getNotNull(it.id).apply {
                     this.delete()

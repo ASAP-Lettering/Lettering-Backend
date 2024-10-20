@@ -43,7 +43,7 @@ class SocialLoginServiceTest :
                     socialId = "socialId",
                     socialLoginProvider = SocialLoginProvider.KAKAO,
                 )
-            val getUser = UserFixture.createUser(getUserAuth.userId.value)
+            val getUser = UserFixture.createUser(getUserAuth.userId)
             every { mockAuthInfoRetrievePort.getAuthInfo(SocialLoginProvider.KAKAO, "registered") } returns authInfo
             every {
                 mockUserAuthManagementPort.getUserAuth(

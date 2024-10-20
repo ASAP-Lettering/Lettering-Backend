@@ -57,11 +57,11 @@ class UserTokenCommandServiceTest :
 
             val refreshToken = "valid"
             every { mockUserTokenManagementPort.isExistsToken(refreshToken) } returns true
+            val mockUser = UserFixture.createUser()
             every { mockUserTokenConvertPort.resolveRefreshToken(refreshToken) } returns
                 UserClaims.Refresh(
-                    userId = "123",
+                    userId = mockUser.id.value,
                 )
-            val mockUser = UserFixture.createUser("123")
             every { mockUserManagementPort.getUserNotNull(any()) } returns mockUser
             every { mockUserTokenConvertPort.generateAccessToken(mockUser) } returns "accessToken"
             every { mockUserTokenConvertPort.generateRefreshToken(mockUser) } returns "refreshToken"

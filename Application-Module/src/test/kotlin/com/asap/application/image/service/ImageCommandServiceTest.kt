@@ -25,9 +25,10 @@ class ImageCommandServiceTest :
             )
 
         given("이미지 업로드 요청이 들어올 때") {
+            val mockUser = UserFixture.createUser()
             val command =
                 UploadImageUsecase.Command(
-                    userId = "user-id",
+                    userId = mockUser.id.value,
                     image =
                         FileMetaData(
                             name = "name",
@@ -36,7 +37,6 @@ class ImageCommandServiceTest :
                             inputStream = InputStream.nullInputStream(),
                         ),
                 )
-            val mockUser = UserFixture.createUser("user-id")
             every {
                 mockUserManagementPort.getUserNotNull(any())
             } returns mockUser
