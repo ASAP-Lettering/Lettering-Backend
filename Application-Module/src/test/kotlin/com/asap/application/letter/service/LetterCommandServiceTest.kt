@@ -22,7 +22,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
 class LetterCommandServiceTest :
@@ -32,7 +31,6 @@ class LetterCommandServiceTest :
         val mockIndependentLetterManagementPort = mockk<IndependentLetterManagementPort>(relaxed = true)
         val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
         val mockSpaceLetterManagementPort = mockk<SpaceLetterManagementPort>(relaxed = true)
-        val mockApplicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val letterCommandService =
             LetterCommandService(
@@ -40,7 +38,6 @@ class LetterCommandServiceTest :
                 mockIndependentLetterManagementPort,
                 mockSpaceLetterManagementPort,
                 mockUserManagementPort,
-                mockApplicationEventPublisher,
             )
 
         given("편지 전송 요청이 들어올 때") {
@@ -74,7 +71,7 @@ class LetterCommandServiceTest :
                     userId = mockUser.id.value,
                 )
             val sendLetter =
-                SendLetter(
+                SendLetter.create(
                     receiverName = "receiver-name",
                     content =
                         LetterContent(
@@ -134,20 +131,9 @@ class LetterCommandServiceTest :
 
         given("검증된 편지를 추가할 때") {
             val letterId = "letter-id"
-            val command = AddLetterUsecase.Command.VerifyLetter(letterId, "user-id")
-            val sendLetter =
-                SendLetter(
-                    id = DomainId(letterId),
-                    receiverName = "receiver-name",
-                    content =
-                        LetterContent(
-                            "content",
-                            images = mutableListOf(),
-                            templateType = 1,
-                        ),
-                    senderId = DomainId("sender-id"),
-                    letterCode = "letter-code",
-                )
+            val userId = UserFixture.createUser()
+            val command = AddLetterUsecase.Command.VerifyLetter(letterId, userId.id.value)
+            val sendLetter = LetterFixture.generateSendLetter(senderId = userId.id)
             every {
                 mockSendLetterManagementPort.getReadLetterNotNull(
                     any(),

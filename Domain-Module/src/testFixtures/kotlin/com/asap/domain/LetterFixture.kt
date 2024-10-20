@@ -13,7 +13,7 @@ object LetterFixture {
         status: LetterStatus = LetterStatus.READ,
         receiverId: DomainId = DomainId.generate(),
     ): SendLetter =
-        SendLetter(
+        SendLetter.create(
             receiverName = receiverName,
             content =
                 LetterContent(

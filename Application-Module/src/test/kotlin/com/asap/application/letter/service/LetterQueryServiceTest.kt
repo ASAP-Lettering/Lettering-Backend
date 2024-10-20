@@ -10,7 +10,6 @@ import com.asap.domain.LetterFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.IndependentLetter
-import com.asap.domain.letter.entity.SendLetter
 import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
@@ -42,24 +41,13 @@ class LetterQueryServiceTest :
             )
 
         given("검증된 편지를 가져올 때") {
+            val user = UserFixture.createUser()
             val query =
                 GetVerifiedLetterUsecase.Query(
                     letterId = "letter-id",
-                    userId = "user-id",
+                    userId = user.id.value,
                 )
-            val mockSendLetter =
-                SendLetter(
-                    id = DomainId(query.letterId),
-                    receiverName = "receiver-name",
-                    content =
-                        LetterContent(
-                            "content",
-                            images = mutableListOf("image1", "image2"),
-                            templateType = 1,
-                        ),
-                    senderId = DomainId.generate(),
-                    letterCode = "letter-code",
-                )
+            val mockSendLetter = LetterFixture.generateSendLetter(user.id)
             val mockSender = UserFixture.createUser(mockSendLetter.senderId, "sender-name")
             every {
                 mockSendLetterManagementPort.getReadLetterNotNull(

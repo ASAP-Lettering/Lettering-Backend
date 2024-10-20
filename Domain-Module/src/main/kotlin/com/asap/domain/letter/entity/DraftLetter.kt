@@ -1,19 +1,21 @@
 package com.asap.domain.letter.entity
 
+import com.asap.domain.common.Aggregate
 import com.asap.domain.common.DomainId
 import java.time.LocalDateTime
 
-data class DraftLetter(
-    val id: DomainId = DomainId.generate(),
+class DraftLetter(
+    id: DomainId,
     var content: String,
     var receiverName: String,
     val ownerId: DomainId,
     var images: List<String>,
     var lastUpdated: LocalDateTime = LocalDateTime.now(),
-) {
+) : Aggregate<DraftLetter>(id) {
     companion object {
         fun default(ownerId: DomainId) =
             DraftLetter(
+                id = DomainId.generate(),
                 ownerId = ownerId,
                 content = "",
                 receiverName = "",

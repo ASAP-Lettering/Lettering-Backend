@@ -29,7 +29,7 @@ class LetterMockManager(
         senderId: String = DomainId.generate().value,
     ): SendLetter {
         val sendLetter =
-            SendLetter(
+            SendLetter.create(
                 receiverName = receiverName,
                 content =
                     LetterContent(
@@ -54,7 +54,7 @@ class LetterMockManager(
         senderId: String = DomainId.generate().value,
     ): Map<String, Any> {
         val sendLetter =
-            SendLetter(
+            SendLetter.create(
                 receiverName = receiverName,
                 content =
                     LetterContent(
