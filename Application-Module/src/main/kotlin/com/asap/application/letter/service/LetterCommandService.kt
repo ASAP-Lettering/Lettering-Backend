@@ -85,7 +85,7 @@ class LetterCommandService(
                 letterId = DomainId(command.letterId),
             )
         val independentLetter =
-            IndependentLetter(
+            IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderId = sendLetter.senderId,
@@ -107,7 +107,7 @@ class LetterCommandService(
 
     override fun addPhysicalLetter(command: AddLetterUsecase.Command.AddPhysicalLetter) {
         val independentLetter =
-            IndependentLetter(
+            IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderName = command.senderName,

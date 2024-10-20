@@ -9,18 +9,12 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.LetterFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.letter.entity.IndependentLetter
-import com.asap.domain.letter.entity.SpaceLetter
-import com.asap.domain.letter.vo.LetterContent
-import com.asap.domain.letter.vo.ReceiverInfo
-import com.asap.domain.letter.vo.SenderInfo
 import com.asap.domain.space.entity.Space
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
 
 class LetterQueryServiceTest :
     BehaviorSpec({
@@ -77,24 +71,10 @@ class LetterQueryServiceTest :
                 )
             val mockLetters =
                 listOf(
-                    IndependentLetter(
-                        id = DomainId.generate(),
-                        sender =
-                            SenderInfo(
-                                senderId = DomainId.generate(),
-                                senderName = "sender-name",
-                            ),
-                        receiver =
-                            ReceiverInfo(
-                                receiverId = DomainId(queryAll.userId),
-                            ),
-                        content =
-                            LetterContent(
-                                content = "content",
-                                templateType = 1,
-                                images = mutableListOf("image1", "image2"),
-                            ),
-                        receiveDate = LocalDate.now(),
+                    LetterFixture.generateIndependentLetter(
+                        senderId = DomainId.generate(),
+                        senderName = "sender-name",
+                        receiverId = DomainId(queryAll.userId),
                     ),
                 )
             every {
@@ -123,69 +103,11 @@ class LetterQueryServiceTest :
                     userId = DomainId(query.userId),
                     templateType = 1,
                 )
-            val spaceLetter =
-                SpaceLetter(
-                    id = DomainId(query.letterId),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "content",
-                            templateType = 1,
-                            images = mutableListOf("image1", "image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
-                    spaceId = space.id,
-                )
+            val spaceLetter = LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
             val prevSpaceLetter =
-                SpaceLetter(
-                    id = DomainId.generate(),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "prev-sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "prev-content",
-                            templateType = 1,
-                            images = mutableListOf("prev-image1", "prev-image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
-                    spaceId = space.id,
-                )
+                LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
             val nextSpaceLetter =
-                SpaceLetter(
-                    id = DomainId.generate(),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "next-sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "next-content",
-                            templateType = 1,
-                            images = mutableListOf("next-image1", "next-image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
-                    spaceId = space.id,
-                )
+                LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
             every {
                 mockSpaceLetterManagementPort.getSpaceLetterNotNull(
                     DomainId(query.letterId),
@@ -240,67 +162,24 @@ class LetterQueryServiceTest :
                     letterId = "letter-id",
                 )
             val independentLetter =
-                IndependentLetter(
-                    id = DomainId(query.letterId),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "content",
-                            templateType = 1,
-                            images = mutableListOf("image1", "image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                LetterFixture.generateIndependentLetter(
+                    senderId = DomainId.generate(),
+                    senderName = "sender-name",
+                    receiverId = DomainId(query.userId),
                 )
             val prevIndependentLetter =
-                IndependentLetter(
-                    id = DomainId.generate(),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "prev-sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "prev-content",
-                            templateType = 1,
-                            images = mutableListOf("prev-image1", "prev-image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                LetterFixture.generateIndependentLetter(
+                    senderId = DomainId.generate(),
+                    senderName = "prev-sender-name",
+                    receiverId = DomainId(query.userId),
                 )
 
             val nextIndependentLetter =
-                IndependentLetter(
-                    id = DomainId.generate(),
-                    sender =
-                        SenderInfo(
-                            senderId = DomainId.generate(),
-                            senderName = "next-sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId(query.userId),
-                        ),
-                    content =
-                        LetterContent(
-                            content = "next-content",
-                            templateType = 1,
-                            images = mutableListOf("next-image1", "next-image2"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                LetterFixture.generateIndependentLetter(
+                    senderId = DomainId.generate(),
+                    senderName = "next-sender-name",
+                    receiverId = DomainId(query.userId),
                 )
-
             every {
                 mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(
                     DomainId(query.letterId),

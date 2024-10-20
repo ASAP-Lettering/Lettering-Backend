@@ -85,7 +85,7 @@ class LetterMockManager(
         isOpened: Boolean = false,
     ): IndependentLetter {
         val independentLetter =
-            IndependentLetter(
+            IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderId = senderId?.let { DomainId(it) },
@@ -116,7 +116,7 @@ class LetterMockManager(
         spaceId: String,
     ): SpaceLetter {
         val spaceLetter =
-            SpaceLetter(
+            SpaceLetter.create(
                 sender =
                     SenderInfo(
                         senderId = senderId?.let { DomainId(it) },

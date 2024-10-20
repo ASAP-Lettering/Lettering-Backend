@@ -1,5 +1,6 @@
 package com.asap.domain.letter.entity
 
+import com.asap.domain.common.Aggregate
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
@@ -7,15 +8,15 @@ import com.asap.domain.letter.vo.SenderInfo
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class IndependentLetter(
-    val id: DomainId = DomainId.generate(),
+class IndependentLetter(
+    id: DomainId,
     val content: LetterContent,
     val sender: SenderInfo,
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
-    val movedAt: LocalDateTime = LocalDateTime.now(),
-    var isOpened: Boolean = false,
-) {
+    val movedAt: LocalDateTime,
+    var isOpened: Boolean,
+) : Aggregate<IndependentLetter>(id) {
     companion object {
         fun createBySpaceLetter(
             spaceLetter: SpaceLetter,
@@ -29,6 +30,25 @@ data class IndependentLetter(
                 receiveDate = spaceLetter.receiveDate,
                 movedAt = LocalDateTime.now(),
                 isOpened = false,
+            )
+
+        fun create(
+            id: DomainId = DomainId.generate(),
+            sender: SenderInfo,
+            receiver: ReceiverInfo,
+            content: LetterContent,
+            receiveDate: LocalDate,
+            movedAt: LocalDateTime = LocalDateTime.now(),
+            isOpened: Boolean = false,
+        ): IndependentLetter =
+            IndependentLetter(
+                id = id,
+                sender = sender,
+                receiver = receiver,
+                content = content,
+                receiveDate = receiveDate,
+                movedAt = movedAt,
+                isOpened = isOpened,
             )
     }
 

@@ -9,12 +9,8 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.LetterFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.letter.entity.IndependentLetter
 import com.asap.domain.letter.entity.SendLetter
-import com.asap.domain.letter.entity.SpaceLetter
 import com.asap.domain.letter.vo.LetterContent
-import com.asap.domain.letter.vo.ReceiverInfo
-import com.asap.domain.letter.vo.SenderInfo
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -22,7 +18,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.time.LocalDate
 
 class LetterCommandServiceTest :
     BehaviorSpec({
@@ -175,23 +170,10 @@ class LetterCommandServiceTest :
                     spaceId = "space-id",
                 )
             val independentLetter =
-                IndependentLetter(
+                LetterFixture.generateIndependentLetter(
                     id = DomainId("letter-id"),
-                    content =
-                        LetterContent(
-                            "content",
-                            images = mutableListOf(),
-                            templateType = 1,
-                        ),
-                    sender =
-                        SenderInfo(
-                            senderName = "sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId("user-id"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                 )
             every {
                 mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id"))
@@ -213,23 +195,10 @@ class LetterCommandServiceTest :
                     userId = "user-id",
                 )
             val spaceLetter =
-                SpaceLetter(
+                LetterFixture.generateSpaceLetter(
                     id = DomainId("letter-id"),
-                    content =
-                        LetterContent(
-                            "content",
-                            images = mutableListOf(),
-                            templateType = 1,
-                        ),
-                    sender =
-                        SenderInfo(
-                            senderName = "sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId("user-id"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                     spaceId = DomainId("space-id"),
                 )
             every {
@@ -255,23 +224,10 @@ class LetterCommandServiceTest :
                     userId = "user-id",
                 )
             val spaceLetter =
-                SpaceLetter(
+                LetterFixture.generateSpaceLetter(
                     id = DomainId("letter-id"),
-                    content =
-                        LetterContent(
-                            "content",
-                            images = mutableListOf(),
-                            templateType = 1,
-                        ),
-                    sender =
-                        SenderInfo(
-                            senderName = "sender-name",
-                        ),
-                    receiver =
-                        ReceiverInfo(
-                            receiverId = DomainId("user-id"),
-                        ),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                     spaceId = DomainId("space-id"),
                 )
             every {
@@ -310,12 +266,10 @@ class LetterCommandServiceTest :
         given("궤도 편지 삭제 요청이 들어올 떄") {
             val command = RemoveLetterUsecase.Command.IndependentLetter("letter-id", "user-id")
             val independentLetter =
-                IndependentLetter(
+                LetterFixture.generateIndependentLetter(
                     id = DomainId("letter-id"),
-                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
-                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
-                    receiver = ReceiverInfo(DomainId("user-id")),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                 )
             every { mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id")) } returns independentLetter
             `when`("편지를 삭제하면") {
@@ -349,12 +303,10 @@ class LetterCommandServiceTest :
                     userId = "user-id",
                 )
             val independentLetter =
-                IndependentLetter(
+                LetterFixture.generateIndependentLetter(
                     id = DomainId("letter-id"),
-                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
-                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
-                    receiver = ReceiverInfo(DomainId("user-id")),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                 )
             every { mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId("letter-id")) } returns independentLetter
             `when`("편지를 수정하면") {
@@ -368,12 +320,10 @@ class LetterCommandServiceTest :
         given("행성 편지 수정 요청이 들어올 떄") {
             val command = UpdateLetterUsecase.Command.Space("letter-id", "user-id", "name", "content", emptyList())
             val spaceLetter =
-                SpaceLetter(
+                LetterFixture.generateSpaceLetter(
                     id = DomainId("letter-id"),
-                    content = LetterContent("content", images = mutableListOf(), templateType = 1),
-                    sender = SenderInfo(DomainId("senderId"), "sender-name"),
-                    receiver = ReceiverInfo(DomainId("user-id")),
-                    receiveDate = LocalDate.now(),
+                    senderId = DomainId("sender-id"),
+                    receiverId = DomainId("user-id"),
                     spaceId = DomainId("space-id"),
                 )
             every {
