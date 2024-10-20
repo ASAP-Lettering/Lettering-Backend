@@ -14,18 +14,15 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.springframework.context.ApplicationEventPublisher
 
 class SpaceCommandServiceTest :
     BehaviorSpec({
 
         val spaceManagementPort = mockk<SpaceManagementPort>(relaxed = true)
-        val applicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val spaceCommandService =
             SpaceCommandService(
                 spaceManagementPort,
-                applicationEventPublisher,
             )
 
         given("스페이스 생성 요청이 들어왔을 때") {
@@ -75,7 +72,7 @@ class SpaceCommandServiceTest :
                         )
                     }
                     verify {
-                        spaceManagementPort.update(mockSpace.updateName(spaceUpdateNameCommand.name))
+                        spaceManagementPort.update(mockSpace)
                     }
                 }
             }
@@ -91,9 +88,8 @@ class SpaceCommandServiceTest :
                 spaceCommandService.deleteOne(spaceDeleteOneCommand)
                 then("스페이스를 삭제한다") {
                     verify {
-                        spaceManagementPort.deleteById(
-                            userId = DomainId(spaceDeleteOneCommand.userId),
-                            spaceId = DomainId(spaceDeleteOneCommand.spaceId),
+                        spaceManagementPort.deleteBy(
+                            any(Space::class),
                         )
                     }
                 }
@@ -108,9 +104,8 @@ class SpaceCommandServiceTest :
                 spaceCommandService.deleteAllBy(spaceDeleteAllCommand)
                 then("여러 스페이스를 삭제한다") {
                     verify {
-                        spaceManagementPort.deleteAllBySpaceIds(
-                            userId = DomainId(spaceDeleteAllCommand.userId),
-                            spaceIds = spaceDeleteAllCommand.spaceIds.map { DomainId(it) },
+                        spaceManagementPort.deleteBy(
+                            any(Space::class),
                         )
                     }
                 }

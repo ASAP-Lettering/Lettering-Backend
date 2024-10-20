@@ -1,6 +1,5 @@
 package com.asap.application.space.service
 
-import com.asap.application.space.event.SpaceDeletedEvent
 import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.`in`.CreateSpaceUsecase
 import com.asap.application.space.port.`in`.DeleteSpaceUsecase
@@ -11,7 +10,6 @@ import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.Space
 import com.asap.domain.space.service.SpaceIndexValidator
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class SpaceCommandService(
     private val spaceManagementPort: SpaceManagementPort,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : CreateSpaceUsecase,
     UpdateSpaceNameUsecase,
     DeleteSpaceUsecase,
@@ -44,42 +41,39 @@ class SpaceCommandService(
                 userId = DomainId(command.userId),
                 spaceId = DomainId(command.spaceId),
             )
-        val updatedSpace = space.updateName(command.name)
-        spaceManagementPort.update(updatedSpace)
+        space.updateName(command.name)
+        spaceManagementPort.update(space)
     }
 
     override fun deleteOne(command: DeleteSpaceUsecase.DeleteOneCommand) {
-        spaceManagementPort.deleteById(
-            userId = DomainId(command.userId),
-            spaceId = DomainId(command.spaceId),
-        )
-        applicationEventPublisher.publishEvent(
-            SpaceDeletedEvent(
-                userId = command.userId,
-                spaceId = command.spaceId,
-            ),
-        )
+        spaceManagementPort
+            .getSpaceNotNull(
+                userId = DomainId(command.userId),
+                spaceId = DomainId(command.spaceId),
+            ).apply {
+                delete()
+                spaceManagementPort.deleteBy(this)
+            }
         reIndexingSpaceOrder(DomainId(command.userId))
     }
 
     override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllCommand) {
-        spaceManagementPort.deleteAllBySpaceIds(
-            userId = DomainId(command.userId),
-            spaceIds = command.spaceIds.map { DomainId(it) },
-        )
-        command.spaceIds.forEach {
-            applicationEventPublisher.publishEvent(
-                SpaceDeletedEvent(
-                    userId = command.userId,
-                    spaceId = it,
-                ),
-            )
-        }
+        spaceManagementPort
+            .getAllSpaceBy(
+                userId = DomainId(command.userId),
+                spaceIds = command.spaceIds.map { DomainId(it) },
+            ).forEach {
+                it.delete()
+                spaceManagementPort.deleteBy(it)
+            }
         reIndexingSpaceOrder(DomainId(command.userId))
     }
 
     override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllUser) {
-        spaceManagementPort.deleteAllByUserId(DomainId(command.userId))
+        spaceManagementPort.getAllSpaceBy(DomainId(command.userId)).forEach {
+            it.delete()
+            spaceManagementPort.deleteBy(it)
+        }
     }
 
     override fun update(command: UpdateSpaceIndexUsecase.Command) {

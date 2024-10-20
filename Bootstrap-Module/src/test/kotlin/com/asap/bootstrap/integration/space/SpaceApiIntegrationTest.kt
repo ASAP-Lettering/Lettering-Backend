@@ -270,10 +270,10 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceId = spaceMockManager.settingSpace(userId)
+            val space = spaceMockManager.settingSpace(userId)
             // when
             val response =
-                mockMvc.delete("/api/v1/spaces/$spaceId") {
+                mockMvc.delete("/api/v1/spaces/${space.id.value}") {
                     header("Authorization", "Bearer $accessToken")
                 }
             // then
