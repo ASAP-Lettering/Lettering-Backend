@@ -86,7 +86,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
         }
 
         @Test
-        fun moveLetterToSpace_inserted_last() {
+        fun moveLetterToSpace_inserted_first() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
@@ -127,7 +127,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                 status { isOk() }
                 jsonPath("$.content") {
                     isArray()
-                    jsonPath("$.content[2].letterId") {
+                    jsonPath("$.content[0].letterId") {
                         value(independentLetterId)
                     }
                 }
@@ -228,11 +228,12 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
             jsonPath("$.content") {
                 isArray()
                 (0..9).forEachIndexed { index, _ ->
+                    val expectedIndex = letterIds.size - 1 - index - page * size
                     jsonPath("$.content[$index].senderName") {
-                        value(letterIds[index + page * size].second)
+                        value(letterIds[expectedIndex].second)
                     }
                     jsonPath("$.content[$index].letterId") {
-                        value(letterIds[index + page * size].first)
+                        value(letterIds[expectedIndex].first)
                     }
                 }
             }

@@ -104,7 +104,7 @@ class LetterQueryService(
                     PageRequest(
                         page = query.page,
                         size = query.size,
-                        sorts = Sort("movedAt", Sort.Direction.ASC),
+                        sorts = Sort("movedAt", Sort.Direction.DESC),
                     ),
             )
         return GetSpaceLettersUsecase.Response(
