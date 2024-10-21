@@ -72,4 +72,7 @@ class IndependentLetter(
         this.content.delete()
         this.sender.delete()
     }
+
+    override fun toString(): String =
+        "IndependentLetter(content=$content, sender=$sender, receiver=$receiver, receiveDate=$receiveDate, movedAt=$movedAt, isOpened=$isOpened)"
 }

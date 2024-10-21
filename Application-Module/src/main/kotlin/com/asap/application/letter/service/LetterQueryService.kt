@@ -44,7 +44,10 @@ class LetterQueryService(
     }
 
     override fun getAll(queryAll: GetIndependentLettersUsecase.QueryAll): GetIndependentLettersUsecase.Response.All {
-        val letters = independentLetterManagementPort.getAllByReceiverId(DomainId(queryAll.userId))
+        val letters =
+            independentLetterManagementPort
+                .getAllByReceiverId(DomainId(queryAll.userId))
+                .sortedByDescending { it.movedAt }
         return GetIndependentLettersUsecase.Response.All(
             letters =
                 letters.map {

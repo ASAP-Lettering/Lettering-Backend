@@ -405,13 +405,14 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                     spaceId = space.id.value,
                 )
 
-            (0..1).forEach { _ ->
-                letterMockManager.generateMockIndependentLetter(
-                    senderId = senderId,
-                    receiverId = receiverId,
-                    senderName = "senderUsername",
-                )
-            }
+            val independentLetters =
+                (0..1).map { _ ->
+                    letterMockManager.generateMockIndependentLetter(
+                        senderId = senderId,
+                        receiverId = receiverId,
+                        senderName = "senderUsername",
+                    )
+                }
 
             mockMvc.put("/api/v1/spaces/letters/${spaceLetter.id.value}/independent") {
                 contentType = MediaType.APPLICATION_JSON
@@ -424,6 +425,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                     contentType = MediaType.APPLICATION_JSON
                     header("Authorization", "Bearer $accessToken")
                 }
+
             // then
             result
                 .andExpect {
@@ -436,6 +438,18 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                             isString()
                             isNotEmpty()
                             value(spaceLetter.id.value)
+                        }
+                        jsonPath("$.content[1].letterId") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                            value(independentLetters[1].id.value)
+                        }
+                        jsonPath("$.content[2].letterId") {
+                            exists()
+                            isString()
+                            isNotEmpty()
+                            value(independentLetters[0].id.value)
                         }
                     }
                 }.andDo { print() }
@@ -940,7 +954,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
     }
 
     @Nested
-    inner class DeleteSendLetter  {
+    inner class DeleteSendLetter {
         @Test
         fun deleteSendLetter() {
             // given
@@ -969,7 +983,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
 
         @Test
-        fun deleteSendLetters()  {
+        fun deleteSendLetters() {
             // given
             val senderId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(senderId)
