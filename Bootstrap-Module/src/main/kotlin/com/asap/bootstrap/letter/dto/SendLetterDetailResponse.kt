@@ -8,4 +8,5 @@ data class SendLetterDetailResponse(
     val content: String,
     val images: List<String>,
     val templateType: Int,
+    val letterCode: String?,
 )

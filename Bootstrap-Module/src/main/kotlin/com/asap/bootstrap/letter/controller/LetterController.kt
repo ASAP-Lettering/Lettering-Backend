@@ -237,6 +237,7 @@ class LetterController(
             content = response.content,
             images = response.images,
             templateType = response.templateType,
+            letterCode = response.letterCode,
         )
     }
 

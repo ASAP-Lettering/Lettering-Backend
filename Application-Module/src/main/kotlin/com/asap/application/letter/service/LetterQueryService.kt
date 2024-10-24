@@ -201,6 +201,7 @@ class LetterQueryService(
             content = letter.content.content,
             images = letter.content.images,
             templateType = letter.content.templateType,
+            letterCode = letter.letterCode,
         )
     }
 }
