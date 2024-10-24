@@ -221,6 +221,7 @@ class LetterCommandService(
             senderName = command.senderName,
             content = command.content,
             images = command.images,
+            templateType = command.templateType,
         )
         independentLetterManagementPort.save(independentLetter)
     }
@@ -235,6 +236,7 @@ class LetterCommandService(
             senderName = command.senderName,
             content = command.content,
             images = command.images,
+            templateType = command.templateType,
         )
         spaceLetterManagementPort.save(spaceLetter)
     }

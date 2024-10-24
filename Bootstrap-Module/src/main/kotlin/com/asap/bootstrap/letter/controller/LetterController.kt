@@ -163,6 +163,7 @@ class LetterController(
                 content = request.content,
                 images = request.images,
                 userId = userId,
+                templateType = request.templateType,
             ),
         )
     }

@@ -429,6 +429,7 @@ class SpaceLetterApiIntegrationTest : IntegrationSupporter() {
                 content = "updateContent",
                 images = listOf("image1", "image2"),
                 senderName = "updateSenderName",
+                templateType = 1,
             )
         // when
         val response =

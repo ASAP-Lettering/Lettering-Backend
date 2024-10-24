@@ -3,7 +3,7 @@ package com.asap.domain.letter.vo
 data class LetterContent(
     var content: String,
     val images: MutableList<String>,
-    val templateType: Int,
+    var templateType: Int,
 ) {
     fun updateContent(content: String) {
         this.content = content
@@ -14,7 +14,11 @@ data class LetterContent(
         this.images.addAll(images)
     }
 
-    fun delete()  {
+    fun updateTemplateType(templateType: Int) {
+        this.templateType = templateType
+    }
+
+    fun delete() {
         this.content = ""
         this.images.clear()
     }

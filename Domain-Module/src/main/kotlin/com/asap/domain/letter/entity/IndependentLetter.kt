@@ -62,10 +62,12 @@ class IndependentLetter(
         senderName: String,
         content: String,
         images: List<String>,
+        templateType: Int,
     ) {
         this.sender.update(senderName)
         this.content.updateContent(content)
         this.content.updateImages(images.toMutableList())
+        this.content.updateTemplateType(templateType)
     }
 
     fun delete() {

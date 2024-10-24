@@ -5,14 +5,14 @@ interface UpdateLetterUsecase {
 
     fun updateSpaceLetter(command: Command.Space)
 
-    sealed class Command  {
-
+    sealed class Command {
         data class Independent(
             val letterId: String,
             val userId: String,
             val senderName: String,
             val content: String,
             val images: List<String>,
+            val templateType: Int,
         ) : Command()
 
         data class Space(
@@ -21,6 +21,7 @@ interface UpdateLetterUsecase {
             val senderName: String,
             val content: String,
             val images: List<String>,
+            val templateType: Int,
         ) : Command()
     }
 }
