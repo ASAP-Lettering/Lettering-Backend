@@ -500,6 +500,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 content = "content",
                 images = listOf("images"),
                 templateType = 1,
+                letterCode = "letterCode",
             )
         BDDMockito
             .given(
@@ -541,6 +542,10 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             jsonPath("$.templateType") {
                 exists()
                 isNumber()
+            }
+            jsonPath("$.letterCode") {
+                exists()
+                isString()
             }
         }
     }
