@@ -139,6 +139,7 @@ class SpaceLetterController(
                     content = request.content,
                     images = request.images,
                     userId = userId,
+                    templateType = request.templateType,
                 ),
         )
     }

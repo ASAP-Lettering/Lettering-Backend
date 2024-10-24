@@ -226,6 +226,7 @@ class SpaceLetterControllerTest : LetterAcceptanceSupporter() {
                 content = "content",
                 images = listOf("images"),
                 senderName = "senderName",
+                templateType = 1,
             )
         // when
         val response =

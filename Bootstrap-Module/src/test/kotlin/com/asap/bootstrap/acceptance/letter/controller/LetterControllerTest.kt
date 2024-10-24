@@ -381,6 +381,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 senderName = "senderName",
                 content = "content",
                 images = listOf("images"),
+                templateType = 1,
             )
         // when
         val response =
@@ -545,7 +546,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
     }
 
     @Nested
-    inner class DeleteSendLetter  {
+    inner class DeleteSendLetter {
         @Test
         fun deleteSendLetter() {
             // given
@@ -564,7 +565,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
         }
 
         @Test
-        fun deleteSendLetters()  {
+        fun deleteSendLetters() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)

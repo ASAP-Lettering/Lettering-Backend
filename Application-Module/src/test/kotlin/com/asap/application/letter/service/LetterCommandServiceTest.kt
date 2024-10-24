@@ -301,6 +301,7 @@ class LetterCommandServiceTest :
                     content = "content",
                     images = emptyList(),
                     userId = "user-id",
+                    templateType = 1,
                 )
             val independentLetter =
                 LetterFixture.generateIndependentLetter(
@@ -318,7 +319,7 @@ class LetterCommandServiceTest :
         }
 
         given("행성 편지 수정 요청이 들어올 떄") {
-            val command = UpdateLetterUsecase.Command.Space("letter-id", "user-id", "name", "content", emptyList())
+            val command = UpdateLetterUsecase.Command.Space("letter-id", "user-id", "name", "content", emptyList(), 1)
             val spaceLetter =
                 LetterFixture.generateSpaceLetter(
                     id = DomainId("letter-id"),
