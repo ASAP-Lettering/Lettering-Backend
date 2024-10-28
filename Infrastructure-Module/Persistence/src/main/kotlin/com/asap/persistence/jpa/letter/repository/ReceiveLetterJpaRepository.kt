@@ -92,7 +92,7 @@ interface ReceiveLetterJpaRepository : JpaRepository<ReceiveLetterEntity, String
         SELECT COUNT(r.id)
         FROM ReceiveLetterEntity r
         WHERE r.receiverId = :receiverId
-        and ((r.spaceId is not null and r.spaceId = :spaceId) or (r.spaceId is null and r.spaceId is null))
+        and ((r.spaceId is not null and r.spaceId = :spaceId) or (r.spaceId is null and :spaceId is null))
         and r.entityStatus = :entityStatus
     """,
     )
