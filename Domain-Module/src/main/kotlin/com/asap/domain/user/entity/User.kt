@@ -46,4 +46,8 @@ class User(
     fun updateOnboarding() {
         this.onboardingAt = LocalDateTime.now()
     }
+
+    fun isProcessedOnboarding(): Boolean {
+        return this.onboardingAt != null
+    }
 }

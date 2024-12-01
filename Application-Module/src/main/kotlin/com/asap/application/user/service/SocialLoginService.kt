@@ -22,11 +22,11 @@ class SocialLoginService(
             authInfoRetrievePort.getAuthInfo(SocialLoginProvider.parse(command.provider), command.accessToken)
         val userAuth = userAuthManagementPort.getUserAuth(authInfo.socialId, authInfo.socialLoginProvider)
         return userAuth?.let {
-            userManagementPort.getUser(userAuth.userId)?.let {
-                val accessToken = userTokenConvertPort.generateAccessToken(it)
-                val refreshToken = userTokenConvertPort.generateRefreshToken(it)
-                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = it.id))
-                SocialLoginUsecase.Success(accessToken, refreshToken)
+            userManagementPort.getUser(userAuth.userId)?.let { user ->
+                val accessToken = userTokenConvertPort.generateAccessToken(user)
+                val refreshToken = userTokenConvertPort.generateRefreshToken(user)
+                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = user.id))
+                SocialLoginUsecase.Success(accessToken, refreshToken, user.isProcessedOnboarding())
             } ?: run {
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
             }

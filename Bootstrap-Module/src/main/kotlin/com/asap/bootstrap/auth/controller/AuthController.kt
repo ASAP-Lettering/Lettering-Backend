@@ -29,7 +29,8 @@ class AuthController(
             is SocialLoginUsecase.Success -> ResponseEntity.ok(
                 SocialLoginResponse.Success(
                     response.accessToken,
-                    response.refreshToken
+                    response.refreshToken,
+                    response.isProcessedOnboarding
                 )
             )
 

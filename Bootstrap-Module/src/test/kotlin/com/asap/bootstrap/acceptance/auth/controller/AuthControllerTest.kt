@@ -33,7 +33,7 @@ class AuthControllerTest : AcceptanceSupporter() {
         val command = SocialLoginUsecase.Command("KAKAO", "registered")
         BDDMockito
             .given(socialLoginUsecase.login(command))
-            .willReturn(SocialLoginUsecase.Success("accessToken", "refreshToken"))
+            .willReturn(SocialLoginUsecase.Success("accessToken", "refreshToken", false))
         // when
         val response =
             mockMvc.post("/api/v1/auth/login/{provider}", "KAKAO") {
