@@ -32,5 +32,5 @@ class UserEntity(
 
     val birthday: LocalDate? = birthday
 
-    val onboardingAt: LocalDateTime? = null
+    val onboardingAt: LocalDateTime? = onboardingAt
 }
