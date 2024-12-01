@@ -1,0 +1,1 @@
+alter table user add column onboarding_at datetime null;

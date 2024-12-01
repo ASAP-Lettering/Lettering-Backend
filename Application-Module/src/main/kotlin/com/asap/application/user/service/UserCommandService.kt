@@ -87,4 +87,14 @@ class UserCommandService(
                 userManagementPort.save(this)
             }
     }
+
+    override fun executeFor(command: UpdateUserUsecase.Command.Onboarding) {
+        userManagementPort
+            .getUserNotNull(DomainId(command.userId))
+            .apply {
+                this.updateOnboarding()
+                userManagementPort.save(this)
+            }
+
+    }
 }
