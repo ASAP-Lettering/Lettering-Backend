@@ -2,7 +2,6 @@ package com.asap.application.user
 
 import com.asap.application.user.port.out.UserAuthManagementPort
 import com.asap.application.user.port.out.UserManagementPort
-import com.asap.application.user.port.out.UserTokenManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.user.entity.User
 import com.asap.domain.user.entity.UserAuth
@@ -11,7 +10,6 @@ import com.asap.domain.user.vo.UserPermission
 import java.time.LocalDate
 
 class UserMockManager(
-    private val tokenManagementPort: UserTokenManagementPort,
     private val userManagementPort: UserManagementPort,
     private val userAuthManagementPort: UserAuthManagementPort,
 ) {
@@ -35,6 +33,7 @@ class UserMockManager(
             permission = UserPermission(true, true, true),
             birthday = LocalDate.now(),
             email = "email",
+            onboardingAt = null,
         ),
     )
 

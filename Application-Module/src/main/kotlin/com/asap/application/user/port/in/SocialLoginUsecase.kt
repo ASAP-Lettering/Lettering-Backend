@@ -11,9 +11,11 @@ interface SocialLoginUsecase {
 
     sealed class Response {
     }
+
     data class Success(
         val accessToken: String,
-        val refreshToken: String
+        val refreshToken: String,
+        val isProcessedOnboarding: Boolean
     ) : Response()
 
     data class NonRegistered(

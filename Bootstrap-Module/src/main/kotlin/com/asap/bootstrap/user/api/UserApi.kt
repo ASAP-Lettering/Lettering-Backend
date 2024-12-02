@@ -100,4 +100,10 @@ interface UserApi {
         @AccessUser userId: String,
         @RequestBody request: UpdateBirthdayRequest,
     )
+
+    @Operation(summary = "온보딩 여부 저장")
+    @PutMapping("/info/onboarding")
+    fun updateOnboarding(
+        @AccessUser userId: String,
+    )
 }

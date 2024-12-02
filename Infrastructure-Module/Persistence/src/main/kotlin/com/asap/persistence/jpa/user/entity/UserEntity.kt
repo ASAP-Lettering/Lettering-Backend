@@ -3,6 +3,7 @@ package com.asap.persistence.jpa.user.entity
 import com.asap.persistence.jpa.common.AggregateRoot
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user")
@@ -13,6 +14,7 @@ class UserEntity(
     profileImage: String,
     userPermission: UserPermissionEntity,
     birthday: LocalDate?,
+    onboardingAt: LocalDateTime?,
 ) : AggregateRoot<UserEntity>(id) {
     @Column(nullable = false)
     val username: String = username
@@ -29,4 +31,6 @@ class UserEntity(
     val userPermission: UserPermissionEntity = userPermission
 
     val birthday: LocalDate? = birthday
+
+    val onboardingAt: LocalDateTime? = onboardingAt
 }

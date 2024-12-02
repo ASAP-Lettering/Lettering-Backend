@@ -9,14 +9,15 @@ import io.swagger.v3.oas.annotations.media.Schema
         SocialLoginResponse.NonRegistered::class
     ]
 )
-sealed class SocialLoginResponse{
+sealed class SocialLoginResponse {
 
     @Schema(description = "기존 회원 로그인 성공")
     data class Success(
         @Schema(description = "access token")
         val accessToken: String,
         @Schema(description = "refresh token")
-        val refreshToken: String
+        val refreshToken: String,
+        val isProcessedOnboarding: Boolean
     ) : SocialLoginResponse()
 
 

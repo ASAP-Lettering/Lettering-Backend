@@ -69,4 +69,12 @@ class UserController(
             ),
         )
     }
+
+    override fun updateOnboarding(userId: String) {
+        updateUserUsecase.executeFor(
+            UpdateUserUsecase.Command.Onboarding(
+                userId = userId,
+            ),
+        )
+    }
 }

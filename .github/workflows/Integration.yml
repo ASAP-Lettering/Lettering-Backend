@@ -35,5 +35,5 @@ jobs:
 
         - name: Build With Gradle
           run: |
-            ./gradlew build --info
+            ./gradlew build
 
