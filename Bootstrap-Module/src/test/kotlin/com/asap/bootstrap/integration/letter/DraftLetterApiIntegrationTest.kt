@@ -2,7 +2,7 @@ package com.asap.bootstrap.integration.letter
 
 import com.asap.application.letter.LetterMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
+import com.asap.bootstrap.web.letter.dto.UpdateDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType

@@ -3,7 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.user.event.UserEvent
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.letter.handler.DraftLetterEventHandler
+import com.asap.bootstrap.web.letter.handler.DraftLetterEventHandler
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.get

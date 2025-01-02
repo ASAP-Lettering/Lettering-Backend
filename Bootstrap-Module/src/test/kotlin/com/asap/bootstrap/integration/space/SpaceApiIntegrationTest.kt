@@ -2,10 +2,10 @@ package com.asap.bootstrap.integration.space
 
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.space.dto.CreateSpaceRequest
-import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
-import com.asap.bootstrap.space.dto.UpdateSpaceNameRequest
-import com.asap.bootstrap.space.dto.UpdateSpaceOrderRequest
+import com.asap.bootstrap.web.space.dto.CreateSpaceRequest
+import com.asap.bootstrap.web.space.dto.DeleteMultipleSpacesRequest
+import com.asap.bootstrap.web.space.dto.UpdateSpaceNameRequest
+import com.asap.bootstrap.web.space.dto.UpdateSpaceOrderRequest
 import io.kotest.matchers.maps.haveValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.haveLength
@@ -445,9 +445,9 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                 status { isOk() }
             }
             spaceMockManager.getSpaceIndexes(userId) shouldBe
-                spaceIndexes
-                    .map { it.spaceId to it.index }
-                    .sortedBy { it.second }
+                    spaceIndexes
+                        .map { it.spaceId to it.index }
+                        .sortedBy { it.second }
         }
 
         @Test

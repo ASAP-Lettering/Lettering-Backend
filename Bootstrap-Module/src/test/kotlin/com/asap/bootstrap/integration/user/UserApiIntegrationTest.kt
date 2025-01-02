@@ -2,9 +2,9 @@ package com.asap.bootstrap.integration.user
 
 import com.asap.application.user.exception.UserException
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.user.dto.LogoutRequest
-import com.asap.bootstrap.user.dto.RegisterUserRequest
-import com.asap.bootstrap.user.dto.UpdateBirthdayRequest
+import com.asap.bootstrap.web.user.dto.LogoutRequest
+import com.asap.bootstrap.web.user.dto.RegisterUserRequest
+import com.asap.bootstrap.web.user.dto.UpdateBirthdayRequest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType

@@ -3,7 +3,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.GetDraftLetterUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
-import com.asap.bootstrap.letter.dto.UpdateDraftLetterRequest
+import com.asap.bootstrap.web.letter.dto.UpdateDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType

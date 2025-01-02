@@ -2,7 +2,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 
 import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
-import com.asap.bootstrap.letter.dto.*
+import com.asap.bootstrap.web.letter.dto.*
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito

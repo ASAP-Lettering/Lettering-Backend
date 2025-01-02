@@ -5,8 +5,8 @@ import com.asap.application.user.port.`in`.ReissueTokenUsecase
 import com.asap.application.user.port.`in`.SocialLoginUsecase
 import com.asap.application.user.port.`in`.TokenResolveUsecase
 import com.asap.bootstrap.AcceptanceSupporter
-import com.asap.bootstrap.auth.dto.ReissueRequest
-import com.asap.bootstrap.auth.dto.SocialLoginRequest
+import com.asap.bootstrap.web.auth.dto.ReissueRequest
+import com.asap.bootstrap.web.auth.dto.SocialLoginRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.boot.test.mock.mockito.MockBean

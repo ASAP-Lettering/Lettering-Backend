@@ -1,8 +1,8 @@
 package com.asap.bootstrap.integration.auth
 
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.auth.dto.ReissueRequest
-import com.asap.bootstrap.auth.dto.SocialLoginRequest
+import com.asap.bootstrap.web.auth.dto.ReissueRequest
+import com.asap.bootstrap.web.auth.dto.SocialLoginRequest
 import com.asap.client.KakaoTestData
 import com.asap.client.MockServer
 import com.asap.security.jwt.user.TokenType

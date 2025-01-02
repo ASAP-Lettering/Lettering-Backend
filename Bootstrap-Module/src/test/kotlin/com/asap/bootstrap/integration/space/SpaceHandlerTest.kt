@@ -3,7 +3,7 @@ package com.asap.bootstrap.integration.space
 import com.asap.application.space.SpaceMockManager
 import com.asap.application.user.event.UserEvent
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.space.handler.SpaceEventHandler
+import com.asap.bootstrap.web.space.handler.SpaceEventHandler
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.get
