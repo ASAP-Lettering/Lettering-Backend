@@ -7,6 +7,7 @@ import com.asap.bootstrap.webhook.dto.KakaoChatType
 import com.asap.bootstrap.webhook.dto.KakaoWebHookRequest
 import com.asap.domain.letter.entity.LetterLogType
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -51,9 +52,10 @@ class WebHookApiIntegrationTest(
         response.andExpect {
             status { isOk() }
         }
-        with(letterLogManagementPort.findAll().first()) {
-            this.targetLetterId shouldBe letter.id
-            this.logType shouldBe LetterLogType.SHARE
+        with(letterLogManagementPort.findLatestByLetterId(letter.id)) {
+            this.shouldNotBeNull()
+            this!!.targetLetterId shouldBe letter.id
+            this!!.logType shouldBe LetterLogType.SHARE
             objectMapper.readValue<KakaoWebHookRequest>(this.content) shouldBe request
         }
     }

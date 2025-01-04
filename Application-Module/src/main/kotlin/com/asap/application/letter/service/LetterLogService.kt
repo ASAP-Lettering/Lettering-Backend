@@ -25,4 +25,17 @@ class LetterLogService(
             letterLogManagementPort.save(this)
         }
     }
+
+    override fun finLatestLogByLetterCode(letterCode: String): LetterLogUsecase.LogResponse? {
+        val letter = sendLetterManagementPort.getLetterByCodeNotNull(letterCode)
+        val latestLog = letterLogManagementPort.findLatestByLetterId(letter.id)
+
+        return latestLog?.let {
+            LetterLogUsecase.LogResponse(
+                letterId = it.targetLetterId.value,
+                logType = it.logType,
+                logContent = it.content
+            )
+        }
+    }
 }
