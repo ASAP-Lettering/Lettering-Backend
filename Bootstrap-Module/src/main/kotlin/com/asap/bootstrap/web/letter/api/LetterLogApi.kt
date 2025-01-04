@@ -1,7 +1,7 @@
 package com.asap.bootstrap.web.letter.api
 
 import com.asap.bootstrap.common.security.annotation.AccessUser
-import com.asap.bootstrap.webhook.dto.KakaoChatType
+import com.asap.bootstrap.web.letter.dto.LetterShareStatusResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -19,7 +19,7 @@ interface LetterLogApi {
     @Operation(summary = "편지 공유 상태 조회")
     @GetMapping("/share/status")
     @ApiResponses(
-        value =[
+        value = [
             ApiResponse(
                 responseCode = "200",
                 description = """
@@ -51,32 +51,4 @@ interface LetterLogApi {
         @RequestParam("letterCode") letterCode: String,
         @AccessUser userId: String
     ): LetterShareStatusResponse
-}
-
-
-data class LetterShareStatusResponse(
-    val isShared: Boolean,
-    val letterId: String?,
-    val shareTarget: KakaoChatType?,
-) {
-    companion object{
-        fun success(
-            letterId: String,
-            shareTarget: KakaoChatType
-        ): LetterShareStatusResponse {
-            return LetterShareStatusResponse(
-                isShared = true,
-                letterId = letterId,
-                shareTarget = shareTarget
-            )
-        }
-
-        fun fail(): LetterShareStatusResponse {
-            return LetterShareStatusResponse(
-                isShared = false,
-                letterId = null,
-                shareTarget = null
-            )
-        }
-    }
 }
