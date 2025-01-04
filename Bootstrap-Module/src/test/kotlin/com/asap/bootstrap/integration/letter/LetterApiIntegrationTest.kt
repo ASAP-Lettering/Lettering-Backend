@@ -3,7 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.letter.dto.*
+import com.asap.bootstrap.web.letter.dto.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

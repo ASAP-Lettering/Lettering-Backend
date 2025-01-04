@@ -3,7 +3,7 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
+import com.asap.bootstrap.web.space.dto.DeleteMultipleSpacesRequest
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

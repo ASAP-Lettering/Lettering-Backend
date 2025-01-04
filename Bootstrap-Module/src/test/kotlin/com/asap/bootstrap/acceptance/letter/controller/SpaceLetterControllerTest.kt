@@ -3,8 +3,8 @@ package com.asap.bootstrap.acceptance.letter.controller
 import com.asap.application.letter.port.`in`.GetSpaceLetterDetailUsecase
 import com.asap.application.letter.port.`in`.GetSpaceLettersUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
-import com.asap.bootstrap.letter.dto.ModifyLetterRequest
-import com.asap.bootstrap.letter.dto.MoveLetterToSpaceRequest
+import com.asap.bootstrap.web.letter.dto.ModifyLetterRequest
+import com.asap.bootstrap.web.letter.dto.MoveLetterToSpaceRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType

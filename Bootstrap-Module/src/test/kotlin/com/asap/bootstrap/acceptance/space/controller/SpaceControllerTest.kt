@@ -2,10 +2,10 @@ package com.asap.bootstrap.acceptance.space.controller
 
 import com.asap.application.space.port.`in`.*
 import com.asap.bootstrap.AcceptanceSupporter
-import com.asap.bootstrap.space.dto.CreateSpaceRequest
-import com.asap.bootstrap.space.dto.DeleteMultipleSpacesRequest
-import com.asap.bootstrap.space.dto.UpdateSpaceNameRequest
-import com.asap.bootstrap.space.dto.UpdateSpaceOrderRequest
+import com.asap.bootstrap.web.space.dto.CreateSpaceRequest
+import com.asap.bootstrap.web.space.dto.DeleteMultipleSpacesRequest
+import com.asap.bootstrap.web.space.dto.UpdateSpaceNameRequest
+import com.asap.bootstrap.web.space.dto.UpdateSpaceOrderRequest
 import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito

@@ -2,9 +2,9 @@ package com.asap.bootstrap.acceptance.user.controller
 
 import com.asap.application.user.port.`in`.*
 import com.asap.bootstrap.AcceptanceSupporter
-import com.asap.bootstrap.user.dto.LogoutRequest
-import com.asap.bootstrap.user.dto.RegisterUserRequest
-import com.asap.bootstrap.user.dto.UpdateBirthdayRequest
+import com.asap.bootstrap.web.user.dto.LogoutRequest
+import com.asap.bootstrap.web.user.dto.RegisterUserRequest
+import com.asap.bootstrap.web.user.dto.UpdateBirthdayRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -50,7 +50,12 @@ class UserControllerTest : AcceptanceSupporter() {
                 request.birthday,
                 request.realName,
             )
-        given(registerUserUsecase.registerUser(command)).willReturn(RegisterUserUsecase.Response("accessToken", "refreshToken"))
+        given(registerUserUsecase.registerUser(command)).willReturn(
+            RegisterUserUsecase.Response(
+                "accessToken",
+                "refreshToken"
+            )
+        )
         // when
         val response =
             mockMvc.post("/api/v1/users") {
@@ -140,7 +145,7 @@ class UserControllerTest : AcceptanceSupporter() {
     }
 
     @Test
-    fun updateBirthday()  {
+    fun updateBirthday() {
         // given
         val userId = userMockManager.settingUser()
         val accessToken = jwtMockManager.generateAccessToken(userId)
