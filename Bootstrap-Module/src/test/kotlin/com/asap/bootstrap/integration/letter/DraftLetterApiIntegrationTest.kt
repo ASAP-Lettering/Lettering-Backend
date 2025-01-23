@@ -142,4 +142,22 @@ class DraftLetterApiIntegrationTest : IntegrationSupporter() {
             status { isOk() }
         }
     }
+
+    @Test
+    fun `get physical draft key`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/drafts/physical/key") {
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.draftId") { isString() }
+        }
+    }
 }

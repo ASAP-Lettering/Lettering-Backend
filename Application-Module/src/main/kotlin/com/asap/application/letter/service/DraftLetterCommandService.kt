@@ -4,8 +4,10 @@ import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
 import com.asap.application.letter.port.out.DraftLetterManagementPort
+import com.asap.application.letter.port.out.ReceiveDraftLetterManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.DraftLetter
+import com.asap.domain.letter.entity.ReceiveDraftLetter
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,13 +15,20 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class DraftLetterCommandService(
     private val draftLetterManagementPort: DraftLetterManagementPort,
+    private val receiveDraftLetterManagementPort: ReceiveDraftLetterManagementPort,
 ) : GenerateDraftKeyUsecase,
     UpdateDraftLetterUsecase,
     RemoveDraftLetterUsecase {
-    override fun command(command: GenerateDraftKeyUsecase.Command): GenerateDraftKeyUsecase.Response {
+    override fun command(command: GenerateDraftKeyUsecase.Command.Send): GenerateDraftKeyUsecase.Response {
         val draftLetter = DraftLetter.default(DomainId(command.userId))
         draftLetterManagementPort.save(draftLetter)
         return GenerateDraftKeyUsecase.Response(draftLetter.id.value)
+    }
+
+    override fun command(command: GenerateDraftKeyUsecase.Command.Physical): GenerateDraftKeyUsecase.Response {
+        val receiveDraftLetter = ReceiveDraftLetter.default(DomainId(command.userId))
+        receiveDraftLetterManagementPort.save(receiveDraftLetter)
+        return GenerateDraftKeyUsecase.Response(receiveDraftLetter.id.value)
     }
 
     override fun command(command: UpdateDraftLetterUsecase.Command) {
