@@ -4,8 +4,10 @@ import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
 import com.asap.application.letter.port.out.DraftLetterManagementPort
+import com.asap.application.letter.port.out.ReceiveDraftLetterManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.DraftLetter
+import com.asap.domain.letter.entity.ReceiveDraftLetter
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.mockk.every
@@ -16,14 +18,16 @@ class DraftLetterCommandServiceTest :
     BehaviorSpec({
 
         val mockGenerateDraftKeyUsecase = mockk<DraftLetterManagementPort>(relaxed = true)
-        val draftLetterCommandService = DraftLetterCommandService(mockGenerateDraftKeyUsecase)
+        val mockReceiveDraftLetterManagementPort = mockk<ReceiveDraftLetterManagementPort>(relaxed = true)
+        val draftLetterCommandService =
+            DraftLetterCommandService(mockGenerateDraftKeyUsecase, mockReceiveDraftLetterManagementPort)
 
         given("임시 저장 키를 발급할 때") {
             val userId = "userId"
             val draftLetter = DraftLetter.default(DomainId(userId))
             every { mockGenerateDraftKeyUsecase.save(any()) } returns draftLetter
             `when`("사용자 아이디를 입력하면") {
-                val response = draftLetterCommandService.command(GenerateDraftKeyUsecase.Command(userId))
+                val response = draftLetterCommandService.command(GenerateDraftKeyUsecase.Command.Send(userId))
                 then("임시 저장 키를 발급한다") {
                     response.draftId.shouldNotBeNull()
                 }
@@ -67,6 +71,18 @@ class DraftLetterCommandServiceTest :
                 draftLetterCommandService.deleteBy(command)
                 then("임시 저장 편지를 삭제한다") {
                     verify { mockGenerateDraftKeyUsecase.remove(any()) }
+                }
+            }
+        }
+
+        given("받은 편지를 임시저장하려 할때"){
+            val command = GenerateDraftKeyUsecase.Command.Physical("userId")
+            val receiveDraftLetter = ReceiveDraftLetter.default(DomainId(command.userId))
+            every { mockReceiveDraftLetterManagementPort.save(any()) } returns receiveDraftLetter
+            `when`("사용자 아이디를 입력하면"){
+                val response = draftLetterCommandService.command(command)
+                then("받은 편지를 임시저장한다"){
+                    response.draftId.shouldNotBeNull()
                 }
             }
         }

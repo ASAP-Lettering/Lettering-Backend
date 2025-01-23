@@ -20,7 +20,7 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         val accessToken = jwtMockManager.generateAccessToken(userId)
 
         BDDMockito
-            .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command(userId)))
+            .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command.Send(userId)))
             .willReturn(GenerateDraftKeyUsecase.Response("draftId"))
 
         // when
@@ -178,6 +178,30 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+
+    @Test
+    fun `get physical draft key`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        BDDMockito
+            .given(generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command.Physical(userId)))
+            .willReturn(GenerateDraftKeyUsecase.Response("draftId"))
+
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/drafts/physical/key") {
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.draftId") { isString() }
         }
     }
 }

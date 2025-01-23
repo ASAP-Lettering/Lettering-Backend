@@ -16,7 +16,12 @@ class DraftLetterController(
     private val removeDraftLetterUsecase: RemoveDraftLetterUsecase,
 ) : DraftLetterApi {
     override fun getDraftKey(userId: String): GenerateDraftKeyResponse {
-        val response = generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command(userId))
+        val response = generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command.Send(userId))
+        return GenerateDraftKeyResponse(response.draftId)
+    }
+
+    override fun getPhysicalDraftKey(userId: String): GenerateDraftKeyResponse {
+        val response = generateDraftKeyUsecase.command(GenerateDraftKeyUsecase.Command.Physical(userId))
         return GenerateDraftKeyResponse(response.draftId)
     }
 

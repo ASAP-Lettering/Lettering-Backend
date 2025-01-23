@@ -31,6 +31,26 @@ interface DraftLetterApi {
         @AccessUser userId: String,
     ): GenerateDraftKeyResponse
 
+    @Operation(summary = "실물 편지 임시 저장 키 발급")
+    @PostMapping("/physical/key")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 키 발급 성공",
+                content = [
+                    Content(
+                        schema =
+                            Schema(implementation = GenerateDraftKeyResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getPhysicalDraftKey(
+        @AccessUser userId: String,
+    ): GenerateDraftKeyResponse
+
     @Operation(summary = "임시 저장하기")
     @PostMapping("/{draftId}")
     @ApiResponses(
