@@ -10,17 +10,15 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
 class DraftLetterApiIntegrationTest(
-    private val receiveDraftLetterManagementPort: ReceiveDraftLetterManagementPort
+    private val receiveDraftLetterManagementPort: ReceiveDraftLetterManagementPort,
+    private val letterMockManager: LetterMockManager,
 ) : IntegrationSupporter() {
-    @Autowired
-    private lateinit var letterMockManager: LetterMockManager
 
     @Test
     fun `get draft key`() {
@@ -224,6 +222,98 @@ class DraftLetterApiIntegrationTest(
                     contentType = MediaType.APPLICATION_JSON
                     header("Authorization", "Bearer $accessToken")
                     content = objectMapper.writeValueAsString(request)
+                }
+
+            // then
+            response.andExpect {
+                status { isNotFound() }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("get physical drafts")
+    inner class GetPhysicalDraft {
+
+        @Test
+        fun `get all physical drafts`() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val draftId = letterMockManager.generateMockReceiveDraftLetter(userId)
+
+            val request = UpdatePhysicalDraftLetterRequest(
+                content = "content",
+                images = listOf("image"),
+                senderName = "senderName",
+            )
+
+            mockMvc.post("/api/v1/letters/drafts/physical/$draftId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+                content = objectMapper.writeValueAsString(request)
+            }
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/drafts/physical") {
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.drafts[0].draftKey") { value(draftId) }
+                jsonPath("$.drafts[0].senderName") { value(request.senderName) }
+                jsonPath("$.drafts[0].content") { value(request.content) }
+                jsonPath("$.drafts[0].lastUpdated") { isString() }
+            }
+        }
+
+        @Test
+        fun `get physical draft letter`() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val draftId = letterMockManager.generateMockReceiveDraftLetter(userId)
+            val request = UpdatePhysicalDraftLetterRequest(
+                content = "content",
+                images = listOf("image"),
+                senderName = "senderName",
+            )
+
+            mockMvc.post("/api/v1/letters/drafts/physical/$draftId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+                content = objectMapper.writeValueAsString(request)
+            }
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/drafts/physical/$draftId") {
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.draftKey") { value(draftId) }
+                jsonPath("$.senderName") { value(request.senderName) }
+                jsonPath("$.content") { value(request.content) }
+                jsonPath("$.images") { isArray() }
+            }
+        }
+
+        @Test
+        fun `throw exception when physical draft not found`() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val draftId = "notFound"
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/drafts/physical/$draftId") {
+                    header("Authorization", "Bearer $accessToken")
                 }
 
             // then

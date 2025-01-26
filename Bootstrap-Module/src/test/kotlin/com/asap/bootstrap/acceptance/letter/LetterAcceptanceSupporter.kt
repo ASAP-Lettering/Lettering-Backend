@@ -52,4 +52,7 @@ abstract class LetterAcceptanceSupporter : AcceptanceSupporter() {
 
     @MockBean
     lateinit var getSendLetterUsecase: GetSendLetterUsecase
+
+    @MockBean
+    lateinit var getPhysicalDraftLetterUsecase: GetPhysicalDraftLetterUsecase
 }

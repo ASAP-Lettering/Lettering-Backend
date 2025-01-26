@@ -2,6 +2,7 @@ package com.asap.bootstrap.acceptance.letter.controller
 
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.GetDraftLetterUsecase
+import com.asap.application.letter.port.`in`.GetPhysicalDraftLetterUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
 import com.asap.bootstrap.web.letter.dto.UpdateDraftLetterRequest
 import com.asap.bootstrap.web.letter.dto.UpdatePhysicalDraftLetterRequest
@@ -228,6 +229,82 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         // then
         response.andExpect {
             status { isOk() }
+        }
+    }
+
+    @Test
+    fun `get all physical drafts`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        BDDMockito.given(getPhysicalDraftLetterUsecase.getAll(GetPhysicalDraftLetterUsecase.Query.All(userId)))
+            .willReturn(
+                GetPhysicalDraftLetterUsecase.Response.All(
+                    drafts =
+                        listOf(
+                            GetPhysicalDraftLetterUsecase.Response.ByKey(
+                                draftKey = "draftKey",
+                                senderName = "senderName",
+                                content = "content",
+                                lastUpdated = LocalDateTime.now(),
+                                images = listOf("image"),
+                            ),
+                        ),
+                ),
+            )
+
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts/physical") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.drafts[0].draftKey") { isString() }
+            jsonPath("$.drafts[0].senderName") { isString() }
+            jsonPath("$.drafts[0].content") { isString() }
+            jsonPath("$.drafts[0].lastUpdated") { isString() }
+        }
+    }
+
+    @Test
+    fun `get physical draft letter`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        BDDMockito
+            .given(getPhysicalDraftLetterUsecase.getByKey(GetPhysicalDraftLetterUsecase.Query.ByKey("draftKey", userId)))
+            .willReturn(
+                GetPhysicalDraftLetterUsecase.Response.ByKey(
+                    draftKey = "draftKey",
+                    senderName = "senderName",
+                    content = "content",
+                    lastUpdated = LocalDateTime.now(),
+                    images = listOf("image"),
+                ),
+            )
+
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts/physical/draftKey") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.draftKey") { isString() }
+            jsonPath("$.senderName") { isString() }
+            jsonPath("$.content") { isString() }
+            jsonPath("$.images") {
+                isArray()
+            }
         }
     }
 }

@@ -12,4 +12,11 @@ interface ReceiveDraftLetterJpaRepository : JpaRepository<ReceiveDraftLetterEnti
         AND rdl.ownerId = :ownerId
     """)
     fun findBy(id: String, ownerId: String): ReceiveDraftLetterEntity?
+
+    @Query("""
+        SELECT rdl
+        FROM ReceiveDraftLetterEntity rdl
+        WHERE rdl.ownerId = :ownerId
+    """)
+    fun findAllBy(ownerId: String): List<ReceiveDraftLetterEntity>
 }

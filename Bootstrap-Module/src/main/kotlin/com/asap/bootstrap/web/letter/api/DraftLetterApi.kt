@@ -96,6 +96,25 @@ interface DraftLetterApi {
         @AccessUser userId: String,
     ): GetAllDraftLetterResponse
 
+    @Operation(summary = "실물 편지 임시 저장 목록 조회")
+    @GetMapping("/physical")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 목록 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetAllPhysicalDraftLetterResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getAllPhysicalDrafts(
+        @AccessUser userId: String,
+    ): GetAllPhysicalDraftLetterResponse
+
     @Operation(summary = "임시 저장 조회")
     @GetMapping("/{draftKey}")
     @ApiResponses(
@@ -115,6 +134,26 @@ interface DraftLetterApi {
         @PathVariable draftKey: String,
         @AccessUser userId: String,
     ): GetDraftLetterResponse
+
+    @Operation(summary = "실물 편지 임시 저장 조회")
+    @GetMapping("/physical/{draftKey}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetPhysicalDraftLetterResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getPhysicalDraftLetter(
+        @PathVariable draftKey: String,
+        @AccessUser userId: String,
+    ): GetPhysicalDraftLetterResponse
 
     @Operation(summary = "임시 저장 개수 조회")
     @GetMapping("/count")

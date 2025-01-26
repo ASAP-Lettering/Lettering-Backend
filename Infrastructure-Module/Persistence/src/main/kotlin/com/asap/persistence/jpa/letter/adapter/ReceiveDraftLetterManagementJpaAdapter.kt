@@ -27,4 +27,10 @@ class ReceiveDraftLetterManagementJpaAdapter(
             ?.let { ReceiveDraftLetterMapper.toDomain(it) }
             ?: throw LetterException.DraftLetterNotFoundException()
     }
+
+    override fun getAllDrafts(ownerId: DomainId): List<ReceiveDraftLetter> {
+        return receiveDraftLetterJpaRepository
+            .findAllBy(ownerId.value)
+            .map { ReceiveDraftLetterMapper.toDomain(it) }
+    }
 }

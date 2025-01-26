@@ -1,9 +1,6 @@
 package com.asap.bootstrap.web.letter.controller
 
-import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
-import com.asap.application.letter.port.`in`.GetDraftLetterUsecase
-import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
-import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
+import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.web.letter.api.DraftLetterApi
 import com.asap.bootstrap.web.letter.dto.*
 import org.springframework.web.bind.annotation.RestController
@@ -13,6 +10,7 @@ class DraftLetterController(
     private val generateDraftKeyUsecase: GenerateDraftKeyUsecase,
     private val updateDraftLetterUsecase: UpdateDraftLetterUsecase,
     private val getDraftLetterUsecase: GetDraftLetterUsecase,
+    private val getPhysicalDraftLetterUsecase: GetPhysicalDraftLetterUsecase,
     private val removeDraftLetterUsecase: RemoveDraftLetterUsecase,
 ) : DraftLetterApi {
     override fun getDraftKey(userId: String): GenerateDraftKeyResponse {
@@ -74,6 +72,20 @@ class DraftLetterController(
                 )
             }
 
+    override fun getAllPhysicalDrafts(userId: String): GetAllPhysicalDraftLetterResponse {
+        val response = getPhysicalDraftLetterUsecase.getAll(GetPhysicalDraftLetterUsecase.Query.All(userId))
+        return GetAllPhysicalDraftLetterResponse(
+            drafts = response.drafts.map {
+                PhysicalDraftLetterInfo(
+                    draftKey = it.draftKey,
+                    senderName = it.senderName,
+                    content = it.content,
+                    lastUpdated = it.lastUpdated,
+                )
+            }
+        )
+    }
+
     override fun getDraftLetter(
         draftKey: String,
         userId: String,
@@ -92,6 +104,19 @@ class DraftLetterController(
                     images = it.images,
                 )
             }
+
+    override fun getPhysicalDraftLetter(
+        draftKey: String,
+        userId: String
+    ): GetPhysicalDraftLetterResponse {
+        val response = getPhysicalDraftLetterUsecase.getByKey(GetPhysicalDraftLetterUsecase.Query.ByKey(draftKey, userId))
+        return GetPhysicalDraftLetterResponse(
+            draftKey = response.draftKey,
+            senderName = response.senderName,
+            content = response.content,
+            images = response.images,
+        )
+    }
 
     override fun getDraftCount(userId: String): GetDraftLetterCountResponse {
         val response = getDraftLetterUsecase.count(GetDraftLetterUsecase.Query.All(userId))
