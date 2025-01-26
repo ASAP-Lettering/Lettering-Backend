@@ -64,6 +64,19 @@ interface DraftLetterApi {
         @RequestBody request: UpdateDraftLetterRequest,
     )
 
+    @Operation(summary = "실물 편지 임시 저장하기")
+    @PostMapping("/physical/{draftId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "임시 저장 성공"),
+        ],
+    )
+    fun updatePhysicalDraft(
+        @PathVariable draftId: String,
+        @AccessUser userId: String,
+        @RequestBody request: UpdatePhysicalDraftLetterRequest,
+    )
+
     @Operation(summary = "임시 저장 목록 조회")
     @GetMapping()
     @ApiResponses(

@@ -11,34 +11,34 @@ sealed class LetterException(
     class SendLetterNotFoundException(
         message: String = "존재하지 않는 편지입니다.",
     ) : LetterException(
-            errorCode = 1,
-            message = message,
-            httpStatus = 404,
-        )
+        errorCode = 1,
+        message = message,
+        httpStatus = 404,
+    )
 
     class InvalidLetterAccessException(
         message: String = "편지에 대한 접근 권한이 없습니다.",
     ) : LetterException(
-            errorCode = 2,
-            message = message,
-            httpStatus = 403,
-        )
+        errorCode = 2,
+        message = message,
+        httpStatus = 403,
+    )
 
     class ReceiveLetterNotFoundException(
         message: String = "존재하지 않는 편지입니다.",
     ) : LetterException(
-            errorCode = 3,
-            message = message,
-            httpStatus = 404,
-        )
+        errorCode = 3,
+        message = message,
+        httpStatus = 404,
+    )
 
     class DraftLetterNotFoundException(
         message: String = "존재하지 않는 임시 편지입니다.",
     ) : LetterException(
-            errorCode = 4,
-            message = message,
-            httpStatus = 404,
-        )
+        errorCode = 4,
+        message = message,
+        httpStatus = 404,
+    )
 
     companion object {
         const val CODE_PREFIX = "LETTER"

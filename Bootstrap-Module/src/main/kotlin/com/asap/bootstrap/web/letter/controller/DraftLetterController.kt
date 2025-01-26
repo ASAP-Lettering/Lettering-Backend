@@ -31,12 +31,28 @@ class DraftLetterController(
         request: UpdateDraftLetterRequest,
     ) {
         updateDraftLetterUsecase.command(
-            UpdateDraftLetterUsecase.Command(
+            UpdateDraftLetterUsecase.Command.Send(
                 draftId = draftId,
                 userId = userId,
                 content = request.content,
                 receiverName = request.receiverName,
                 images = request.images,
+            ),
+        )
+    }
+
+    override fun updatePhysicalDraft(
+        draftId: String,
+        userId: String,
+        request: UpdatePhysicalDraftLetterRequest
+    ) {
+        updateDraftLetterUsecase.command(
+            UpdateDraftLetterUsecase.Command.Physical(
+                draftId = draftId,
+                userId = userId,
+                content = request.content,
+                images = request.images,
+                senderName = request.senderName,
             ),
         )
     }

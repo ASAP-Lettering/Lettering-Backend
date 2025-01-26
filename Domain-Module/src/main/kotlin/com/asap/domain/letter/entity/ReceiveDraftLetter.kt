@@ -11,8 +11,8 @@ class ReceiveDraftLetter(
     val ownerId: DomainId,
     var images: List<String>,
     var lastUpdated: LocalDateTime = LocalDateTime.now(),
-    val type: ReceiveDraftLetterType,
-) : BaseEntity() {
+    val type: ReceiveDraftLetterType, // TODO: 상속 구조를 통한 타입 구분 생각해보기
+) : BaseEntity(id) {
     companion object {
         fun default(ownerId: DomainId) =
             ReceiveDraftLetter(
