@@ -1,5 +1,6 @@
 package com.asap.application.letter.service
 
+import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.letter.port.`in`.UpdateDraftLetterUsecase
@@ -8,6 +9,7 @@ import com.asap.application.letter.port.out.ReceiveDraftLetterManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.letter.entity.DraftLetter
 import com.asap.domain.letter.entity.ReceiveDraftLetter
+import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.mockk.every
@@ -16,6 +18,7 @@ import io.mockk.verify
 
 class DraftLetterCommandServiceTest :
     BehaviorSpec({
+        isolationMode = IsolationMode.InstancePerLeaf
 
         val mockGenerateDraftKeyUsecase = mockk<DraftLetterManagementPort>(relaxed = true)
         val mockReceiveDraftLetterManagementPort = mockk<ReceiveDraftLetterManagementPort>(relaxed = true)
@@ -36,7 +39,7 @@ class DraftLetterCommandServiceTest :
 
         given("임시 저장 편지를 수정할 때") {
             val command =
-                UpdateDraftLetterUsecase.Command(
+                UpdateDraftLetterUsecase.Command.Send(
                     draftId = "draftId",
                     userId = "userId",
                     content = "content",
@@ -83,6 +86,52 @@ class DraftLetterCommandServiceTest :
                 val response = draftLetterCommandService.command(command)
                 then("받은 편지를 임시저장한다"){
                     response.draftId.shouldNotBeNull()
+                }
+            }
+        }
+
+        given("받은 임시 저장편지를 수저할 때"){
+
+            `when`("사용자 아이디와 임시 저장 편지 아이디, 내용, 발신자 이름, 이미지를 입력하면"){
+                val command = UpdateDraftLetterUsecase.Command.Physical(
+                    draftId = "draftId",
+                    userId = "userId",
+                    content = "content",
+                    images = listOf("image1", "image2"),
+                    senderName = "senderName",
+                )
+                val receiveDraftLetter = ReceiveDraftLetter.default(DomainId(command.userId))
+                every {
+                    mockReceiveDraftLetterManagementPort.getDraftLetterNotNull(
+                        draftId = receiveDraftLetter.id,
+                        ownerId = receiveDraftLetter.ownerId,
+                    )
+                } returns receiveDraftLetter
+                draftLetterCommandService.command(command)
+                then("받은 임시 저장편지를 수정한다"){
+                    verify { mockReceiveDraftLetterManagementPort.save(any()) }
+                }
+            }
+
+            `when`("임시 저장 편지가 없으면"){
+
+                val command = UpdateDraftLetterUsecase.Command.Physical(
+                    draftId = "draftId",
+                    userId = "userId",
+                    content = "content",
+                    images = listOf("image1", "image2"),
+                    senderName = "senderName",
+                )
+                every {
+                    mockReceiveDraftLetterManagementPort.getDraftLetterNotNull(
+                        draftId = DomainId(command.draftId),
+                        ownerId = DomainId(command.userId),
+                    )
+                } throws LetterException.DraftLetterNotFoundException()
+                then("임시 저장 편지가 수정되지 않는다"){
+                    verify(exactly = 0) {
+                        mockReceiveDraftLetterManagementPort.save(any())
+                    }
                 }
             }
         }

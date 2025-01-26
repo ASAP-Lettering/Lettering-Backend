@@ -4,6 +4,7 @@ import com.asap.application.letter.port.`in`.GenerateDraftKeyUsecase
 import com.asap.application.letter.port.`in`.GetDraftLetterUsecase
 import com.asap.bootstrap.acceptance.letter.LetterAcceptanceSupporter
 import com.asap.bootstrap.web.letter.dto.UpdateDraftLetterRequest
+import com.asap.bootstrap.web.letter.dto.UpdatePhysicalDraftLetterRequest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.http.MediaType
@@ -202,6 +203,31 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
         response.andExpect {
             status { isOk() }
             jsonPath("$.draftId") { isString() }
+        }
+    }
+
+    @Test
+    fun `update physical draft`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+        val request =
+            UpdatePhysicalDraftLetterRequest(
+                content = "content",
+                senderName = "senderName",
+                images = listOf("image"),
+            )
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/drafts/physical/draftId") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+                content = objectMapper.writeValueAsString(request)
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

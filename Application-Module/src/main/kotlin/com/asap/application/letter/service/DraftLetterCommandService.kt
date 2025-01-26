@@ -31,7 +31,7 @@ class DraftLetterCommandService(
         return GenerateDraftKeyUsecase.Response(receiveDraftLetter.id.value)
     }
 
-    override fun command(command: UpdateDraftLetterUsecase.Command) {
+    override fun command(command: UpdateDraftLetterUsecase.Command.Send) {
         val draftLetter =
             draftLetterManagementPort.getDraftLetterNotNull(
                 draftId = DomainId(command.draftId),
@@ -62,5 +62,20 @@ class DraftLetterCommandService(
             .forEach {
                 draftLetterManagementPort.remove(it)
             }
+    }
+
+    override fun command(command: UpdateDraftLetterUsecase.Command.Physical) {
+        val receiveDraftLetter =
+            receiveDraftLetterManagementPort.getDraftLetterNotNull(
+                draftId = DomainId(command.draftId),
+                ownerId = DomainId(command.userId),
+            )
+
+        receiveDraftLetter.update(
+            content = command.content,
+            senderName = command.senderName,
+            images = command.images,
+        )
+        receiveDraftLetterManagementPort.save(receiveDraftLetter)
     }
 }
