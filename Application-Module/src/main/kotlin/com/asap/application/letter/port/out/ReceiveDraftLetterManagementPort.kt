@@ -7,4 +7,6 @@ interface ReceiveDraftLetterManagementPort {
     fun save(receiveDraftLetter: ReceiveDraftLetter): ReceiveDraftLetter
 
     fun getDraftLetterNotNull(draftId: DomainId, ownerId: DomainId): ReceiveDraftLetter
+
+    fun getAllDrafts(ownerId: DomainId): List<ReceiveDraftLetter>
 }
