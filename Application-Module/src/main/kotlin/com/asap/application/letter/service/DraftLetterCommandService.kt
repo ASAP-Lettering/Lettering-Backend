@@ -46,7 +46,7 @@ class DraftLetterCommandService(
         draftLetterManagementPort.save(draftLetter)
     }
 
-    override fun deleteBy(command: RemoveDraftLetterUsecase.Command.Draft) {
+    override fun deleteBy(command: RemoveDraftLetterUsecase.Command.Send) {
         draftLetterManagementPort
             .getDraftLetterNotNull(
                 draftId = DomainId(command.draftId),
@@ -61,6 +61,16 @@ class DraftLetterCommandService(
             .getAllDrafts(DomainId(command.userId))
             .forEach {
                 draftLetterManagementPort.remove(it)
+            }
+    }
+
+    override fun deleteBy(command: RemoveDraftLetterUsecase.Command.Physical) {
+        receiveDraftLetterManagementPort
+            .getDraftLetterNotNull(
+                draftId = DomainId(command.draftId),
+                ownerId = DomainId(command.userId),
+            ).let {
+                receiveDraftLetterManagementPort.remove(it)
             }
     }
 

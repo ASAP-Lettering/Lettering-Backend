@@ -19,4 +19,11 @@ interface ReceiveDraftLetterJpaRepository : JpaRepository<ReceiveDraftLetterEnti
         WHERE rdl.ownerId = :ownerId
     """)
     fun findAllBy(ownerId: String): List<ReceiveDraftLetterEntity>
+
+    @Query("""
+        SELECT COUNT(rdl.id)
+        FROM ReceiveDraftLetterEntity rdl
+        WHERE rdl.ownerId = :ownerId
+    """)
+    fun countBy(ownerId: String): Int
 }

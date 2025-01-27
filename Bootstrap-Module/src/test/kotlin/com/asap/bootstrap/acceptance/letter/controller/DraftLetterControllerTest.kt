@@ -307,4 +307,47 @@ class DraftLetterControllerTest : LetterAcceptanceSupporter() {
             }
         }
     }
+
+    @Test
+    fun `get physical draft count`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        BDDMockito
+            .given(getPhysicalDraftLetterUsecase.count(GetPhysicalDraftLetterUsecase.Query.All(userId)))
+            .willReturn(GetPhysicalDraftLetterUsecase.Response.Count(1))
+
+        // when
+        val response =
+            mockMvc.get("/api/v1/letters/drafts/physical/count") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.count") { isNumber() }
+        }
+    }
+
+    @Test
+    fun `delete physical draft`() {
+        // given
+        val userId = userMockManager.settingUser()
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        // when
+        val response =
+            mockMvc.delete("/api/v1/letters/drafts/physical/draftKey") {
+                contentType = MediaType.APPLICATION_JSON
+                header("Authorization", "Bearer $accessToken")
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+        }
+    }
 }

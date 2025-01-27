@@ -33,4 +33,13 @@ class ReceiveDraftLetterManagementJpaAdapter(
             .findAllBy(ownerId.value)
             .map { ReceiveDraftLetterMapper.toDomain(it) }
     }
+
+    override fun countDrafts(ownerId: DomainId): Int {
+        return receiveDraftLetterJpaRepository.countBy(ownerId.value)
+    }
+
+    override fun remove(receiveDraftLetter: ReceiveDraftLetter) {
+        val entity = ReceiveDraftLetterMapper.toEntity(receiveDraftLetter)
+        receiveDraftLetterJpaRepository.delete(entity)
+    }
 }

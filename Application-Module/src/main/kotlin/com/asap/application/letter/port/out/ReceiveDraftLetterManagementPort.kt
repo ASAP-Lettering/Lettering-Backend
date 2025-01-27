@@ -9,4 +9,8 @@ interface ReceiveDraftLetterManagementPort {
     fun getDraftLetterNotNull(draftId: DomainId, ownerId: DomainId): ReceiveDraftLetter
 
     fun getAllDrafts(ownerId: DomainId): List<ReceiveDraftLetter>
+
+    fun countDrafts(ownerId: DomainId): Int
+
+    fun remove(receiveDraftLetter: ReceiveDraftLetter)
 }

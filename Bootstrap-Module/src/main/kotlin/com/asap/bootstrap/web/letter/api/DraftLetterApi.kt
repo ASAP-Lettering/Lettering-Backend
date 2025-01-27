@@ -174,6 +174,25 @@ interface DraftLetterApi {
         @AccessUser userId: String,
     ): GetDraftLetterCountResponse
 
+    @Operation(summary = "실물 편지 임시 저장 개수 조회")
+    @GetMapping("/physical/count")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "임시 저장 개수 조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(implementation = GetPhysicalDraftLetterCountResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getPhysicalDraftCount(
+        @AccessUser userId: String,
+    ): GetPhysicalDraftLetterCountResponse
+
     @Operation(summary = "임시 저장 삭제")
     @DeleteMapping("/{draftId}")
     @ApiResponses(
@@ -182,6 +201,18 @@ interface DraftLetterApi {
         ],
     )
     fun deleteDraft(
+        @PathVariable draftId: String,
+        @AccessUser userId: String,
+    )
+
+    @Operation(summary = "실물 편지 임시 저장 삭제")
+    @DeleteMapping("/physical/{draftId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "임시 저장 삭제 성공"),
+        ],
+    )
+    fun deletePhysicalDraft(
         @PathVariable draftId: String,
         @AccessUser userId: String,
     )
