@@ -144,4 +144,17 @@ class DraftLetterQueryServiceTest :
                 }
             }
         }
+
+        given("임시 저장한 실물 편지 개수를 조회할 때") {
+            val userId = "userId"
+            val query = GetPhysicalDraftLetterUsecase.Query.All(userId)
+            val draftCount = 1
+            every { mockReceiveLetterManagementPort.countDrafts(DomainId(userId)) } returns draftCount
+            `when`("사용자 아이디를 입력하면") {
+                val response = draftLetterQueryService.count(query)
+                then("임시 저장한 실물 편지 개수를 반환한다") {
+                    response.count shouldBe draftCount
+                }
+            }
+        }
     })

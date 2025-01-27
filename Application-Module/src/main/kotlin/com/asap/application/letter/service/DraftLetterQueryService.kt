@@ -78,4 +78,9 @@ class DraftLetterQueryService(
             lastUpdated = draft.lastUpdated
         )
     }
+
+    override fun count(query: GetPhysicalDraftLetterUsecase.Query.All): GetPhysicalDraftLetterUsecase.Response.Count {
+        val count = receiveDraftLetterManagementPort.countDrafts(DomainId(query.userId))
+        return GetPhysicalDraftLetterUsecase.Response.Count(count)
+    }
 }

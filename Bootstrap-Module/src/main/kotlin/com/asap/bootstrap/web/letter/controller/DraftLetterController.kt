@@ -123,12 +123,26 @@ class DraftLetterController(
         return GetDraftLetterCountResponse(response.count)
     }
 
+    override fun getPhysicalDraftCount(userId: String): GetPhysicalDraftLetterCountResponse {
+        val response = getPhysicalDraftLetterUsecase.count(GetPhysicalDraftLetterUsecase.Query.All(userId))
+        return GetPhysicalDraftLetterCountResponse(response.count)
+    }
+
     override fun deleteDraft(
         draftId: String,
         userId: String,
     ) {
         removeDraftLetterUsecase.deleteBy(
-            RemoveDraftLetterUsecase.Command.Draft(
+            RemoveDraftLetterUsecase.Command.Send(
+                draftId = draftId,
+                userId = userId,
+            ),
+        )
+    }
+
+    override fun deletePhysicalDraft(draftId: String, userId: String) {
+        removeDraftLetterUsecase.deleteBy(
+            RemoveDraftLetterUsecase.Command.Physical(
                 draftId = draftId,
                 userId = userId,
             ),

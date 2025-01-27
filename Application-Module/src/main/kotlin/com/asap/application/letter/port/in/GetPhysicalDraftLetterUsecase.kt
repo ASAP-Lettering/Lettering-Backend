@@ -8,6 +8,8 @@ interface GetPhysicalDraftLetterUsecase {
 
     fun getByKey(query: Query.ByKey): Response.ByKey
 
+    fun count(query: Query.All): Response.Count
+
     sealed class Query {
         data class All(
             val userId: String,
@@ -30,6 +32,10 @@ interface GetPhysicalDraftLetterUsecase {
             val content: String,
             val images: List<String>,
             val lastUpdated: LocalDateTime,
+        ) : Response()
+
+        data class Count(
+            val count: Int,
         ) : Response()
     }
 }

@@ -14,7 +14,7 @@ class DraftLetterEventHandler(
     fun deleteDraftLetter(event: SendLetterEvent.SendLetterCreatedEvent) {
         event.draftId?.let {
             removeDraftLetterUsecase.deleteBy(
-                RemoveDraftLetterUsecase.Command.Draft(
+                RemoveDraftLetterUsecase.Command.Send(
                     userId = event.sendLetter.senderId.value,
                     draftId = it,
                 ),
