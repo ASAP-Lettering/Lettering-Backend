@@ -2,6 +2,7 @@ package com.asap.bootstrap.web.letter.handler
 
 import com.asap.application.letter.port.`in`.RemoveDraftLetterUsecase
 import com.asap.application.user.event.UserEvent
+import com.asap.domain.letter.event.IndependentLetterEvent
 import com.asap.domain.letter.event.SendLetterEvent
 import org.springframework.context.event.EventListener
 import org.springframework.web.bind.annotation.RestController
@@ -16,6 +17,18 @@ class DraftLetterEventHandler(
             removeDraftLetterUsecase.deleteBy(
                 RemoveDraftLetterUsecase.Command.Send(
                     userId = event.sendLetter.senderId.value,
+                    draftId = it,
+                ),
+            )
+        }
+    }
+
+    @EventListener
+    fun deletePhysicalDraftLetter(event: IndependentLetterEvent.IndependentLetterCreatedEvent) {
+        event.receiveDraftId?.let {
+            removeDraftLetterUsecase.deleteBy(
+                RemoveDraftLetterUsecase.Command.Physical(
+                    userId = event.independentLetter.getOwnerId().value,
                     draftId = it,
                 ),
             )

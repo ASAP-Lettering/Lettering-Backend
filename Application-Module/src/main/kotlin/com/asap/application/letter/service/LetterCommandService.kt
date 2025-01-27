@@ -123,6 +123,7 @@ class LetterCommandService(
                         images = command.images.toMutableList(),
                     ),
                 receiveDate = LocalDate.now(),
+                draftId = command.draftId?.let { DomainId(it) },
             )
         independentLetterManagementPort.save(independentLetter)
     }

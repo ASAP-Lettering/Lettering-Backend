@@ -153,6 +153,7 @@ class LetterCommandServiceTest :
                     images = emptyList(),
                     templateType = 1,
                     userId = "user-id",
+                    draftId = null,
                 )
             `when`("편지를 추가하면") {
                 letterCommandService.addPhysicalLetter(command)

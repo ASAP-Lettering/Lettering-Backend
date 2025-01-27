@@ -4,6 +4,7 @@ class AddPhysicalLetterRequest(
     val senderName: String,
     val content: String,
     val images: List<String>,
-    val templateType: Int
+    val templateType: Int,
+    val draftId: String?
 ) {
 }

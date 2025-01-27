@@ -5,15 +5,12 @@ import com.asap.application.user.event.UserEvent
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.web.letter.handler.DraftLetterEventHandler
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.get
 
-class DraftLetterEventHandlerTest : IntegrationSupporter() {
-    @Autowired
-    private lateinit var draftLetterEventHandler: DraftLetterEventHandler
-
-    @Autowired
-    private lateinit var letterMockManager: LetterMockManager
+class DraftLetterEventHandlerTest(
+    val draftLetterEventHandler: DraftLetterEventHandler,
+    val letterMockManager: LetterMockManager,
+) : IntegrationSupporter() {
 
     @Test
     fun onUserDelete() {
