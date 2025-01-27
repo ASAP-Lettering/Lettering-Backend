@@ -2,20 +2,7 @@ package com.asap.bootstrap.web.letter.controller
 
 import com.asap.application.letter.port.`in`.*
 import com.asap.bootstrap.web.letter.api.LetterApi
-import com.asap.bootstrap.web.letter.dto.AddPhysicalLetterRequest
-import com.asap.bootstrap.web.letter.dto.AddVerifiedLetterRequest
-import com.asap.bootstrap.web.letter.dto.AllLetterCountResponse
-import com.asap.bootstrap.web.letter.dto.DeleteSendLettersRequest
-import com.asap.bootstrap.web.letter.dto.GetIndependentLetterDetailResponse
-import com.asap.bootstrap.web.letter.dto.GetIndependentLetterSimpleInfo
-import com.asap.bootstrap.web.letter.dto.LetterVerifyRequest
-import com.asap.bootstrap.web.letter.dto.LetterVerifyResponse
-import com.asap.bootstrap.web.letter.dto.ModifyLetterRequest
-import com.asap.bootstrap.web.letter.dto.SendLetterDetailResponse
-import com.asap.bootstrap.web.letter.dto.SendLetterHistoryResponse
-import com.asap.bootstrap.web.letter.dto.SendLetterRequest
-import com.asap.bootstrap.web.letter.dto.SendLetterResponse
-import com.asap.bootstrap.web.letter.dto.VerifiedLetterInfoResponse
+import com.asap.bootstrap.web.letter.dto.*
 import com.asap.common.page.ListResponse
 import com.asap.common.page.SliceResponse
 import org.springframework.web.bind.annotation.RestController
@@ -91,6 +78,7 @@ class LetterController(
                 images = request.images,
                 templateType = request.templateType,
                 userId = userId,
+                draftId = request.draftId,
             ),
         )
     }

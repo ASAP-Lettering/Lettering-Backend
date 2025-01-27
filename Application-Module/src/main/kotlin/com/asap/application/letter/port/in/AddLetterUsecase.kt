@@ -17,6 +17,7 @@ interface AddLetterUsecase {
             val images: List<String>,
             val templateType: Int,
             val userId: String,
+            val draftId: String?,
         ) : Command()
     }
 }

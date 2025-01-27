@@ -3,6 +3,7 @@ package com.asap.persistence.jpa.letter.adapter
 import com.asap.application.letter.exception.LetterException
 import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
+import com.asap.common.event.EventPublisher
 import com.asap.common.page.Page
 import com.asap.common.page.PageRequest
 import com.asap.domain.common.DomainId
@@ -18,6 +19,7 @@ import java.time.LocalDateTime
 @Repository
 class ReceiveLetterManagementJpaAdapter(
     private val receiveLetterJpaRepository: ReceiveLetterJpaRepository,
+    private val eventPublisher: EventPublisher,
 ) : IndependentLetterManagementPort,
     SpaceLetterManagementPort {
     override fun save(letter: IndependentLetter) {
@@ -35,6 +37,7 @@ class ReceiveLetterManagementJpaAdapter(
             spaceId = null,
         ).also {
             receiveLetterJpaRepository.save(it)
+            eventPublisher.publishAll(letter.pullEvents())
         }
     }
 

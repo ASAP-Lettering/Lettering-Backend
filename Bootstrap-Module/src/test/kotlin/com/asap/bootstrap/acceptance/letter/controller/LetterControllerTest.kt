@@ -338,6 +338,7 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
                 content = "content",
                 images = listOf("images"),
                 templateType = 1,
+                draftId = null
             )
         // when
         val response =

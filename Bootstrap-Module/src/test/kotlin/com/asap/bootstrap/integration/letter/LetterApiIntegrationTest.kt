@@ -610,28 +610,64 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun addPhysicalLetter() {
-        // given
-        val request =
-            AddPhysicalLetterRequest(
-                senderName = "senderName",
-                content = "content",
-                images = listOf("images"),
-                templateType = 1,
-            )
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        // when
-        val response =
+    @Nested
+    @DisplayName("실물 편지 추가")
+    inner class AddPhysicalLetter {
+        @Test
+        fun addPhysicalLetter() {
+            // given
+            val request =
+                AddPhysicalLetterRequest(
+                    senderName = "senderName",
+                    content = "content",
+                    images = listOf("images"),
+                    templateType = 1,
+                    draftId = null,
+                )
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            // when
+            val response =
+                mockMvc.post("/api/v1/letters/physical/receive") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+        }
+
+
+        @Test
+        fun `addPhysicalLetter with draftId`() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val receiveDraftId = letterMockManager.generateMockReceiveDraftLetter(userId)
+
+            val request =
+                AddPhysicalLetterRequest(
+                    senderName = "senderName",
+                    content = "content",
+                    images = listOf("images"),
+                    templateType = 1,
+                    draftId = receiveDraftId,
+                )
+            // when
             mockMvc.post("/api/v1/letters/physical/receive") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
                 header("Authorization", "Bearer $accessToken")
             }
-        // then
-        response.andExpect {
-            status { isOk() }
+            // then
+            mockMvc
+                .get("/api/v1/letters/drafts/physical/$receiveDraftId") {
+                    header("Authorization", "Bearer $accessToken")
+                }.andExpect {
+                    status { isNotFound() }
+                }
         }
     }
 

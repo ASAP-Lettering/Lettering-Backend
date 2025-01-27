@@ -2,6 +2,7 @@ package com.asap.domain.letter.entity
 
 import com.asap.domain.common.Aggregate
 import com.asap.domain.common.DomainId
+import com.asap.domain.letter.event.IndependentLetterEvent
 import com.asap.domain.letter.vo.LetterContent
 import com.asap.domain.letter.vo.ReceiverInfo
 import com.asap.domain.letter.vo.SenderInfo
@@ -40,6 +41,7 @@ class IndependentLetter(
             receiveDate: LocalDate,
             movedAt: LocalDateTime = LocalDateTime.now(),
             isOpened: Boolean = false,
+            draftId: DomainId? = null,
         ): IndependentLetter =
             IndependentLetter(
                 id = id,
@@ -49,7 +51,9 @@ class IndependentLetter(
                 receiveDate = receiveDate,
                 movedAt = movedAt,
                 isOpened = isOpened,
-            )
+            ).also {
+                it.registerEvent(IndependentLetterEvent.IndependentLetterCreatedEvent(it, draftId?.value))
+            }
     }
 
     fun isNew(): Boolean = movedAt.isAfter(LocalDateTime.now().minusDays(1)) && isOpened.not()
@@ -74,6 +78,8 @@ class IndependentLetter(
         this.content.delete()
         this.sender.delete()
     }
+
+    fun getOwnerId(): DomainId = receiver.receiverId
 
     override fun toString(): String =
         "IndependentLetter(content=$content, sender=$sender, receiver=$receiver, receiveDate=$receiveDate, movedAt=$movedAt, isOpened=$isOpened)"
