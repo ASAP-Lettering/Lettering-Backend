@@ -14,3 +14,9 @@ spring:
         - aws-local
         - persistence-test
     active: local
+
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
