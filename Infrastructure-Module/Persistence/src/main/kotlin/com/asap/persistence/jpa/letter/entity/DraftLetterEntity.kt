@@ -19,6 +19,11 @@ class DraftLetterEntity(
     images: List<String>,
     updatedAt: LocalDateTime,
 ) : AggregateRoot<DraftLetterEntity>(id) {
+    @Column(
+        name = "content",
+        nullable = false,
+        columnDefinition = "text",
+    )
     var content: String = content
     var receiverName: String = receiverName
 

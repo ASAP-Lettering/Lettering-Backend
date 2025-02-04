@@ -21,7 +21,11 @@ class ReceiveDraftLetterEntity(
     updatedAt: LocalDateTime,
     type: ReceiveDraftLetterType
 ) : BaseEntity(id) {
-
+    @Column(
+        name = "content",
+        nullable = false,
+        columnDefinition = "text",
+    )
     var content: String = content
     var senderName: String = senderName
 
