@@ -3,8 +3,8 @@ package com.asap.application.space.service
 import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.`in`.CreateSpaceUsecase
 import com.asap.application.space.port.`in`.DeleteSpaceUsecase
-import com.asap.application.space.port.`in`.UpdateSpaceIndexUsecase
 import com.asap.application.space.port.`in`.UpdateSpaceNameUsecase
+import com.asap.application.space.port.`in`.UpdateSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.common.exception.DefaultException
 import com.asap.domain.common.DomainId
@@ -20,7 +20,7 @@ class SpaceCommandService(
 ) : CreateSpaceUsecase,
     UpdateSpaceNameUsecase,
     DeleteSpaceUsecase,
-    UpdateSpaceIndexUsecase {
+    UpdateSpaceUsecase {
     private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 
     override fun create(command: CreateSpaceUsecase.Command) {
@@ -76,7 +76,7 @@ class SpaceCommandService(
         }
     }
 
-    override fun update(command: UpdateSpaceIndexUsecase.Command) {
+    override fun update(command: UpdateSpaceUsecase.Command.Index) {
         val indexedSpaces = spaceManagementPort.getAllIndexedSpace(DomainId(command.userId))
         val changeIndexMap = command.orders.associateBy({ DomainId(it.spaceId) }, { it.index })
 
@@ -106,5 +106,9 @@ class SpaceCommandService(
                 indexedSpace.updateIndex(index)
                 spaceManagementPort.update(indexedSpace)
             }
+    }
+
+    override fun update(command: UpdateSpaceUsecase.Command.Main) {
+        TODO("Not yet implemented")
     }
 }

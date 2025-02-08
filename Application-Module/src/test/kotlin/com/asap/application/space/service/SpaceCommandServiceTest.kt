@@ -3,8 +3,8 @@ package com.asap.application.space.service
 import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.`in`.CreateSpaceUsecase
 import com.asap.application.space.port.`in`.DeleteSpaceUsecase
-import com.asap.application.space.port.`in`.UpdateSpaceIndexUsecase
 import com.asap.application.space.port.`in`.UpdateSpaceNameUsecase
+import com.asap.application.space.port.`in`.UpdateSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.IndexedSpace
@@ -114,12 +114,12 @@ class SpaceCommandServiceTest :
 
         given("스페이스 인덱스 수정 요청이 들어올 때") {
             val spaceUpdateIndexCommand =
-                UpdateSpaceIndexUsecase.Command(
+                UpdateSpaceUsecase.Command.Index(
                     userId = "userId",
                     orders =
                         listOf(
-                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId1", 1),
-                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId2", 0),
+                            UpdateSpaceUsecase.Command.SpaceOrder("spaceId1", 1),
+                            UpdateSpaceUsecase.Command.SpaceOrder("spaceId2", 0),
                         ),
                 )
             val indexedSpaces =
@@ -159,13 +159,13 @@ class SpaceCommandServiceTest :
             }
 
             val invalidCommand =
-                UpdateSpaceIndexUsecase.Command(
+                UpdateSpaceUsecase.Command.Index(
                     userId = "userId",
                     orders =
                         listOf(
-                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId1", 1),
-                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId2", 2),
-                            UpdateSpaceIndexUsecase.Command.SpaceOrder("spaceId3", 3),
+                            UpdateSpaceUsecase.Command.SpaceOrder("spaceId1", 1),
+                            UpdateSpaceUsecase.Command.SpaceOrder("spaceId2", 2),
+                            UpdateSpaceUsecase.Command.SpaceOrder("spaceId3", 3),
                         ),
                 )
             every {

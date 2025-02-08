@@ -9,6 +9,7 @@ class Space(
     val userId: DomainId,
     var name: String,
     val templateType: Int,
+    var isMain: Boolean = false,
 ) : Aggregate<Space>(id) {
     companion object {
         fun create(
