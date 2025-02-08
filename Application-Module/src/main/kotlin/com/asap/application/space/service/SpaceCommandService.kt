@@ -25,27 +25,20 @@ class SpaceCommandService(
 
     override fun create(command: CreateSpaceUsecase.Command) {
         val userId = DomainId(command.userId)
-        Space
-            .create(
-                userId = userId,
-                name = command.spaceName,
-                templateType = command.templateType,
-            ).apply {
-                spaceManagementPort.save(this)
-            }
+        Space.create(
+            userId = userId,
+            name = command.spaceName,
+            templateType = command.templateType,
+        ).apply {
+            spaceManagementPort.save(this)
+        }
 
-        updateMainSpace(userId)
+        // TODO 동시성 문제가 발생한다면?
+        if (spaceManagementPort.countByUserId(userId) == 1L) {
+            updateMainSpace(userId)
+        }
+
         reIndexingSpaceOrder(userId)
-    }
-
-    override fun update(command: UpdateSpaceNameUsecase.Command) {
-        val space =
-            spaceManagementPort.getSpaceNotNull(
-                userId = DomainId(command.userId),
-                spaceId = DomainId(command.spaceId),
-            )
-        space.updateName(command.name)
-        spaceManagementPort.update(space)
     }
 
     override fun deleteOne(command: DeleteSpaceUsecase.DeleteOneCommand) {
@@ -116,6 +109,17 @@ class SpaceCommandService(
         spaceManagementPort.saveAll(spaces)
     }
 
+    override fun update(command: UpdateSpaceNameUsecase.Command) {
+        val space =
+            spaceManagementPort.getSpaceNotNull(
+                userId = DomainId(command.userId),
+                spaceId = DomainId(command.spaceId),
+            )
+
+        space.updateName(command.name)
+        spaceManagementPort.update(space)
+    }
+
     private fun reIndexingSpaceOrder(userId: DomainId) {
         val spaces = spaceManagementPort
             .getAllSpaceBy(userId)
@@ -134,10 +138,9 @@ class SpaceCommandService(
             return
         }
 
-        if (spaces.size == 1) {
-            spaces[0].updateToMain()
-            spaceManagementPort.save(spaces[0])
-            return
-        }
+        spaces.forEach { it.updateToSub() }
+        spaces.first().updateToMain()
+
+        spaceManagementPort.saveAll(spaces)
     }
 }
