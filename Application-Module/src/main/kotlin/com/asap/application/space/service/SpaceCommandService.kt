@@ -48,10 +48,13 @@ class SpaceCommandService(
                 userId = userId,
                 spaceId = DomainId(command.spaceId),
             ).apply {
+                if (isMain) {
+                    updateMainSpace(userId)
+                }
+
                 delete()
                 spaceManagementPort.deleteBy(this)
             }
-        updateMainSpace(userId)
         reIndexingSpaceOrder(userId)
     }
 
@@ -62,10 +65,13 @@ class SpaceCommandService(
                 userId = userId,
                 spaceIds = command.spaceIds.map { DomainId(it) },
             ).forEach {
+                if (it.isMain) {
+                    updateMainSpace(userId)
+                }
                 it.delete()
                 spaceManagementPort.deleteBy(it)
             }
-        updateMainSpace(userId)
+
         reIndexingSpaceOrder(userId)
     }
 

@@ -1,0 +1,1 @@
+drop trigger if exists update_space_is_main;

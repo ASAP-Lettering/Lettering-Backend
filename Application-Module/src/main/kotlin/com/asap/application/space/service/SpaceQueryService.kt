@@ -39,7 +39,7 @@ class SpaceQueryService(
         val spaces =
             spaceManagementPort.getAllSpaceBy(
                 userId = DomainId(query.userId),
-            )
+            ).sortedBy { it.index }
 
         return GetSpaceUsecase.GetAllResponse(
             spaces =
