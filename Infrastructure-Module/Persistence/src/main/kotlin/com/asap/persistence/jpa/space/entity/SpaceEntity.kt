@@ -39,6 +39,13 @@ class SpaceEntity(
     )
     var spaceStatus: EntityStatus = EntityStatus.ACTIVE
 
+
+    @Column(
+        name = "is_main",
+        nullable = false,
+    )
+    var isMain: Boolean = false
+
     fun update(space: Space) {
         this.userId = space.userId.value
         this.name = space.name
