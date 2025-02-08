@@ -92,7 +92,12 @@ class SpaceController(
     }
 
     override fun updateSpaceMain(spaceId: String, userId: String) {
-
+        updateSpaceUsecase.update(
+            UpdateSpaceUsecase.Command.Main(
+                userId = userId,
+                spaceId = spaceId,
+            ),
+        )
     }
 
     override fun deleteSpaces(

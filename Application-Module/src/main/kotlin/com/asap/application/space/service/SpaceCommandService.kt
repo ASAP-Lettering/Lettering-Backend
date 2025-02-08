@@ -108,14 +108,14 @@ class SpaceCommandService(
     override fun update(command: UpdateSpaceUsecase.Command.Main) {
         val spaces = spaceManagementPort.getAllSpaceBy(
             userId = DomainId(command.userId),
-        ).map {
-            if(it.id.value == command.spaceId){
+        ).onEach {
+            if (it.id.value == command.spaceId) {
                 it.updateToMain()
-            }else{
+            } else {
                 it.updateToSub()
             }
         }
 
-
+        spaceManagementPort.saveAll(spaces)
     }
 }
