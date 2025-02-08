@@ -19,7 +19,7 @@ class SpaceManagementJpaAdapter(
         spaceJpaRepository
             .findAllActiveSpaceByUserId(userId.value)
             .first {
-                it.index == 0
+                it.isMain
             }.let {
                 SpaceMapper.toMainSpace(it)
             }
