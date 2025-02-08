@@ -1,18 +1,20 @@
 package com.asap.bootstrap.integration.space
 
 import com.asap.application.space.SpaceMockManager
+import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.web.space.dto.CreateSpaceRequest
 import com.asap.bootstrap.web.space.dto.DeleteMultipleSpacesRequest
 import com.asap.bootstrap.web.space.dto.UpdateSpaceNameRequest
 import com.asap.bootstrap.web.space.dto.UpdateSpaceOrderRequest
+import com.asap.domain.common.DomainId
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.maps.haveValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.haveLength
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
@@ -20,9 +22,10 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.*
 
-class SpaceApiIntegrationTest : IntegrationSupporter() {
-    @Autowired
-    lateinit var spaceMockManager: SpaceMockManager
+class SpaceApiIntegrationTest(
+    private val spaceMockManager: SpaceMockManager,
+    private val spaceManagementPort: SpaceManagementPort
+) : IntegrationSupporter() {
 
     @Nested
     inner class GetMainSpace {
@@ -31,7 +34,7 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            spaceMockManager.settingSpace(userId)
+            spaceMockManager.settingSpace(userId, isMain = true)
             // when
             val response =
                 mockMvc.get("/api/v1/spaces/main") {
@@ -45,54 +48,6 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
                     exists()
                     isString()
                     isNotEmpty()
-                }
-                jsonPath("$.username") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-                jsonPath("$.templateType") {
-                    exists()
-                    isNumber()
-                }
-                jsonPath("$.spaceName") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                }
-            }
-        }
-
-        @Test
-        fun getMainSpaceId_with_changedIndex() {
-            // given
-            val userId = userMockManager.settingUser()
-            val accessToken = jwtMockManager.generateAccessToken(userId)
-            val spaceIndexes =
-                (0..3).map {
-                    val spaceId = spaceMockManager.settingSpace(userId).id.value
-                    UpdateSpaceOrderRequest.SpaceOrder(spaceId, 3 - it)
-                }
-            mockMvc.put("/api/v1/spaces/order") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(UpdateSpaceOrderRequest(spaceIndexes))
-                header("Authorization", "Bearer $accessToken")
-            }
-            // when
-            val response =
-                mockMvc.get("/api/v1/spaces/main") {
-                    contentType = MediaType.APPLICATION_JSON
-                    header("Authorization", "Bearer $accessToken")
-                }
-
-            // then
-            response.andExpect {
-                status { isOk() }
-                jsonPath("$.spaceId") {
-                    exists()
-                    isString()
-                    isNotEmpty()
-                    value(spaceIndexes[3].spaceId)
                 }
                 jsonPath("$.username") {
                     exists()
@@ -138,13 +93,10 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         }
 
         @Test
-        fun createSpace_and_get_main_space() {
+        fun create_first_space_and_get_main_space() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            (0..2).forEach {
-                spaceMockManager.settingSpace(userId)
-            }
             val request =
                 CreateSpaceRequest(
                     spaceName = "createdSpace",
@@ -190,26 +142,31 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    fun updateSpaceName() {
-        // given
-        val userId = userMockManager.settingUser()
-        val accessToken = jwtMockManager.generateAccessToken(userId)
-        val spaceId = spaceMockManager.settingSpace(userId).id.value
-        val request =
-            UpdateSpaceNameRequest(
-                spaceName = "change space name",
-            )
-        // when
-        val response =
-            mockMvc.put("/api/v1/spaces/$spaceId/name") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-                header("Authorization", "Bearer $accessToken")
+
+    @Nested
+    @DisplayName("updateSpaceName")
+    inner class UpdateSpaceName{
+        @Test
+        fun updateSpaceName() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            val request =
+                UpdateSpaceNameRequest(
+                    spaceName = "change space name",
+                )
+            // when
+            val response =
+                mockMvc.put("/api/v1/spaces/$spaceId/name") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
             }
-        // then
-        response.andExpect {
-            status { isOk() }
         }
     }
 
@@ -444,10 +401,8 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             response.andExpect {
                 status { isOk() }
             }
-            spaceMockManager.getSpaceIndexes(userId) shouldBe
-                    spaceIndexes
-                        .map { it.spaceId to it.index }
-                        .sortedBy { it.second }
+            val spaceIds = spaceManagementPort.getAllSpaceBy(DomainId(userId)).map { it.id.value }
+            spaceIds shouldContainExactlyInAnyOrder spaceIndexes.map { it.spaceId }
         }
 
         @Test
@@ -609,6 +564,37 @@ class SpaceApiIntegrationTest : IntegrationSupporter() {
             jsonPath("$.templateType") {
                 exists()
                 isNumber()
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("updateSpaceMain")
+    inner class UpdateSpaceMain{
+        @Test
+        fun updateSpaceMain() {
+            // given
+            val userId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val spaceId = spaceMockManager.settingSpace(userId).id.value
+            (0..2).forEach {
+                spaceMockManager.settingSpace(userId)
+            }
+            // when
+            val response =
+                mockMvc.put("/api/v1/spaces/$spaceId/main") {
+                    header("Authorization", "Bearer $accessToken")
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+            spaceManagementPort.getAllSpaceBy(DomainId(userId)).forEach {
+                if(it.id.value == spaceId) {
+                    it.isMain shouldBe true
+                }else{
+                    it.isMain shouldBe false
+                }
             }
         }
     }

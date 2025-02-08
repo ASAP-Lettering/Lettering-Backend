@@ -12,7 +12,7 @@ class SpaceController(
     private val updateSpaceNameUsecase: UpdateSpaceNameUsecase,
     private val getSpaceUsecase: GetSpaceUsecase,
     private val deleteSpaceUsecase: DeleteSpaceUsecase,
-    private val updateSpaceIndexUsecase: UpdateSpaceIndexUsecase,
+    private val updateSpaceUsecase: UpdateSpaceUsecase,
 ) : SpaceApi {
     override fun getMainSpace(userId: String): MainSpaceInfoResponse {
         val response =
@@ -83,10 +83,19 @@ class SpaceController(
         request: UpdateSpaceOrderRequest,
         userId: String,
     ) {
-        updateSpaceIndexUsecase.update(
-            UpdateSpaceIndexUsecase.Command(
+        updateSpaceUsecase.update(
+            UpdateSpaceUsecase.Command.Index(
                 userId = userId,
-                orders = request.orders.map { UpdateSpaceIndexUsecase.Command.SpaceOrder(it.spaceId, it.index) },
+                orders = request.orders.map { UpdateSpaceUsecase.Command.SpaceOrder(it.spaceId, it.index) },
+            ),
+        )
+    }
+
+    override fun updateSpaceMain(spaceId: String, userId: String) {
+        updateSpaceUsecase.update(
+            UpdateSpaceUsecase.Command.Main(
+                userId = userId,
+                spaceId = spaceId,
             ),
         )
     }

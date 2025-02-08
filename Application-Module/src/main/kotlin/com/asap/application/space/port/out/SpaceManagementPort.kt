@@ -1,7 +1,6 @@
 package com.asap.application.space.port.out
 
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
 
@@ -13,13 +12,6 @@ interface SpaceManagementPort {
         spaceId: DomainId,
     ): Space
 
-    fun getIndexedSpaceNotNull(
-        userId: DomainId,
-        spaceId: DomainId,
-    ): IndexedSpace
-
-    fun getAllIndexedSpace(userId: DomainId): List<IndexedSpace>
-
     fun getAllSpaceBy(
         userId: DomainId,
         spaceIds: List<DomainId>,
@@ -29,14 +21,9 @@ interface SpaceManagementPort {
 
     fun save(space: Space): Space
 
+    fun saveAll(spaces: List<Space>): List<Space>
+
     fun update(space: Space): Space
-
-    fun update(indexedSpace: IndexedSpace): IndexedSpace
-
-    fun updateIndexes(
-        userId: DomainId,
-        orders: List<IndexedSpace>,
-    )
 
     fun deleteBy(space: Space)
 

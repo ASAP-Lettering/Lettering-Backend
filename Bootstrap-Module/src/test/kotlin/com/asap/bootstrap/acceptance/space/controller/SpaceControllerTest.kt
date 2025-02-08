@@ -33,7 +33,7 @@ class SpaceControllerTest : AcceptanceSupporter() {
     lateinit var deleteSpaceUsecase: DeleteSpaceUsecase
 
     @MockBean
-    lateinit var updateSpaceIndexUsecase: UpdateSpaceIndexUsecase
+    lateinit var updateSpaceUsecase: UpdateSpaceUsecase
 
     @Test
     fun getMainSpaceId() {
@@ -291,6 +291,22 @@ class SpaceControllerTest : AcceptanceSupporter() {
                 exists()
                 isNumber()
             }
+        }
+    }
+
+    @Test
+    fun updateSpaceMain() {
+        // given
+        val accessToken = jwtMockManager.generateAccessToken()
+        val spaceId = "spaceId"
+        // when
+        val response =
+            mockMvc.put("/api/v1/spaces/$spaceId/main") {
+                header("Authorization", "Bearer $accessToken")
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
         }
     }
 }

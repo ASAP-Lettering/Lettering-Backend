@@ -114,6 +114,21 @@ interface SpaceApi {
         @AccessUser userId: String,
     )
 
+    @Operation(summary = "메인 스페이스 변경")
+    @PutMapping("/{spaceId}/main")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "메인 스페이스 변경 성공",
+            ),
+        ],
+    )
+    fun updateSpaceMain(
+        @PathVariable spaceId: String,
+        @AccessUser userId: String,
+    )
+
     @Operation(summary = "여러 스페이스 삭제")
     @DeleteMapping
     @ApiResponses(

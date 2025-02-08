@@ -37,7 +37,7 @@ class SpaceQueryService(
 
     override fun getAll(query: GetSpaceUsecase.GetAllQuery): GetSpaceUsecase.GetAllResponse {
         val spaces =
-            spaceManagementPort.getAllIndexedSpace(
+            spaceManagementPort.getAllSpaceBy(
                 userId = DomainId(query.userId),
             )
 
@@ -47,7 +47,7 @@ class SpaceQueryService(
                     GetSpaceUsecase.SpaceDetail(
                         spaceName = it.name,
                         letterCount = spaceLetterManagementPort.countSpaceLetterBy(it.id, DomainId(query.userId)),
-                        isMainSpace = it.isMain(),
+                        isMainSpace = it.isMain,
                         spaceIndex = it.index,
                         spaceId = it.id.value,
                     )

@@ -10,23 +10,22 @@ class SpaceMockManager(
     fun settingSpace(
         userId: String,
         index: Int = 0,
+        isMain: Boolean = false,
     ): Space {
         val space =
             Space.create(
                 userId = DomainId(userId),
                 name = "test",
                 templateType = 0,
+                index = index,
             )
+        if(isMain) space.updateToMain()
+
         return spaceManagementPort.save(space).also {
-            spaceManagementPort.getIndexedSpaceNotNull(DomainId(userId), it.id).apply {
+            spaceManagementPort.getSpaceNotNull(DomainId(userId), it.id).apply {
                 updateIndex(index)
                 spaceManagementPort.update(this)
             }
         }
     }
-
-    fun getSpaceIndexes(userId: String): List<Pair<String, Int>> =
-        spaceManagementPort.getAllIndexedSpace(DomainId(userId)).map {
-            it.id.value to it.index
-        }
 }
