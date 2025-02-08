@@ -8,6 +8,7 @@ import com.asap.bootstrap.web.space.dto.DeleteMultipleSpacesRequest
 import com.asap.bootstrap.web.space.dto.UpdateSpaceNameRequest
 import com.asap.bootstrap.web.space.dto.UpdateSpaceOrderRequest
 import com.asap.domain.common.DomainId
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.maps.haveValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.haveLength
@@ -448,11 +449,8 @@ class SpaceApiIntegrationTest(
             response.andExpect {
                 status { isOk() }
             }
-            // TODO: port를 통해 조회하고 검증해야함
-//            spaceMockManager.getSpaceIndexes(userId) shouldBe
-//                    spaceIndexes
-//                        .map { it.spaceId to it.index }
-//                        .sortedBy { it.second }
+            val spaceIds = spaceManagementPort.getAllSpaceBy(DomainId(userId)).map { it.id.value }
+            spaceIds shouldContainExactlyInAnyOrder spaceIndexes.map { it.spaceId }
         }
 
         @Test

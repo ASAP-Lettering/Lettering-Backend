@@ -89,7 +89,7 @@ class SpaceCommandService(
 
         try {
             spaceIndexValidator.validate(
-                spaces = spaces, // todo: space로 수정하기
+                spaces = spaces,
                 validateIndex = changeIndexMap,
             )
         } catch (e: DefaultException.InvalidArgumentException) {
