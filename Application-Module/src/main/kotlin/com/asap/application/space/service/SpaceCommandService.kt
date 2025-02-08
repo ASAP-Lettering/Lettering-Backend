@@ -24,15 +24,18 @@ class SpaceCommandService(
     private val spaceIndexValidator: SpaceIndexValidator = SpaceIndexValidator()
 
     override fun create(command: CreateSpaceUsecase.Command) {
+        val userId = DomainId(command.userId)
         Space
             .create(
-                userId = DomainId(command.userId),
+                userId = userId,
                 name = command.spaceName,
                 templateType = command.templateType,
             ).apply {
                 spaceManagementPort.save(this)
             }
-        reIndexingSpaceOrder(DomainId(command.userId))
+
+        updateMainSpace(userId)
+        reIndexingSpaceOrder(userId)
     }
 
     override fun update(command: UpdateSpaceNameUsecase.Command) {
@@ -46,27 +49,31 @@ class SpaceCommandService(
     }
 
     override fun deleteOne(command: DeleteSpaceUsecase.DeleteOneCommand) {
+        val userId = DomainId(command.userId)
         spaceManagementPort
             .getSpaceNotNull(
-                userId = DomainId(command.userId),
+                userId = userId,
                 spaceId = DomainId(command.spaceId),
             ).apply {
                 delete()
                 spaceManagementPort.deleteBy(this)
             }
-        reIndexingSpaceOrder(DomainId(command.userId))
+        updateMainSpace(userId)
+        reIndexingSpaceOrder(userId)
     }
 
     override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllCommand) {
+        val userId = DomainId(command.userId)
         spaceManagementPort
             .getAllSpaceBy(
-                userId = DomainId(command.userId),
+                userId = userId,
                 spaceIds = command.spaceIds.map { DomainId(it) },
             ).forEach {
                 it.delete()
                 spaceManagementPort.deleteBy(it)
             }
-        reIndexingSpaceOrder(DomainId(command.userId))
+        updateMainSpace(userId)
+        reIndexingSpaceOrder(userId)
     }
 
     override fun deleteAllBy(command: DeleteSpaceUsecase.DeleteAllUser) {
@@ -95,16 +102,6 @@ class SpaceCommandService(
         spaceManagementPort.saveAll(spaces)
     }
 
-    private fun reIndexingSpaceOrder(userId: DomainId) {
-        spaceManagementPort
-            .getAllSpaceBy(userId)
-            .sortedBy { it.index }
-            .forEachIndexed { index, indexedSpace ->
-                indexedSpace.updateIndex(index)
-                spaceManagementPort.update(indexedSpace)
-            }
-    }
-
     override fun update(command: UpdateSpaceUsecase.Command.Main) {
         val spaces = spaceManagementPort.getAllSpaceBy(
             userId = DomainId(command.userId),
@@ -117,5 +114,30 @@ class SpaceCommandService(
         }
 
         spaceManagementPort.saveAll(spaces)
+    }
+
+    private fun reIndexingSpaceOrder(userId: DomainId) {
+        val spaces = spaceManagementPort
+            .getAllSpaceBy(userId)
+            .sortedBy { it.index }
+            .onEachIndexed { index, space ->
+                space.updateIndex(index)
+            }
+        spaceManagementPort.saveAll(spaces)
+    }
+
+
+    private fun updateMainSpace(userId: DomainId) {
+        val spaces = spaceManagementPort.getAllSpaceBy(userId)
+
+        if (spaces.isEmpty()) {
+            return
+        }
+
+        if (spaces.size == 1) {
+            spaces[0].updateToMain()
+            spaceManagementPort.save(spaces[0])
+            return
+        }
     }
 }

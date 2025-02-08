@@ -49,13 +49,13 @@ class SpaceCommandServiceTest :
                     spaceId = "spaceId",
                     name = "newName",
                 )
-            val mockSpace =
-                Space(
-                    id = DomainId(spaceUpdateNameCommand.spaceId),
-                    userId = DomainId(spaceUpdateNameCommand.userId),
-                    name = "oldName",
-                    templateType = 1,
-                )
+            val mockSpace = SpaceFixture.createSpace(
+                id = DomainId(spaceUpdateNameCommand.spaceId),
+                userId = DomainId(spaceUpdateNameCommand.userId),
+                name = "oldName",
+                templateType = 1,
+            )
+
             every {
                 spaceManagementPort.getSpaceNotNull(
                     userId = DomainId(spaceUpdateNameCommand.userId),

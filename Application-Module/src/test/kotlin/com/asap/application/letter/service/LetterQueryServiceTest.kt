@@ -7,9 +7,9 @@ import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.LetterFixture
+import com.asap.domain.SpaceFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.Space
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -96,13 +96,9 @@ class LetterQueryServiceTest :
                     letterId = "letter-id",
                     userId = "user-id",
                 )
-            val space =
-                Space(
-                    id = DomainId.generate(),
-                    name = "space-name",
-                    userId = DomainId(query.userId),
-                    templateType = 1,
-                )
+            val space = SpaceFixture.createSpace(
+                userId = DomainId(query.userId),
+            )
             val spaceLetter = LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
             val prevSpaceLetter =
                 LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)

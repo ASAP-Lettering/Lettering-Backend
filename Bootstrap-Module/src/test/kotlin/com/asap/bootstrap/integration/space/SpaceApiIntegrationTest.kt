@@ -33,7 +33,7 @@ class SpaceApiIntegrationTest(
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            spaceMockManager.settingSpace(userId)
+            spaceMockManager.settingSpace(userId, isMain = true)
             // when
             val response =
                 mockMvc.get("/api/v1/spaces/main") {
@@ -140,13 +140,10 @@ class SpaceApiIntegrationTest(
         }
 
         @Test
-        fun createSpace_and_get_main_space() {
+        fun create_first_space_and_get_main_space() {
             // given
             val userId = userMockManager.settingUser()
             val accessToken = jwtMockManager.generateAccessToken(userId)
-            (0..2).forEach {
-                spaceMockManager.settingSpace(userId)
-            }
             val request =
                 CreateSpaceRequest(
                     spaceName = "createdSpace",

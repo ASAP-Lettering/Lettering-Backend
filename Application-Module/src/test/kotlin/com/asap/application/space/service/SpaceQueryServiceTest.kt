@@ -9,7 +9,6 @@ import com.asap.domain.SpaceFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.MainSpace
-import com.asap.domain.space.entity.Space
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -40,13 +39,9 @@ class SpaceQueryServiceTest :
                 GetMainSpaceUsecase.Query(
                     userId = user.id.value,
                 )
-            val space =
-                Space(
-                    id = mainSpace.id,
-                    name = "name",
-                    userId = user.id,
-                    templateType = 1,
-                )
+            val space = SpaceFixture.createSpace(
+                userId = user.id,
+            )
             every { spaceManagementPort.getMainSpace(any()) } returns mainSpace
             every { userManagementPort.getUserNotNull(any()) } returns user
             every { spaceManagementPort.getSpaceNotNull(any(), any()) } returns space
@@ -123,13 +118,10 @@ class SpaceQueryServiceTest :
         }
 
         given("행성 조회 요청이 들어왔을 때") {
-            val space =
-                Space(
-                    id = DomainId.generate(),
-                    name = "name",
-                    userId = DomainId("userId"),
-                    templateType = 1,
-                )
+            val space = SpaceFixture.createSpace(
+                id = DomainId("spaceId"),
+                userId = DomainId("userId"),
+            )
             val query =
                 GetSpaceUsecase.GetQuery(
                     userId = "userId",

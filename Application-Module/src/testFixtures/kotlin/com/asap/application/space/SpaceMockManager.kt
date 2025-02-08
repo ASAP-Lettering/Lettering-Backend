@@ -10,13 +10,17 @@ class SpaceMockManager(
     fun settingSpace(
         userId: String,
         index: Int = 0,
+        isMain: Boolean = false,
     ): Space {
         val space =
             Space.create(
                 userId = DomainId(userId),
                 name = "test",
                 templateType = 0,
+                index = index,
             )
+        if(isMain) space.updateToMain()
+
         return spaceManagementPort.save(space).also {
             spaceManagementPort.getSpaceNotNull(DomainId(userId), it.id).apply {
                 updateIndex(index)
