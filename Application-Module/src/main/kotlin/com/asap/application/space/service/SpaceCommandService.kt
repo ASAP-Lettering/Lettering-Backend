@@ -77,30 +77,27 @@ class SpaceCommandService(
     }
 
     override fun update(command: UpdateSpaceUsecase.Command.Index) {
-        val indexedSpaces = spaceManagementPort.getAllIndexedSpace(DomainId(command.userId))
+        val spaces = spaceManagementPort.getAllSpaceBy(DomainId(command.userId))
         val changeIndexMap = command.orders.associateBy({ DomainId(it.spaceId) }, { it.index })
 
         try {
             spaceIndexValidator.validate(
-                indexedSpaces = indexedSpaces,
+                spaces = spaces, // todo: space로 수정하기
                 validateIndex = changeIndexMap,
             )
         } catch (e: DefaultException.InvalidArgumentException) {
-            throw SpaceException.InvalidSpaceUpdateException()
+            throw SpaceException.InvalidSpaceUpdateException(message = e.message)
         }
 
-        indexedSpaces.map {
+        spaces.map {
             it.updateIndex(changeIndexMap.getValue(it.id))
         }
-        spaceManagementPort.updateIndexes(
-            userId = DomainId(command.userId),
-            orders = indexedSpaces,
-        )
+        spaceManagementPort.saveAll(spaces)
     }
 
     private fun reIndexingSpaceOrder(userId: DomainId) {
         spaceManagementPort
-            .getAllIndexedSpace(userId)
+            .getAllSpaceBy(userId)
             .sortedBy { it.index }
             .forEachIndexed { index, indexedSpace ->
                 indexedSpace.updateIndex(index)
@@ -109,6 +106,16 @@ class SpaceCommandService(
     }
 
     override fun update(command: UpdateSpaceUsecase.Command.Main) {
-        TODO("Not yet implemented")
+        val spaces = spaceManagementPort.getAllSpaceBy(
+            userId = DomainId(command.userId),
+        ).map {
+            if(it.id.value == command.spaceId){
+                it.updateToMain()
+            }else{
+                it.updateToSub()
+            }
+        }
+
+
     }
 }

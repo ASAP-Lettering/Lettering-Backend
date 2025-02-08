@@ -6,8 +6,8 @@ import com.asap.application.space.port.`in`.DeleteSpaceUsecase
 import com.asap.application.space.port.`in`.UpdateSpaceNameUsecase
 import com.asap.application.space.port.`in`.UpdateSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
+import com.asap.domain.SpaceFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.Space
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
@@ -122,38 +122,23 @@ class SpaceCommandServiceTest :
                             UpdateSpaceUsecase.Command.SpaceOrder("spaceId2", 0),
                         ),
                 )
-            val indexedSpaces =
+            val spaces =
                 listOf(
-                    IndexedSpace(
-                        id = DomainId("spaceId1"),
-                        userId = DomainId("userId"),
-                        name = "space1",
-                        index = 0,
-                        templateType = 1,
+                    SpaceFixture.createSpace(
+                        id = DomainId(spaceUpdateIndexCommand.orders[0].spaceId),
+                        userId = DomainId(spaceUpdateIndexCommand.userId),
                     ),
-                    IndexedSpace(
-                        id = DomainId("spaceId2"),
-                        userId = DomainId("userId"),
-                        name = "space2",
-                        index = 1,
-                        templateType = 1,
+                    SpaceFixture.createSpace(
+                        id = DomainId(spaceUpdateIndexCommand.orders[1].spaceId),
+                        userId = DomainId(spaceUpdateIndexCommand.userId),
                     ),
                 )
-            every { spaceManagementPort.getAllIndexedSpace(DomainId(spaceUpdateIndexCommand.userId)) } returns indexedSpaces
+            every { spaceManagementPort.getAllSpaceBy(DomainId(spaceUpdateIndexCommand.userId)) } returns spaces
             `when`("유저 아이디, 스페이스 순서가 주어진다면") {
                 spaceCommandService.update(spaceUpdateIndexCommand)
                 then("스페이스 순서를 수정한다") {
-                    indexedSpaces[0].updateIndex(1)
-                    indexedSpaces[1].updateIndex(0)
                     verify {
-                        spaceManagementPort.updateIndexes(
-                            userId = DomainId(spaceUpdateIndexCommand.userId),
-                            orders =
-                                listOf(
-                                    indexedSpaces[0],
-                                    indexedSpaces[1],
-                                ),
-                        )
+                        spaceManagementPort.saveAll(spaces)
                     }
                 }
             }
@@ -169,8 +154,8 @@ class SpaceCommandServiceTest :
                         ),
                 )
             every {
-                spaceManagementPort.getAllIndexedSpace(DomainId(invalidCommand.userId))
-            } returns indexedSpaces
+                spaceManagementPort.getAllSpaceBy(DomainId(invalidCommand.userId))
+            } returns spaces
             `when`("인덱스 검증과정에서 예외가 발생한다면") {
                 then("스페이스 순서를 수정하지 않는다") {
                     shouldThrow<SpaceException.InvalidSpaceUpdateException> {

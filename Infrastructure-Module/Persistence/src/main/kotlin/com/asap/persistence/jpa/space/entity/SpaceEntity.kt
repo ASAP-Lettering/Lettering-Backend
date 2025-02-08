@@ -14,6 +14,7 @@ class SpaceEntity(
     name: String,
     templateType: Int,
     index: Int,
+    isMain: Boolean,
 ) : AggregateRoot<SpaceEntity>(id) {
     @Column(name = "user_id", nullable = false)
     var userId: String = userId
@@ -44,7 +45,7 @@ class SpaceEntity(
         name = "is_main",
         nullable = false,
     )
-    var isMain: Boolean = false
+    var isMain: Boolean = isMain
 
     fun update(space: Space) {
         this.userId = space.userId.value

@@ -5,9 +5,9 @@ import com.asap.application.space.port.`in`.GetMainSpaceUsecase
 import com.asap.application.space.port.`in`.GetSpaceUsecase
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.application.user.port.out.UserManagementPort
+import com.asap.domain.SpaceFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.IndexedSpace
 import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
 import io.kotest.core.spec.style.BehaviorSpec
@@ -62,41 +62,23 @@ class SpaceQueryServiceTest :
         }
 
         given("모든 스페이스 조회 요청이 들어왔을 때") {
-            val indexedSpaces =
-                listOf(
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 0,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 1,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 2,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
+            val spaces = (0..2).mapIndexed { index, _ ->
+                SpaceFixture.createSpace(
+                    userId = DomainId("userId"),
+                    index = index,
                 )
-            val indexedSpaceMap = indexedSpaces.associateBy { it.id }
+            }
+            val indexedSpaceMap = spaces.associateBy { it.id }
             val query =
                 GetSpaceUsecase.GetAllQuery(
                     userId = "userId",
                 )
-            every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
+            every { spaceManagementPort.getAllSpaceBy(DomainId(query.userId)) } returns spaces
             every { spaceLetterManagementPort.countSpaceLetterBy(any(), any()) } returns 0
             `when`("유저 아이디가 주어진다면") {
                 val response = spaceQueryService.getAll(query)
                 then("모든 스페이스를 반환한다") {
-                    response.spaces.size shouldBe indexedSpaces.size
+                    response.spaces.size shouldBe spaces.size
                     response.spaces.forEach { spaceDetail ->
                         val indexedSpace = indexedSpaceMap[DomainId(spaceDetail.spaceId)]
                         indexedSpace.shouldNotBeNull {
@@ -111,42 +93,24 @@ class SpaceQueryServiceTest :
         }
 
         given("행성 모두 조회 요청이 들어왔을 때") {
-            val indexedSpaces =
-                listOf(
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 0,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 1,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
-                    IndexedSpace(
-                        id = DomainId.generate(),
-                        name = "name",
-                        index = 2,
-                        userId = DomainId("userId"),
-                        templateType = 1,
-                    ),
+            val spaces = (0..2).mapIndexed { index, _ ->
+                SpaceFixture.createSpace(
+                    userId = DomainId("userId"),
+                    index = index,
                 )
-            val indexedSpaceMap = indexedSpaces.associateBy { it.id }
+            }
+            val spaceMap = spaces.associateBy { it.id }
             val query =
                 GetSpaceUsecase.GetAllQuery(
                     userId = "userId",
                 )
-            every { spaceManagementPort.getAllIndexedSpace(DomainId(query.userId)) } returns indexedSpaces
+            every { spaceManagementPort.getAllSpaceBy(DomainId(query.userId)) } returns spaces
             `when`("유저 아이디가 주어진다면") {
                 val response = spaceQueryService.getAll(query)
                 then("모든 스페이스를 반환한다") {
-                    response.spaces.size shouldBe indexedSpaces.size
+                    response.spaces.size shouldBe spaces.size
                     response.spaces.forEach { spaceDetail ->
-                        val indexedSpace = indexedSpaceMap[DomainId(spaceDetail.spaceId)]
+                        val indexedSpace = spaceMap[DomainId(spaceDetail.spaceId)]
                         indexedSpace.shouldNotBeNull {
                             this.id shouldBe DomainId(spaceDetail.spaceId)
                             this.name shouldBe spaceDetail.spaceName

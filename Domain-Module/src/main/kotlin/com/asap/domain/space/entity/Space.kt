@@ -8,6 +8,7 @@ class Space(
     id: DomainId,
     val userId: DomainId,
     var name: String,
+    var index: Int = 0,
     val templateType: Int,
     var isMain: Boolean = false,
 ) : Aggregate<Space>(id) {
@@ -30,6 +31,19 @@ class Space(
 
     fun updateName(name: String) {
         this.name = name
+    }
+
+    fun updateToMain() {
+        this.isMain = true
+    }
+
+    fun updateToSub() {
+        this.isMain = false
+    }
+
+    fun updateIndex(index: Int) {
+        check(index >= 0) { "Index must be greater than or equal to 0" }
+        this.index = index
     }
 
     fun delete() {

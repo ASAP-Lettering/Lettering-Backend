@@ -18,15 +18,10 @@ class SpaceMockManager(
                 templateType = 0,
             )
         return spaceManagementPort.save(space).also {
-            spaceManagementPort.getIndexedSpaceNotNull(DomainId(userId), it.id).apply {
+            spaceManagementPort.getSpaceNotNull(DomainId(userId), it.id).apply {
                 updateIndex(index)
                 spaceManagementPort.update(this)
             }
         }
     }
-
-    fun getSpaceIndexes(userId: String): List<Pair<String, Int>> =
-        spaceManagementPort.getAllIndexedSpace(DomainId(userId)).map {
-            it.id.value to it.index
-        }
 }
