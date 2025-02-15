@@ -8,7 +8,6 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.SpaceFixture
 import com.asap.domain.UserFixture
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.MainSpace
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -30,10 +29,6 @@ class SpaceQueryServiceTest :
             )
 
         given("메인 스페이스 조회 요청이 들어왔을 때") {
-            val mainSpace =
-                MainSpace(
-                    id = DomainId.generate(),
-                )
             val user = UserFixture.createUser()
             val query =
                 GetMainSpaceUsecase.Query(
@@ -42,13 +37,13 @@ class SpaceQueryServiceTest :
             val space = SpaceFixture.createSpace(
                 userId = user.id,
             )
-            every { spaceManagementPort.getMainSpace(any()) } returns mainSpace
+            every { spaceManagementPort.getMainSpace(any()) } returns space
             every { userManagementPort.getUserNotNull(any()) } returns user
             every { spaceManagementPort.getSpaceNotNull(any(), any()) } returns space
             `when`("유저 아이디가 주어진다면") {
                 val response = spaceQueryService.get(query)
                 then("메인 스페이스를 반환한다") {
-                    response.id shouldBe mainSpace.id.value
+                    response.id shouldBe space.id.value
                     response.username shouldBe user.username
                     response.templateType shouldBe space.templateType
                     response.spaceName shouldBe space.name

@@ -11,16 +11,24 @@ sealed class SpaceException(
     class InvalidSpaceUpdateException(
         message: String = "유효하지 않는 스페이스 순서 변경 요청입니다.",
     ) : SpaceException(
-            errorCode = 1,
-            message = message,
-        )
+        errorCode = 1,
+        message = message,
+    )
 
     class SpaceNotFoundException(
         message: String = "해당 스페이스를 찾을 수 없습니다.",
     ) : SpaceException(
-            errorCode = 2,
-            message = message,
-        )
+        errorCode = 2,
+        message = message,
+    )
+
+    class MainSpaceNotFoundException(
+        message: String = "메인 스페이스를 찾을 수 없습니다.",
+    ) : SpaceException(
+        errorCode = 3,
+        message = message,
+        httpStatus = 500
+    )
 
     companion object {
         const val CODE_PREFIX = "SPACE"
