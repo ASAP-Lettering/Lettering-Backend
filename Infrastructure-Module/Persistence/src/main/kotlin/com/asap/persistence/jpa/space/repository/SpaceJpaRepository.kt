@@ -63,6 +63,18 @@ interface SpaceJpaRepository : JpaRepository<SpaceEntity, String> {
         entityStatus: EntityStatus,
     ): List<SpaceEntity>
 
+    @Query("""
+        SELECT s
+        FROM SpaceEntity s
+        WHERE s.isMain = true
+        AND s.userId = :userId
+        AND s.spaceStatus = :entityStatus
+    """)
+    fun findMainSpace(
+        userId: String,
+        entityStatus: EntityStatus
+    ): SpaceEntity?
+
     @Modifying
     @Query(
         """
@@ -104,5 +116,9 @@ fun SpaceJpaRepository.findActiveSpaceByIdAndUserId(
     id: String,
     userId: String,
 ): SpaceEntity? = findByIdAndUserId(id, userId, EntityStatus.ACTIVE)
+
+fun SpaceJpaRepository.findActiveMainSpace(
+    userId: String,
+): SpaceEntity? = findMainSpace(userId, EntityStatus.ACTIVE)
 
 fun SpaceJpaRepository.countActiveSpaceByUserId(userId: String): Long = countByUserId(userId, EntityStatus.ACTIVE)

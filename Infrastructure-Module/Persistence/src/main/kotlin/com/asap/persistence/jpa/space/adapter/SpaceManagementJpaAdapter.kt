@@ -4,7 +4,6 @@ import com.asap.application.space.exception.SpaceException
 import com.asap.application.space.port.out.SpaceManagementPort
 import com.asap.common.event.EventPublisher
 import com.asap.domain.common.DomainId
-import com.asap.domain.space.entity.MainSpace
 import com.asap.domain.space.entity.Space
 import com.asap.persistence.jpa.space.SpaceMapper
 import com.asap.persistence.jpa.space.repository.*
@@ -15,14 +14,14 @@ class SpaceManagementJpaAdapter(
     private val spaceJpaRepository: SpaceJpaRepository,
     private val eventPublisher: EventPublisher,
 ) : SpaceManagementPort {
-    override fun getMainSpace(userId: DomainId): MainSpace =
+    override fun getMainSpace(userId: DomainId): Space =
         spaceJpaRepository
-            .findAllActiveSpaceByUserId(userId.value)
-            .first {
-                it.isMain
-            }.let {
-                SpaceMapper.toMainSpace(it)
+            .findActiveMainSpace(userId.value)
+            ?.let {
+                SpaceMapper.toSpace(it)
             }
+            ?: throw SpaceException.MainSpaceNotFoundException()
+
 
     override fun getSpaceNotNull(
         userId: DomainId,

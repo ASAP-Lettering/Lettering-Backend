@@ -18,17 +18,11 @@ class SpaceQueryService(
 ) : GetMainSpaceUsecase,
     GetSpaceUsecase {
     override fun get(query: GetMainSpaceUsecase.Query): GetMainSpaceUsecase.Response {
-        val mainSpace =
-            spaceManagementPort.getMainSpace(
-                userId = DomainId(query.userId),
-            )
-        val space =
-            spaceManagementPort.getSpaceNotNull(
-                userId = DomainId(query.userId),
-                spaceId = mainSpace.id,
-            )
+        val space = spaceManagementPort.getMainSpace(
+            userId = DomainId(query.userId),
+        )
         return GetMainSpaceUsecase.Response(
-            id = mainSpace.id.value,
+            id = space.id.value,
             username = userManagementPort.getUserNotNull(DomainId(query.userId)).username,
             templateType = space.templateType,
             spaceName = space.name,
