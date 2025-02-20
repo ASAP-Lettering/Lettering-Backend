@@ -11,4 +11,6 @@ interface UserManagementPort {
 
     @Throws(UserException.UserNotFoundException::class)
     fun getUserNotNull(userId: DomainId): User
+
+    fun findById(userId: DomainId): User?
 }

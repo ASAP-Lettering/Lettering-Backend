@@ -1,10 +1,13 @@
 package com.asap.bootstrap.integration.user
 
 import com.asap.application.user.exception.UserException
+import com.asap.application.user.port.out.UserManagementPort
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.web.user.dto.LogoutRequest
 import com.asap.bootstrap.web.user.dto.RegisterUserRequest
 import com.asap.bootstrap.web.user.dto.UpdateBirthdayRequest
+import com.asap.domain.common.DomainId
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -14,7 +17,9 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.time.LocalDate
 
-class UserApiIntegrationTest : IntegrationSupporter() {
+class UserApiIntegrationTest(
+    private val userManagementPort: UserManagementPort
+) : IntegrationSupporter() {
     @Test
     fun registerUserSuccessTest() {
         // given
@@ -259,5 +264,24 @@ class UserApiIntegrationTest : IntegrationSupporter() {
         response.andExpect {
             status { isOk() }
         }
+    }
+
+    @Test
+    fun deleteUser_user_updated_at_updated() {
+        // given
+        val userId = userMockManager.settingUser()
+        userMockManager.settingUserAuth(userId = userId)
+        val accessToken = jwtMockManager.generateAccessToken(userId)
+
+        // when
+        mockMvc.delete("/api/v1/users") {
+            contentType = MediaType.APPLICATION_JSON
+            header("Authorization", "Bearer $accessToken")
+        }
+
+
+        // then
+        val user = userManagementPort.getUserNotNull(DomainId(userId))
+        user.updatedAt shouldBeGreaterThan user.createdAt
     }
 }

@@ -12,6 +12,7 @@ object DraftLetterMapper {
             receiverName = draftLetter.receiverName,
             ownerId = draftLetter.ownerId.value,
             images = draftLetter.images,
+            createdAt = draftLetter.createdAt,
             updatedAt = draftLetter.lastUpdated,
         )
 
@@ -22,6 +23,7 @@ object DraftLetterMapper {
             receiverName = draftLetterEntity.receiverName,
             ownerId = DomainId(draftLetterEntity.ownerId),
             images = draftLetterEntity.images,
+            createdAt = draftLetterEntity.createdAt,
             lastUpdated = draftLetterEntity.updatedAt,
         )
 }

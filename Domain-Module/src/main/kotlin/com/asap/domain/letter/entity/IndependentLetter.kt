@@ -17,7 +17,9 @@ class IndependentLetter(
     val receiveDate: LocalDate,
     val movedAt: LocalDateTime,
     var isOpened: Boolean,
-) : Aggregate<IndependentLetter>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : Aggregate<IndependentLetter>(id, createdAt, updatedAt) {
     companion object {
         fun createBySpaceLetter(
             spaceLetter: SpaceLetter,
@@ -31,6 +33,8 @@ class IndependentLetter(
                 receiveDate = spaceLetter.receiveDate,
                 movedAt = LocalDateTime.now(),
                 isOpened = false,
+                createdAt = spaceLetter.createdAt,
+                updatedAt = LocalDateTime.now(),
             )
 
         fun create(
@@ -42,6 +46,8 @@ class IndependentLetter(
             movedAt: LocalDateTime = LocalDateTime.now(),
             isOpened: Boolean = false,
             draftId: DomainId? = null,
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
         ): IndependentLetter =
             IndependentLetter(
                 id = id,
@@ -51,6 +57,8 @@ class IndependentLetter(
                 receiveDate = receiveDate,
                 movedAt = movedAt,
                 isOpened = isOpened,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
             ).also {
                 it.registerEvent(IndependentLetterEvent.IndependentLetterCreatedEvent(it, draftId?.value))
             }
@@ -60,6 +68,7 @@ class IndependentLetter(
 
     fun read() {
         isOpened = true
+        updateTime()
     }
 
     fun update(
@@ -72,11 +81,13 @@ class IndependentLetter(
         this.content.updateContent(content)
         this.content.updateImages(images.toMutableList())
         this.content.updateTemplateType(templateType)
+        updateTime()
     }
 
     fun delete() {
         this.content.delete()
         this.sender.delete()
+        updateTime()
     }
 
     fun getOwnerId(): DomainId = receiver.receiverId

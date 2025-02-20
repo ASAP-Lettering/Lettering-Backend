@@ -10,9 +10,10 @@ class ReceiveDraftLetter(
     var senderName: String,
     val ownerId: DomainId,
     var images: List<String>,
-    var lastUpdated: LocalDateTime = LocalDateTime.now(),
+    var lastUpdated: LocalDateTime,
     val type: ReceiveDraftLetterType, // TODO: 상속 구조를 통한 타입 구분 생각해보기
-) : BaseEntity(id) {
+    createdAt: LocalDateTime,
+) : BaseEntity(id, createdAt, lastUpdated) {
     companion object {
         fun default(ownerId: DomainId) =
             ReceiveDraftLetter(
@@ -22,6 +23,8 @@ class ReceiveDraftLetter(
                 senderName = "",
                 images = emptyList(),
                 type = ReceiveDraftLetterType.PHYSICAL,
+                lastUpdated = LocalDateTime.now(),
+                createdAt = LocalDateTime.now(),
             )
     }
 
@@ -34,6 +37,7 @@ class ReceiveDraftLetter(
         this.senderName = senderName
         this.images = images
         this.lastUpdated = LocalDateTime.now()
+        updateTime()
     }
 }
 

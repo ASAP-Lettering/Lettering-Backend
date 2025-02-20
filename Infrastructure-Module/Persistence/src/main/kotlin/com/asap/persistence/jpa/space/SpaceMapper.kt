@@ -13,6 +13,8 @@ object SpaceMapper {
             templateType = spaceEntity.templateType,
             index = spaceEntity.index,
             isMain = spaceEntity.isMain,
+            createdAt = spaceEntity.createdAt,
+            updatedAt = spaceEntity.updatedAt,
         )
 
     fun toSpaceEntity(
@@ -24,5 +26,7 @@ object SpaceMapper {
         templateType = space.templateType,
         index = space.index,
         isMain = space.isMain,
+        createdAt = space.createdAt,
+        updatedAt = space.updatedAt,
     )
 }

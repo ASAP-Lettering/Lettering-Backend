@@ -5,6 +5,7 @@ import com.asap.persistence.jpa.common.AggregateRoot
 import com.asap.persistence.jpa.common.EntityStatus
 import com.asap.persistence.jpa.user.entity.UserEntity
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "space")
@@ -15,7 +16,9 @@ class SpaceEntity(
     templateType: Int,
     index: Int,
     isMain: Boolean,
-) : AggregateRoot<SpaceEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<SpaceEntity>(id, createdAt, updatedAt) {
     @Column(name = "user_id", nullable = false)
     var userId: String = userId
 

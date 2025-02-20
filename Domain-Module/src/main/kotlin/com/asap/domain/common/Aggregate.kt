@@ -1,10 +1,13 @@
 package com.asap.domain.common
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.time.LocalDateTime
 
 abstract class Aggregate<T : Aggregate<T>>(
-    val id: DomainId,
-) {
+    id: DomainId,
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+): BaseEntity(id, createdAt, updatedAt) {
     private val logger = KotlinLogging.logger {}
     private val events: MutableList<DomainEvent<T>> = mutableListOf()
 

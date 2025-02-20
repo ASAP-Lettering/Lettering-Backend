@@ -14,8 +14,10 @@ class LetterLogEntity(
     targetLetterId: String,
     loggedAt: LocalDateTime,
     logType: LetterLogType,
-    content: String
-):BaseEntity(id) {
+    content: String,
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+):BaseEntity(id, createdAt, updatedAt) {
     @Column(
         name = "target_letter_id",
         nullable = false,

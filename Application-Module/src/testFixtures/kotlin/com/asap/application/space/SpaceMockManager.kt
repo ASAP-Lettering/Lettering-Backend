@@ -14,6 +14,7 @@ class SpaceMockManager(
     ): Space {
         val space =
             Space.create(
+                id = DomainId.generate(),
                 userId = DomainId(userId),
                 name = "test",
                 templateType = 0,
@@ -27,5 +28,9 @@ class SpaceMockManager(
                 spaceManagementPort.update(this)
             }
         }
+    }
+
+    fun clear() {
+        spaceManagementPort.deleteAll()
     }
 }

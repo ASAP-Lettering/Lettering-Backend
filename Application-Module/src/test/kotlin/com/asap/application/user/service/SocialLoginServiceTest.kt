@@ -38,7 +38,7 @@ class SocialLoginServiceTest :
             var command = SocialLoginUsecase.Command(SocialLoginProvider.KAKAO.name, "registered")
             val authInfo = AuthInfo(SocialLoginProvider.KAKAO, "socialId", "name", "email", "profileImage")
             val getUserAuth =
-                UserAuth(
+                UserAuth.create(
                     userId = DomainId.generate(),
                     socialId = "socialId",
                     socialLoginProvider = SocialLoginProvider.KAKAO,

@@ -878,6 +878,7 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                     contentType = MediaType.APPLICATION_JSON
                     header("Authorization", "Bearer $accessToken")
                 }
+
             // then
             response.andExpect {
                 status { isOk() }
@@ -886,6 +887,32 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
                     isNumber()
                     value(7)
                 }
+                jsonPath("$.spaceCount") {
+                    exists()
+                    isNumber()
+                    value(1)
+                }
+            }
+        }
+
+        @Test
+        fun getAllLetterCount_with_space_count(){
+            // given
+            val senderId = userMockManager.settingUser()
+            val receiverId = userMockManager.settingUser()
+            val accessToken = jwtMockManager.generateAccessToken(receiverId)
+            val space = spaceMockManager.settingSpace(receiverId)
+
+            // when
+            val response =
+                mockMvc.get("/api/v1/letters/count") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
                 jsonPath("$.spaceCount") {
                     exists()
                     isNumber()

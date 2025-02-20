@@ -38,7 +38,7 @@ class JwtMockManager(
                 ),
                 userJwtProperties.secret,
             ).apply {
-                userTokenManagementPort.saveUserToken(UserToken(token = this))
+                userTokenManagementPort.saveUserToken(UserToken.create(token = this))
             }
 
     fun generateAccessToken(
@@ -79,7 +79,7 @@ class JwtMockManager(
                 ),
                 userJwtProperties.secret,
             ).apply {
-                userTokenManagementPort.saveUserToken(UserToken(token = this, userId = DomainId(userId)))
+                userTokenManagementPort.saveUserToken(UserToken.create(token = this, userId = DomainId(userId)))
             }
 
     fun generateExpiredToken(
@@ -104,7 +104,7 @@ class JwtMockManager(
                 when (tokenType) {
                     TokenType.REFRESH ->
                         userTokenManagementPort.saveUserToken(
-                            UserToken(
+                            UserToken.create(
                                 token = it,
                                 userId = DomainId(userId),
                             ),

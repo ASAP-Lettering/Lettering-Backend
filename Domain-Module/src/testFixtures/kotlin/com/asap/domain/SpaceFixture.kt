@@ -2,6 +2,7 @@ package com.asap.domain
 
 import com.asap.domain.common.DomainId
 import com.asap.domain.space.entity.Space
+import java.time.LocalDateTime
 
 object SpaceFixture {
     fun createSpace(
@@ -18,7 +19,9 @@ object SpaceFixture {
             name = name,
             templateType = templateType,
             index = index,
-            isMain = isMain
+            isMain = isMain,
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now(),
         )
     }
 }

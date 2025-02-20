@@ -15,7 +15,9 @@ class User(
     val permission: UserPermission,
     var birthday: LocalDate?,
     var onboardingAt: LocalDateTime?,
-) : Aggregate<User>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : Aggregate<User>(id, createdAt, updatedAt) {
     companion object {
         fun create(
             id: DomainId = DomainId.generate(),
@@ -24,27 +26,30 @@ class User(
             email: String,
             permission: UserPermission,
             birthday: LocalDate?,
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
         ): User =
-            User(id, username, profileImage, email, permission, birthday, null).also {
+            User(id, username, profileImage, email, permission, birthday, null, createdAt, updatedAt).also {
                 it.registerEvent(UserEvent.UserCreatedEvent(it))
             }
     }
 
     fun delete() {
-        this.username = "UNKNOWN"
         this.profileImage = "UNKNOWN"
-        this.email = "UNKNOWN"
         this.birthday = null
 
         registerEvent(UserEvent.UserDeletedEvent(this))
+        updateTime()
     }
 
     fun updateBirthday(birthday: LocalDate) {
         this.birthday = birthday
+        updateTime()
     }
 
     fun updateOnboarding() {
         this.onboardingAt = LocalDateTime.now()
+        updateTime()
     }
 
     fun isProcessedOnboarding(): Boolean {

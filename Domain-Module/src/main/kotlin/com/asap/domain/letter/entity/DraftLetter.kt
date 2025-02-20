@@ -10,8 +10,9 @@ class DraftLetter(
     var receiverName: String,
     val ownerId: DomainId,
     var images: List<String>,
-    var lastUpdated: LocalDateTime = LocalDateTime.now(),
-) : Aggregate<DraftLetter>(id) {
+    var lastUpdated: LocalDateTime,
+    createdAt: LocalDateTime,
+) : Aggregate<DraftLetter>(id, createdAt, lastUpdated) {
     companion object {
         fun default(ownerId: DomainId) =
             DraftLetter(
@@ -20,6 +21,8 @@ class DraftLetter(
                 content = "",
                 receiverName = "",
                 images = emptyList(),
+                lastUpdated = LocalDateTime.now(),
+                createdAt = LocalDateTime.now(),
             )
     }
 
@@ -32,5 +35,6 @@ class DraftLetter(
         this.receiverName = receiverName
         this.images = images
         this.lastUpdated = LocalDateTime.now()
+        updateTime()
     }
 }

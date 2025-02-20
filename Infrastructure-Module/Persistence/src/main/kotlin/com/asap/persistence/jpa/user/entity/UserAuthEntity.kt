@@ -2,6 +2,7 @@ package com.asap.persistence.jpa.user.entity
 
 import com.asap.persistence.jpa.common.AggregateRoot
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(
@@ -15,7 +16,9 @@ class UserAuthEntity(
     userId: String,
     socialId: String,
     socialLoginProvider: String,
-) : AggregateRoot<UserAuthEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<UserAuthEntity>(id, createdAt, updatedAt) {
     @Column(nullable = false)
     val userId: String = userId
 

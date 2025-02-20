@@ -30,6 +30,8 @@ object ReceiverLetterMapper {
             receiveDate = receiveLetterEntity.receiveDate,
             movedAt = receiveLetterEntity.movedAt,
             isOpened = receiveLetterEntity.isOpened,
+            createdAt = receiveLetterEntity.createdAt,
+            updatedAt = receiveLetterEntity.updatedAt,
         )
 
     fun toSpaceLetter(receiveLetterEntity: ReceiveLetterEntity): SpaceLetter =
@@ -53,5 +55,7 @@ object ReceiverLetterMapper {
             receiveDate = receiveLetterEntity.receiveDate,
             spaceId = receiveLetterEntity.spaceId!!.let { DomainId(it) },
             movedAt = receiveLetterEntity.movedAt,
+            createdAt = receiveLetterEntity.createdAt,
+            updatedAt = receiveLetterEntity.updatedAt,
         )
 }

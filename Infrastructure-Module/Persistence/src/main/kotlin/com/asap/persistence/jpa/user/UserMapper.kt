@@ -26,6 +26,8 @@ object UserMapper {
                 ),
             email = user.email,
             onboardingAt = user.onboardingAt,
+            createdAt = user.createdAt,
+            updatedAt = user.updatedAt,
         )
 
     fun toUser(userEntity: UserEntity): User =
@@ -42,6 +44,8 @@ object UserMapper {
             birthday = userEntity.birthday,
             email = userEntity.email,
             onboardingAt = userEntity.onboardingAt,
+            createdAt = userEntity.createdAt,
+            updatedAt = userEntity.updatedAt,
         )
 
     fun toUserAuthEntity(userAuth: UserAuth): UserAuthEntity =
@@ -50,6 +54,8 @@ object UserMapper {
             socialId = userAuth.socialId,
             socialLoginProvider = userAuth.socialLoginProvider.name,
             userId = userAuth.userId.value,
+            createdAt = userAuth.createdAt,
+            updatedAt = userAuth.updatedAt,
         )
 
     fun toUserAuth(userAuthEntity: UserAuthEntity): UserAuth =
@@ -58,6 +64,8 @@ object UserMapper {
             socialId = userAuthEntity.socialId,
             socialLoginProvider = SocialLoginProvider.parse(userAuthEntity.socialLoginProvider),
             userId = DomainId(userAuthEntity.userId),
+            createdAt = userAuthEntity.createdAt,
+            updatedAt = userAuthEntity.updatedAt,
         )
 
     fun toUserTokenEntity(userToken: UserToken): UserTokenEntity =
@@ -65,6 +73,8 @@ object UserMapper {
             id = userToken.id.value,
             token = userToken.token,
             userId = userToken.userId?.value,
+            createdAt = userToken.createdAt,
+            updatedAt = userToken.updatedAt,
         )
 
     fun toUserToken(userTokenEntity: UserTokenEntity): UserToken =
@@ -72,5 +82,7 @@ object UserMapper {
             id = DomainId(userTokenEntity.id),
             token = userTokenEntity.token,
             userId = userTokenEntity.userId?.let { DomainId(it) },
+            createdAt = userTokenEntity.createdAt,
+            updatedAt = userTokenEntity.updatedAt,
         )
 }
