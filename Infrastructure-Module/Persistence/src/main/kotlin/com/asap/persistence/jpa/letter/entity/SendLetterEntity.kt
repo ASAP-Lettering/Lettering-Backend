@@ -7,6 +7,7 @@ import com.asap.persistence.jpa.user.entity.UserEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import java.time.LocalDateTime
 
 @Entity
 @Table(
@@ -29,7 +30,9 @@ class SendLetterEntity(
     letterCode: String?,
     receiverId: String?,
     letterStatus: LetterStatus,
-) : AggregateRoot<SendLetterEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<SendLetterEntity>(id, createdAt, updatedAt) {
     @Column(
         name = "content",
         nullable = false,

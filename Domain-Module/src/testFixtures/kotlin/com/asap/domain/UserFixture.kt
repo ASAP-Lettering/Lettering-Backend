@@ -28,7 +28,7 @@ object UserFixture {
         socialId: String = "socialId",
         socialLoginProvider: SocialLoginProvider = SocialLoginProvider.KAKAO,
     ): UserAuth =
-        UserAuth(
+        UserAuth.create(
             userId = DomainId(userId),
             socialId = socialId,
             socialLoginProvider = socialLoginProvider,

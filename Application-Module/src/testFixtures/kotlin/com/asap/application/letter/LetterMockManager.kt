@@ -129,6 +129,7 @@ class LetterMockManager(
                     ),
                 spaceId = DomainId(spaceId),
                 receiveDate = LocalDate.now(),
+
             )
         spaceLetterManagementPort.save(
             spaceLetter,

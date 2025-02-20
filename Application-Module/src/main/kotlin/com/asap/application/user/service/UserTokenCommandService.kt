@@ -39,7 +39,7 @@ class UserTokenCommandService(
 
         val accessToken = userTokenConvertPort.generateAccessToken(user)
         val refreshToken = userTokenConvertPort.generateRefreshToken(user)
-        userTokenManagementPort.saveUserToken(UserToken(userId = user.id, token = refreshToken))
+        userTokenManagementPort.saveUserToken(UserToken.create(userId = user.id, token = refreshToken))
         return ReissueTokenUsecase.Response(
             accessToken = accessToken,
             refreshToken = refreshToken,

@@ -26,6 +26,7 @@ class SpaceCommandService(
     override fun create(command: CreateSpaceUsecase.Command) {
         val userId = DomainId(command.userId)
         Space.create(
+            id = DomainId.generate(),
             userId = userId,
             name = command.spaceName,
             templateType = command.templateType,

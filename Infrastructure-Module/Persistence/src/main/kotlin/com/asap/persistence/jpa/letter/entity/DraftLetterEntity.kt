@@ -17,8 +17,9 @@ class DraftLetterEntity(
     receiverName: String,
     ownerId: String,
     images: List<String>,
+    createdAt: LocalDateTime,
     updatedAt: LocalDateTime,
-) : AggregateRoot<DraftLetterEntity>(id) {
+) : AggregateRoot<DraftLetterEntity>(id, createdAt, updatedAt) {
     @Column(
         name = "content",
         nullable = false,
@@ -48,6 +49,4 @@ class DraftLetterEntity(
         columnDefinition = "text",
     )
     var images: List<String> = images
-
-    override var updatedAt: LocalDateTime = updatedAt
 }

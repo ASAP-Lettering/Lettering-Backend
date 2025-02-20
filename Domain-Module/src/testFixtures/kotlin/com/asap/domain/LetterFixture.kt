@@ -62,6 +62,8 @@ object LetterFixture {
         receiveDate = receiveDate,
         movedAt = movedAt,
         isOpened = isOpened,
+        createdAt = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now(),
     )
 
     fun generateSpaceLetter(
@@ -94,5 +96,7 @@ object LetterFixture {
             ),
         receiveDate = receiveDate,
         movedAt = movedAt,
+        createdAt = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now(),
     )
 }

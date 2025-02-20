@@ -16,9 +16,10 @@ class SendLetter(
     var receiverName: String,
     var letterCode: String?,
     var status: LetterStatus,
-    val createdAt: LocalDateTime,
     var receiverId: DomainId?,
-) : Aggregate<SendLetter>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : Aggregate<SendLetter>(id, createdAt, updatedAt) {
     val createdDate: LocalDate = createdAt.toLocalDate()
 
     companion object {
@@ -28,9 +29,10 @@ class SendLetter(
             receiverName: String,
             letterCode: String?,
             status: LetterStatus = LetterStatus.SENDING,
-            createdAt: LocalDateTime = LocalDateTime.now(),
             receiverId: DomainId? = null,
             draftId: DomainId? = null,
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
         ) = SendLetter(
             id = DomainId.generate(),
             content = content,
@@ -38,8 +40,9 @@ class SendLetter(
             receiverName = receiverName,
             letterCode = letterCode,
             status = status,
-            createdAt = createdAt,
             receiverId = receiverId,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         ).also {
             it.registerEvent(SendLetterEvent.SendLetterCreatedEvent(it, draftId?.value))
         }
@@ -53,11 +56,13 @@ class SendLetter(
     fun readLetter(receiverId: DomainId) {
         this.receiverId = receiverId
         this.status = LetterStatus.READ
+        updateTime()
     }
 
     fun receiveLetter() {
         status = LetterStatus.RECEIVED
         letterCode = null
+        updateTime()
     }
 
     fun delete() {
@@ -65,5 +70,6 @@ class SendLetter(
         this.receiverName = ""
         this.letterCode = null
         this.receiverId = null
+        updateTime()
     }
 }

@@ -15,7 +15,9 @@ class UserEntity(
     userPermission: UserPermissionEntity,
     birthday: LocalDate?,
     onboardingAt: LocalDateTime?,
-) : AggregateRoot<UserEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<UserEntity>(id, createdAt, updatedAt) {
     @Column(nullable = false)
     val username: String = username
 

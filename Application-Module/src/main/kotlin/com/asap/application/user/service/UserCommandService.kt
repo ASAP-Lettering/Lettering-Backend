@@ -48,7 +48,7 @@ class UserCommandService(
                 email = userClaims.email,
             )
         val userAuth =
-            UserAuth(
+            UserAuth.create(
                 userId = registerUser.id,
                 socialId = userClaims.socialId,
                 socialLoginProvider = userClaims.socialLoginProvider,
@@ -60,7 +60,7 @@ class UserCommandService(
         val accessToken = userTokenConvertPort.generateAccessToken(registerUser)
         val refreshToken = userTokenConvertPort.generateRefreshToken(registerUser)
 
-        userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = registerUser.id))
+        userTokenManagementPort.saveUserToken(UserToken.create(token = refreshToken, userId = registerUser.id))
 
         return RegisterUserUsecase.Response(accessToken, refreshToken)
     }

@@ -9,11 +9,9 @@ import java.time.LocalDateTime
 abstract class BaseEntity(
     @Id
     open val id: String = DomainId.generate().value,
+    var createdAt: LocalDateTime,
+    var updatedAt: LocalDateTime
 ) {
-    var createdAt: LocalDateTime = LocalDateTime.now()
-
-    open var updatedAt: LocalDateTime = LocalDateTime.now()
-
     fun update() {
         this.updatedAt = LocalDateTime.now()
     }

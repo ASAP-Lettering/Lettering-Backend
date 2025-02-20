@@ -27,4 +27,8 @@ class UserManagementJpaAdapter(
     override fun getUserNotNull(userId: DomainId): User =
         userJpaRepository.findByIdOrNull(userId.value)?.let { UserMapper.toUser(it) }
             ?: throw UserException.UserNotFoundException()
+
+    override fun findById(userId: DomainId): User? {
+        return userJpaRepository.findByIdOrNull(userId.value)?.let { UserMapper.toUser(it) }
+    }
 }

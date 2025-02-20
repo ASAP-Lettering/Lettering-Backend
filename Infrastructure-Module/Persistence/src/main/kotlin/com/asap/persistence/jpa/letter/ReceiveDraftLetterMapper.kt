@@ -12,8 +12,9 @@ object ReceiveDraftLetterMapper {
             senderName = receiveDraftLetter.senderName,
             ownerId = receiveDraftLetter.ownerId.value,
             images = receiveDraftLetter.images,
-            updatedAt = receiveDraftLetter.lastUpdated,
             type = receiveDraftLetter.type,
+            createdAt = receiveDraftLetter.createdAt,
+            updatedAt = receiveDraftLetter.lastUpdated,
         )
 
     fun toDomain(receiveDraftLetterEntity: ReceiveDraftLetterEntity): ReceiveDraftLetter =
@@ -25,5 +26,6 @@ object ReceiveDraftLetterMapper {
             images = receiveDraftLetterEntity.images,
             lastUpdated = receiveDraftLetterEntity.updatedAt,
             type = receiveDraftLetterEntity.type,
+            createdAt = receiveDraftLetterEntity.createdAt,
         )
 }

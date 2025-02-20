@@ -25,7 +25,7 @@ class SocialLoginService(
             userManagementPort.getUser(userAuth.userId)?.let { user ->
                 val accessToken = userTokenConvertPort.generateAccessToken(user)
                 val refreshToken = userTokenConvertPort.generateRefreshToken(user)
-                userTokenManagementPort.saveUserToken(UserToken(token = refreshToken, userId = user.id))
+                userTokenManagementPort.saveUserToken(UserToken.create(token = refreshToken, userId = user.id))
                 SocialLoginUsecase.Success(accessToken, refreshToken, user.isProcessedOnboarding())
             } ?: run {
                 throw DefaultException.InvalidStateException("사용자 인증정보만 존재합니다. - ${userAuth.userId}")
@@ -39,7 +39,7 @@ class SocialLoginService(
                     profileImage = authInfo.profileImage,
                     email = authInfo.email,
                 )
-            userTokenManagementPort.saveUserToken(UserToken(token = registerToken))
+            userTokenManagementPort.saveUserToken(UserToken.create(token = registerToken))
             SocialLoginUsecase.NonRegistered(registerToken)
         }
     }

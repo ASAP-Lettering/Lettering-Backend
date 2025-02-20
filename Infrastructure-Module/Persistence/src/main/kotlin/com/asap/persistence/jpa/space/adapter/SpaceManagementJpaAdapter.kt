@@ -99,5 +99,12 @@ class SpaceManagementJpaAdapter(
         eventPublisher.publishAll(space.pullEvents())
     }
 
-    override fun countByUserId(userId: DomainId): Long = spaceJpaRepository.countActiveSpaceByUserId(userId.value)
+    override fun deleteAll() {
+        spaceJpaRepository.deleteAll()
+    }
+
+    override fun countByUserId(userId: DomainId): Long{
+        return spaceJpaRepository.countActiveSpaceByUserId(userId.value)
+    }
+
 }

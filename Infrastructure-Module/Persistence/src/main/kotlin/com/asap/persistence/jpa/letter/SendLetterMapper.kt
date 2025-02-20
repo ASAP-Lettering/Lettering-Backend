@@ -21,6 +21,7 @@ object SendLetterMapper {
             receiverId = sendLetterEntity.receiverId?.let { DomainId(it) },
             status = sendLetterEntity.letterStatus,
             createdAt = sendLetterEntity.createdAt,
+            updatedAt = sendLetterEntity.updatedAt,
         )
 
     fun toSendLetterEntity(sendLetter: SendLetter): SendLetterEntity =
@@ -34,5 +35,7 @@ object SendLetterMapper {
             letterCode = sendLetter.letterCode,
             receiverId = sendLetter.receiverId?.value,
             letterStatus = sendLetter.status,
+            createdAt = sendLetter.createdAt,
+            updatedAt = sendLetter.updatedAt,
         )
 }

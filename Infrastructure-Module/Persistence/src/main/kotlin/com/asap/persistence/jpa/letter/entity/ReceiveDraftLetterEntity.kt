@@ -18,9 +18,10 @@ class ReceiveDraftLetterEntity(
     senderName: String,
     ownerId: String,
     images: List<String>,
+    type: ReceiveDraftLetterType,
+    createdAt: LocalDateTime,
     updatedAt: LocalDateTime,
-    type: ReceiveDraftLetterType
-) : BaseEntity(id) {
+) : BaseEntity(id, createdAt, updatedAt) {
     @Column(
         name = "content",
         nullable = false,
@@ -50,8 +51,6 @@ class ReceiveDraftLetterEntity(
         columnDefinition = "text",
     )
     var images: List<String> = images
-
-    override var updatedAt: LocalDateTime = updatedAt
 
     @Enumerated(EnumType.STRING)
     @Column(

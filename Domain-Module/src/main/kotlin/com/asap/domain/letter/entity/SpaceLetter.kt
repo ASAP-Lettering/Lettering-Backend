@@ -16,7 +16,9 @@ class SpaceLetter(
     val receiver: ReceiverInfo,
     val receiveDate: LocalDate,
     val movedAt: LocalDateTime,
-) : Aggregate<SpaceLetter>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : Aggregate<SpaceLetter>(id, createdAt, updatedAt) {
     companion object {
         fun createByIndependentLetter(
             independentLetter: IndependentLetter,
@@ -30,6 +32,8 @@ class SpaceLetter(
                 receiver = independentLetter.receiver,
                 receiveDate = independentLetter.receiveDate,
                 movedAt = LocalDateTime.now(),
+                createdAt = independentLetter.createdAt,
+                updatedAt = LocalDateTime.now(),
             )
 
         fun create(
@@ -40,6 +44,8 @@ class SpaceLetter(
             content: LetterContent,
             receiveDate: LocalDate,
             movedAt: LocalDateTime = LocalDateTime.now(),
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
         ): SpaceLetter =
             SpaceLetter(
                 id = id,
@@ -49,6 +55,8 @@ class SpaceLetter(
                 content = content,
                 receiveDate = receiveDate,
                 movedAt = movedAt,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
             )
     }
 

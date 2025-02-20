@@ -35,6 +35,8 @@ class ReceiveLetterManagementJpaAdapter(
             movedAt = letter.movedAt,
             isOpened = letter.isOpened,
             spaceId = null,
+            createdAt = letter.createdAt,
+            updatedAt = letter.updatedAt,
         ).also {
             receiveLetterJpaRepository.save(it)
             eventPublisher.publishAll(letter.pullEvents())
@@ -97,6 +99,8 @@ class ReceiveLetterManagementJpaAdapter(
             spaceId = letter.spaceId.value,
             movedAt = LocalDateTime.now(),
             isOpened = false,
+            createdAt = letter.createdAt,
+            updatedAt = letter.updatedAt,
         ).apply {
             receiveLetterJpaRepository.save(this)
         }

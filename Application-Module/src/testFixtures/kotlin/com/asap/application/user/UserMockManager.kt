@@ -8,6 +8,7 @@ import com.asap.domain.user.entity.UserAuth
 import com.asap.domain.user.enums.SocialLoginProvider
 import com.asap.domain.user.vo.UserPermission
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class UserMockManager(
     private val userManagementPort: UserManagementPort,
@@ -33,7 +34,9 @@ class UserMockManager(
             permission = UserPermission(true, true, true),
             birthday = LocalDate.now(),
             email = "email",
-            onboardingAt = null,
+            onboardingAt = LocalDateTime.now(),
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now()
         ),
     )
 
@@ -43,7 +46,7 @@ class UserMockManager(
         provider: String = "KAKAO",
     ) {
         userAuthManagementPort.saveUserAuth(
-            UserAuth(
+            UserAuth.create(
                 userId = DomainId(userId),
                 socialId = socialId,
                 socialLoginProvider = SocialLoginProvider.parse(provider),

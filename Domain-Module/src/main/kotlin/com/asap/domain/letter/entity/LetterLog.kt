@@ -10,18 +10,24 @@ class LetterLog(
     val loggedAt: LocalDateTime,
     val logType: LetterLogType,
     val content: String,
-) : BaseEntity(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : BaseEntity(id, createdAt, updatedAt) {
     companion object {
         fun create(
             targetLetterId: DomainId,
             logType: LetterLogType,
             content: String,
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
         ): LetterLog =
             LetterLog(
                 targetLetterId = targetLetterId,
                 loggedAt = LocalDateTime.now(),
                 logType = logType,
                 content = content,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
             )
     }
 }

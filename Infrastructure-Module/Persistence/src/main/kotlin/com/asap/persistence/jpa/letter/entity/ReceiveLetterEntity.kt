@@ -24,7 +24,9 @@ class ReceiveLetterEntity(
     movedAt: LocalDateTime,
     isOpened: Boolean,
     spaceId: String? = null,
-) : AggregateRoot<ReceiveLetterEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<ReceiveLetterEntity>(id, createdAt, updatedAt) {
     @Column(
         name = "content",
         nullable = false,

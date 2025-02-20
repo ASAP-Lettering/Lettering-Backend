@@ -2,6 +2,7 @@ package com.asap.persistence.jpa.user.entity
 
 import com.asap.persistence.jpa.common.AggregateRoot
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(
@@ -14,7 +15,9 @@ class UserTokenEntity(
     id: String,
     token: String,
     userId: String?,
-) : AggregateRoot<UserTokenEntity>(id) {
+    createdAt: LocalDateTime,
+    updatedAt: LocalDateTime,
+) : AggregateRoot<UserTokenEntity>(id, createdAt, updatedAt) {
     @Column(
         nullable = false,
         columnDefinition = "text",

@@ -11,7 +11,9 @@ object LetterLogMapper {
             targetLetterId = letterLog.targetLetterId.value,
             loggedAt = letterLog.loggedAt,
             logType = letterLog.logType,
-            content = letterLog.content
+            content = letterLog.content,
+            createdAt = letterLog.createdAt,
+            updatedAt = letterLog.updatedAt
         )
     }
 
@@ -21,7 +23,9 @@ object LetterLogMapper {
             targetLetterId = DomainId(letterLogEntity.targetLetterId),
             loggedAt = letterLogEntity.loggedAt,
             logType = letterLogEntity.logType,
-            content = letterLogEntity.content
+            content = letterLogEntity.content,
+            createdAt = letterLogEntity.createdAt,
+            updatedAt = letterLogEntity.updatedAt
         )
     }
 }
