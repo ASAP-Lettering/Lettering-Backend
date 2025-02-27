@@ -17,6 +17,7 @@ class User(
     var onboardingAt: LocalDateTime?,
     createdAt: LocalDateTime,
     updatedAt: LocalDateTime,
+    var unregisterReason: String? = null,
 ) : Aggregate<User>(id, createdAt, updatedAt) {
     companion object {
         fun create(
@@ -34,9 +35,10 @@ class User(
             }
     }
 
-    fun delete() {
+    fun delete(reason: String) {
         this.profileImage = "UNKNOWN"
         this.birthday = null
+        this.unregisterReason = reason
 
         registerEvent(UserEvent.UserDeletedEvent(this))
         updateTime()
