@@ -68,6 +68,7 @@ interface UserApi {
     )
     fun deleteUser(
         @AccessUser userId: String,
+        @RequestBody(required = false) request: UnregisterUserRequest?,
     )
 
     @Operation(summary = "내 정보 조회")

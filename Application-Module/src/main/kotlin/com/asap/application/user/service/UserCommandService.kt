@@ -69,7 +69,7 @@ class UserCommandService(
         userManagementPort
             .getUserNotNull(DomainId(command.userId))
             .apply {
-                this.delete()
+                this.delete(command.reason)
                 userManagementPort.save(this)
             }.also {
                 userAuthManagementPort.getNotNull(it.id).apply {

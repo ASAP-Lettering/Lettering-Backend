@@ -28,6 +28,7 @@ object UserMapper {
             onboardingAt = user.onboardingAt,
             createdAt = user.createdAt,
             updatedAt = user.updatedAt,
+            unregisterReason = user.unregisterReason,
         )
 
     fun toUser(userEntity: UserEntity): User =
@@ -46,6 +47,7 @@ object UserMapper {
             onboardingAt = userEntity.onboardingAt,
             createdAt = userEntity.createdAt,
             updatedAt = userEntity.updatedAt,
+            unregisterReason = userEntity.unregisterReason,
         )
 
     fun toUserAuthEntity(userAuth: UserAuth): UserAuthEntity =

@@ -5,5 +5,6 @@ interface DeleteUserUsecase {
 
     data class Command(
         val userId: String,
+        val reason: String = ""
     )
 }

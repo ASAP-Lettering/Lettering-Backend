@@ -5,9 +5,12 @@ import com.asap.application.user.port.out.UserManagementPort
 import com.asap.bootstrap.IntegrationSupporter
 import com.asap.bootstrap.web.user.dto.LogoutRequest
 import com.asap.bootstrap.web.user.dto.RegisterUserRequest
+import com.asap.bootstrap.web.user.dto.UnregisterUserRequest
 import com.asap.bootstrap.web.user.dto.UpdateBirthdayRequest
 import com.asap.domain.common.DomainId
 import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -189,23 +192,51 @@ class UserApiIntegrationTest(
         }
     }
 
-    @Test
-    fun deleteUser() {
-        // given
-        val userId = userMockManager.settingUser()
-        userMockManager.settingUserAuth(userId = userId)
-        val accessToken = jwtMockManager.generateAccessToken(userId)
+    @Nested
+    @DisplayName("deleteUser")
+    inner class DeleteUser{
+        @Test
+        fun deleteUser() {
+            // given
+            val userId = userMockManager.settingUser()
+            userMockManager.settingUserAuth(userId = userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
 
-        // when
-        val response =
-            mockMvc.delete("/api/v1/users") {
-                contentType = MediaType.APPLICATION_JSON
-                header("Authorization", "Bearer $accessToken")
+            // when
+            val response =
+                mockMvc.delete("/api/v1/users") {
+                    contentType = MediaType.APPLICATION_JSON
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
             }
+        }
 
-        // then
-        response.andExpect {
-            status { isOk() }
+        @Test
+        fun deleteUser_with_reason(){
+            // given
+            val userId = userMockManager.settingUser()
+            userMockManager.settingUserAuth(userId = userId)
+            val accessToken = jwtMockManager.generateAccessToken(userId)
+            val request = UnregisterUserRequest("reason")
+
+            // when
+            val response =
+                mockMvc.delete("/api/v1/users") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                    header("Authorization", "Bearer $accessToken")
+                }
+
+            // then
+            response.andExpect {
+                status { isOk() }
+            }
+            val user = userManagementPort.findById(DomainId(userId))
+            user!!.unregisterReason shouldBe request.reason
         }
     }
 

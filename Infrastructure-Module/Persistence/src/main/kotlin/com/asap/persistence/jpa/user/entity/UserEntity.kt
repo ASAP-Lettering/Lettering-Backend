@@ -17,6 +17,7 @@ class UserEntity(
     onboardingAt: LocalDateTime?,
     createdAt: LocalDateTime,
     updatedAt: LocalDateTime,
+    unregisterReason: String? = null,
 ) : AggregateRoot<UserEntity>(id, createdAt, updatedAt) {
     @Column(nullable = false)
     val username: String = username
@@ -35,4 +36,9 @@ class UserEntity(
     val birthday: LocalDate? = birthday
 
     val onboardingAt: LocalDateTime? = onboardingAt
+
+    @Column(
+        columnDefinition = "varchar(1000)",
+    )
+    val unregisterReason: String? = unregisterReason
 }
