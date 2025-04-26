@@ -1,6 +1,5 @@
 package com.asap.client
 
-
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Qualifier
@@ -12,12 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @TestConfiguration
 class TestWebClientConfig {
-
     @Bean
     fun kakaoMockWebServer(): MockServer {
-        val mockWebServer = MockWebServer().apply {
-            url("/v2/user/me")
-        }
+        val mockWebServer =
+            MockWebServer().apply {
+                url("/v2/user/me")
+            }
         return object : MockServer {
             override fun start() {
                 mockWebServer.start()
@@ -30,7 +29,7 @@ class TestWebClientConfig {
                         .setBody(response.body)
                         .also {
                             response.headers.forEach { (key, value) -> it.addHeader(key, value) }
-                        }
+                        },
                 )
             }
 
@@ -38,22 +37,17 @@ class TestWebClientConfig {
                 mockWebServer.shutdown()
             }
 
-            override fun url(baseUrl: String): String {
-                return mockWebServer.url(baseUrl).toString()
-            }
-
+            override fun url(baseUrl: String): String = mockWebServer.url(baseUrl).toString()
         }
     }
 
     @Bean
     @Qualifier("kakaoWebClient")
     @Primary
-    fun mockKakaoWebClient(kakaoMockWebServer: MockServer): WebClient {
-        return WebClient.builder()
+    fun mockKakaoWebClient(kakaoMockWebServer: MockServer): WebClient =
+        WebClient
+            .builder()
             .baseUrl(kakaoMockWebServer.url("/"))
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
-    }
-
-
 }

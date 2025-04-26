@@ -8,13 +8,21 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class OAuthWebClientConfig {
-
     @Bean
     @Qualifier("kakaoWebClient")
-    fun kakaoWebClient(): WebClient {
-        return WebClient.builder()
+    fun kakaoWebClient(): WebClient =
+        WebClient
+            .builder()
             .baseUrl("https://kapi.kakao.com")
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
-    }
+
+    @Bean
+    @Qualifier("googleWebClient")
+    fun googleWebClient(): WebClient =
+        WebClient
+            .builder()
+            .baseUrl("https://oauth2.googleapis.com")
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .build()
 }
