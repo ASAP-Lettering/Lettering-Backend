@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Tag(name = "Auth", description = "Auth API")
 @RequestMapping("/api/v1/auth")
 interface AuthApi {
-
     @Operation(summary = "소셜 로그인")
     @PostMapping("/login/{provider}")
     @ApiResponses(
@@ -31,9 +30,9 @@ interface AuthApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = SocialLoginResponse.Success::class)
-                    )
-                ]
+                        schema = Schema(implementation = SocialLoginResponse.Success::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
@@ -41,9 +40,9 @@ interface AuthApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = SocialLoginResponse.NonRegistered::class)
-                    )
-                ]
+                        schema = Schema(implementation = SocialLoginResponse.NonRegistered::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "4XX",
@@ -51,18 +50,17 @@ interface AuthApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun socialLogin(
-        @Schema(description = "소셜 로그인 플랫폼, ex) KAKAO")
+        @Schema(description = "소셜 로그인 플랫폼, ex) KAKAO, GOOGLE, NAVER")
         @PathVariable provider: String,
-        @RequestBody request: SocialLoginRequest
+        @RequestBody request: SocialLoginRequest,
     ): ResponseEntity<SocialLoginResponse>
-
 
     @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
@@ -74,9 +72,9 @@ interface AuthApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ReissueResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ReissueResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "4XX",
@@ -84,13 +82,13 @@ interface AuthApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ExceptionResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
             ),
-        ]
+        ],
     )
     fun reissueToken(
-        @RequestBody request: ReissueRequest
+        @RequestBody request: ReissueRequest,
     ): ReissueResponse
 }

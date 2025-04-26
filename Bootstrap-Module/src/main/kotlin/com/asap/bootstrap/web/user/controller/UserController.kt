@@ -40,7 +40,10 @@ class UserController(
         )
     }
 
-    override fun deleteUser(userId: String, request: UnregisterUserRequest?) {
+    override fun deleteUser(
+        userId: String,
+        request: UnregisterUserRequest?,
+    ) {
         deleteUserUsecase.delete(
             DeleteUserUsecase.Command(
                 userId = userId,

@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(
-    name = "receive_draft_letters"
+    name = "receive_draft_letters",
 )
 class ReceiveDraftLetterEntity(
     id: String,
@@ -59,5 +59,4 @@ class ReceiveDraftLetterEntity(
         columnDefinition = "VARCHAR(20)",
     )
     var type: ReceiveDraftLetterType = type
-
 }

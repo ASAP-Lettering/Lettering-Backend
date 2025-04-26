@@ -42,7 +42,7 @@ class DraftLetterController(
     override fun updatePhysicalDraft(
         draftId: String,
         userId: String,
-        request: UpdatePhysicalDraftLetterRequest
+        request: UpdatePhysicalDraftLetterRequest,
     ) {
         updateDraftLetterUsecase.command(
             UpdateDraftLetterUsecase.Command.Physical(
@@ -75,14 +75,15 @@ class DraftLetterController(
     override fun getAllPhysicalDrafts(userId: String): GetAllPhysicalDraftLetterResponse {
         val response = getPhysicalDraftLetterUsecase.getAll(GetPhysicalDraftLetterUsecase.Query.All(userId))
         return GetAllPhysicalDraftLetterResponse(
-            drafts = response.drafts.map {
-                PhysicalDraftLetterInfo(
-                    draftKey = it.draftKey,
-                    senderName = it.senderName,
-                    content = it.content,
-                    lastUpdated = it.lastUpdated,
-                )
-            }
+            drafts =
+                response.drafts.map {
+                    PhysicalDraftLetterInfo(
+                        draftKey = it.draftKey,
+                        senderName = it.senderName,
+                        content = it.content,
+                        lastUpdated = it.lastUpdated,
+                    )
+                },
         )
     }
 
@@ -107,7 +108,7 @@ class DraftLetterController(
 
     override fun getPhysicalDraftLetter(
         draftKey: String,
-        userId: String
+        userId: String,
     ): GetPhysicalDraftLetterResponse {
         val response = getPhysicalDraftLetterUsecase.getByKey(GetPhysicalDraftLetterUsecase.Query.ByKey(draftKey, userId))
         return GetPhysicalDraftLetterResponse(
@@ -140,7 +141,10 @@ class DraftLetterController(
         )
     }
 
-    override fun deletePhysicalDraft(draftId: String, userId: String) {
+    override fun deletePhysicalDraft(
+        draftId: String,
+        userId: String,
+    ) {
         removeDraftLetterUsecase.deleteBy(
             RemoveDraftLetterUsecase.Command.Physical(
                 draftId = draftId,

@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile
 @Tag(name = "Image", description = "Image API")
 @RequestMapping("/api/v1/images")
 interface ImageApi {
-
     @Operation(
         summary = "이미지 업로드",
         description = "이미지를 업로드합니다.",
@@ -30,18 +29,18 @@ interface ImageApi {
                     Header(
                         name = "Authorization",
                         description = "액세스 토큰",
-                        required = true
-                    )
-                ]
+                        required = true,
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "4XX",
-                description = "이미지 업로드 실패"
-            )
-        ]
+                description = "이미지 업로드 실패",
+            ),
+        ],
     )
     fun uploadImage(
         @RequestPart image: MultipartFile,
-        @AccessUser userId: String
+        @AccessUser userId: String,
     ): UploadImageResponse
 }
