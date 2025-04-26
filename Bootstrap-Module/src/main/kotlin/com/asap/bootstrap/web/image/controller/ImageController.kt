@@ -10,21 +10,21 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 class ImageController(
     private val uploadImageUsecase: UploadImageUsecase,
-    private val fileConverter: FileConverter
-): ImageApi {
-
+    private val fileConverter: FileConverter,
+) : ImageApi {
     override fun uploadImage(
         image: MultipartFile,
-        userId: String
+        userId: String,
     ): UploadImageResponse {
-        val response = uploadImageUsecase.upload(
-            UploadImageUsecase.Command(
-                image = fileConverter.convert(image),
-                userId = userId
+        val response =
+            uploadImageUsecase.upload(
+                UploadImageUsecase.Command(
+                    image = fileConverter.convert(image),
+                    userId = userId,
+                ),
             )
-        )
         return UploadImageResponse(
-            imageUrl = response.imageUrl
+            imageUrl = response.imageUrl,
         )
     }
 }
