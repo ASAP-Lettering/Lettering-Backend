@@ -25,4 +25,13 @@ class OAuthWebClientConfig {
             .baseUrl("https://oauth2.googleapis.com")
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
+
+    @Bean
+    @Qualifier("naverWebClient")
+    fun naverWebClient(): WebClient =
+        WebClient
+            .builder()
+            .baseUrl("https://openapi.naver.com")
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .build()
 }
