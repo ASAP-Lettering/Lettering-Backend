@@ -22,7 +22,7 @@ class OAuthWebClientConfig {
     fun googleWebClient(): WebClient =
         WebClient
             .builder()
-            .baseUrl("https://oauth2.googleapis.com")
+            .baseUrl("https://www.googleapis.com")
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
 
