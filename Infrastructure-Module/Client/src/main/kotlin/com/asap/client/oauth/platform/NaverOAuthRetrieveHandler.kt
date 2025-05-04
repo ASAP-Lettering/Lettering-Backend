@@ -79,9 +79,9 @@ class NaverOAuthRetrieveHandler(
         val clientSecret: String,
         val code: String,
     ) {
-        fun toUriComponents(baseUrl: String): String =
+        fun toUriComponents(baseUri: String): String =
             UriComponentsBuilder
-                .fromHttpUrl(baseUrl)
+                .fromPath(baseUri)
                 .queryParam("grant_type", grantType)
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
