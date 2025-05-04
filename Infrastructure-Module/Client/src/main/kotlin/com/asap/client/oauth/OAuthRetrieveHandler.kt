@@ -19,6 +19,7 @@ interface OAuthRetrieveHandler {
 
     data class OAuthGetAccessTokenRequest(
         val code: String,
+        val state: String,
     )
 
     data class OAuthAccessTokenResponse(

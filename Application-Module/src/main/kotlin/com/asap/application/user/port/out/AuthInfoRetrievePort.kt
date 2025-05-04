@@ -14,5 +14,6 @@ interface AuthInfoRetrievePort {
     fun getAccessToken(
         provider: SocialLoginProvider,
         code: String,
+        state: String,
     ): String
 }

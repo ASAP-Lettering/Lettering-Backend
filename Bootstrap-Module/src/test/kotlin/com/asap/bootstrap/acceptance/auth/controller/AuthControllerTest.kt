@@ -124,11 +124,12 @@ class AuthControllerTest : AcceptanceSupporter() {
         // given
         val provider = "KAKAO"
         val code = "authorization_code"
-        val request = OAuthAccessTokenRequest(code)
+        val state = "state"
+        val request = OAuthAccessTokenRequest(code, state)
         val expectedAccessToken = "access_token"
 
         BDDMockito
-            .given(authInfoRetrievePort.getAccessToken(SocialLoginProvider.valueOf(provider), code))
+            .given(authInfoRetrievePort.getAccessToken(SocialLoginProvider.valueOf(provider), code, state))
             .willReturn(expectedAccessToken)
 
         // when

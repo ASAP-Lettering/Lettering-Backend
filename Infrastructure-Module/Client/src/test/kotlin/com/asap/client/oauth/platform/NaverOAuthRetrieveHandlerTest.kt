@@ -1,5 +1,8 @@
 package com.asap.client.oauth.platform
 
+import com.asap.client.ClientProperties
+import com.asap.client.NaverOAuthProperties
+import com.asap.client.OAuthProperties
 import com.asap.client.oauth.OAuthRetrieveHandler
 import com.asap.client.oauth.exception.OAuthException
 import io.kotest.assertions.throwables.shouldThrow
@@ -12,16 +15,29 @@ import org.springframework.web.reactive.function.client.WebClient
 
 class NaverOAuthRetrieveHandlerTest :
     BehaviorSpec({
-        var mockWebServer = MockWebServer().also {
-            it.start()
-        }
+        var mockWebServer =
+            MockWebServer().also {
+                it.start()
+            }
         var naverWebClient: WebClient =
             WebClient
                 .builder()
                 .baseUrl(mockWebServer.url("/").toString())
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .build()
-        var naverOAuthRetrieveHandler = NaverOAuthRetrieveHandler(naverWebClient)
+
+        val config =
+            ClientProperties(
+                oauth =
+                    OAuthProperties(
+                        naver =
+                            NaverOAuthProperties(
+                                clientId = "test-client-id",
+                                clientSecret = "test-client-secret",
+                            ),
+                    ),
+            )
+        var naverOAuthRetrieveHandler = NaverOAuthRetrieveHandler(naverWebClient, naverWebClient, config)
 
         given("OAuth 요청이 성공적으로 처리되었을 때") {
             val accessToken = "test-access-token"
@@ -58,10 +74,8 @@ class NaverOAuthRetrieveHandlerTest :
                 val response = naverOAuthRetrieveHandler.getOAuthInfo(request)
 
                 then("올바른 OAuthResponse를 반환해야 한다") {
-                    response.username shouldBe "Test User"
                     response.socialId shouldBe "12345"
                     response.email shouldBe "test@example.com"
-                    response.profileImage shouldBe "https://example.com/profile.jpg"
 
                     // 요청 검증
                     val recordedRequest = mockWebServer.takeRequest()

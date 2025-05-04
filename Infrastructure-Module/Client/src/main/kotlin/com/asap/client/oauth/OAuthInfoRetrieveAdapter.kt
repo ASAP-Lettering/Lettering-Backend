@@ -34,9 +34,10 @@ class OAuthInfoRetrieveAdapter(
     override fun getAccessToken(
         provider: SocialLoginProvider,
         code: String,
+        state: String,
     ): String {
         val accessTokenResponse =
-            oAuthRetrieveHandlers[provider]?.getAccessToken(OAuthRetrieveHandler.OAuthGetAccessTokenRequest(code))
+            oAuthRetrieveHandlers[provider]?.getAccessToken(OAuthRetrieveHandler.OAuthGetAccessTokenRequest(code, state))
                 ?: throw OAuthException.OAuthRetrieveFailedException("OAuth Access Token을 가져오는 핸들러가 존재하지 않습니다.")
 
         return accessTokenResponse.accessToken

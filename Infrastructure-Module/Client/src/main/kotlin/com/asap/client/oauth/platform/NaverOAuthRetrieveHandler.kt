@@ -12,29 +12,33 @@ import org.springframework.web.util.UriComponentsBuilder
 @Component
 class NaverOAuthRetrieveHandler(
     @Qualifier("naverWebClient") naverWebClient: WebClient,
+    @Qualifier("getNaverAccessTokenWebClient") val getNaverAccessTokenWebClient: WebClient,
     private val clientProperties: ClientProperties,
 ) : AbstractOAuthRetrieveHandler<NaverOAuthRetrieveHandler.NaverOAuthUserInfoResponse>(naverWebClient) {
     private val naverOAuthConfig by lazy { clientProperties.oauth.naver }
 
     override fun getAccessToken(request: OAuthRetrieveHandler.OAuthGetAccessTokenRequest): OAuthRetrieveHandler.OAuthAccessTokenResponse {
-        val accessTokenUri =
+        val accessTokenUrl =
             NaverAccessTokenRequest(
                 grantType = "authorization_code",
                 clientId = naverOAuthConfig.clientId,
                 clientSecret = naverOAuthConfig.clientSecret,
                 code = request.code,
-            ).toUriComponents("/oauth2/token")
+            ).toUriComponents("/oauth2.0/token")
 
         val response =
-            webClient
+            getNaverAccessTokenWebClient
                 .get()
-                .uri(accessTokenUri)
+                .uri(accessTokenUrl)
                 .retrieve()
                 .bodyToMono(NaverAccessTokenResponse::class.java)
                 .block()
                 ?: throw OAuthException.OAuthRetrieveFailedException(getErrorMessage())
 
-        return OAuthRetrieveHandler.OAuthAccessTokenResponse(response.accessToken, response.tokenType)
+        return OAuthRetrieveHandler.OAuthAccessTokenResponse(
+            accessToken = response.accessToken,
+            refreshToken = response.tokenType,
+        )
     }
 
     override fun getApiEndpoint(): String = "/v1/nid/me"
@@ -45,10 +49,10 @@ class NaverOAuthRetrieveHandler(
 
     override fun mapToOAuthResponse(response: NaverOAuthUserInfoResponse): OAuthRetrieveHandler.OAuthResponse =
         OAuthRetrieveHandler.OAuthResponse(
-            username = response.response.nickname,
+            username = "",
             socialId = response.response.id,
             email = response.response.email,
-            profileImage = response.response.profile_image,
+            profileImage = "",
         )
 
     data class NaverOAuthUserInfoResponse(
@@ -59,29 +63,18 @@ class NaverOAuthRetrieveHandler(
 
     data class NaverUserResponse(
         val id: String,
-        val nickname: String,
-        val name: String,
         val email: String,
-        val gender: String,
-        val age: String,
-        val birthday: String,
-        val profile_image: String,
-        val birthyear: String,
-        val mobile: String,
     )
 
     data class NaverAccessTokenRequest(
-        @JsonProperty("grant_type")
         val grantType: String,
-        @JsonProperty("client_id")
         val clientId: String,
-        @JsonProperty("client_secret")
         val clientSecret: String,
         val code: String,
     ) {
-        fun toUriComponents(baseUri: String): String =
+        fun toUriComponents(basePath: String): String =
             UriComponentsBuilder
-                .fromPath(baseUri)
+                .fromPath(basePath)
                 .queryParam("grant_type", grantType)
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
@@ -90,9 +83,13 @@ class NaverOAuthRetrieveHandler(
     }
 
     data class NaverAccessTokenResponse(
+        @JsonProperty("access_token")
         val accessToken: String,
+        @JsonProperty("refresh_token")
         val refreshToken: String,
+        @JsonProperty("token_type")
         val tokenType: String,
+        @JsonProperty("expires_in")
         val expiresIn: Int,
     )
 }

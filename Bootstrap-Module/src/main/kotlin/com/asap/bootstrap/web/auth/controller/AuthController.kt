@@ -59,10 +59,12 @@ class AuthController(
         provider: String,
         request: OAuthAccessTokenRequest,
     ): OAuthAccessTokenResponse {
-        val accessToken = authInfoRetrievePort.getAccessToken(
-            provider = SocialLoginProvider.valueOf(provider),
-            code = request.code,
-        )
+        val accessToken =
+            authInfoRetrievePort.getAccessToken(
+                provider = SocialLoginProvider.valueOf(provider),
+                code = request.code,
+                state = request.state,
+            )
         return OAuthAccessTokenResponse(
             accessToken = accessToken,
         )
