@@ -2,11 +2,10 @@ package com.asap.bootstrap.web.auth.controller
 
 import com.asap.application.user.port.`in`.ReissueTokenUsecase
 import com.asap.application.user.port.`in`.SocialLoginUsecase
+import com.asap.application.user.port.out.AuthInfoRetrievePort
 import com.asap.bootstrap.web.auth.api.AuthApi
-import com.asap.bootstrap.web.auth.dto.ReissueRequest
-import com.asap.bootstrap.web.auth.dto.ReissueResponse
-import com.asap.bootstrap.web.auth.dto.SocialLoginRequest
-import com.asap.bootstrap.web.auth.dto.SocialLoginResponse
+import com.asap.bootstrap.web.auth.dto.*
+import com.asap.domain.user.enums.SocialLoginProvider
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val socialLoginUsecase: SocialLoginUsecase,
     private val reissueTokenUsecase: ReissueTokenUsecase,
+    private val authInfoRetrievePort: AuthInfoRetrievePort,
 ) : AuthApi {
     override fun socialLogin(
         provider: String,
@@ -52,6 +52,19 @@ class AuthController(
         return ReissueResponse(
             accessToken = response.accessToken,
             refreshToken = response.refreshToken,
+        )
+    }
+
+    override fun getAccessToken(
+        provider: String,
+        request: OAuthAccessTokenRequest,
+    ): OAuthAccessTokenResponse {
+        val accessToken = authInfoRetrievePort.getAccessToken(
+            provider = SocialLoginProvider.valueOf(provider),
+            code = request.code,
+        )
+        return OAuthAccessTokenResponse(
+            accessToken = accessToken,
         )
     }
 }

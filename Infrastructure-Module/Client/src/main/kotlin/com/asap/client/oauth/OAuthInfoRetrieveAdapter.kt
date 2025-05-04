@@ -30,4 +30,15 @@ class OAuthInfoRetrieveAdapter(
             throw UserException.UserAuthNotFoundException("OAuth 정보를 가져오는데 실패했습니다. 에러 메시지: ${e.message}")
         }
     }
+
+    override fun getAccessToken(
+        provider: SocialLoginProvider,
+        code: String,
+    ): String {
+        val accessTokenResponse =
+            oAuthRetrieveHandlers[provider]?.getAccessToken(OAuthRetrieveHandler.OAuthGetAccessTokenRequest(code))
+                ?: throw OAuthException.OAuthRetrieveFailedException("OAuth Access Token을 가져오는 핸들러가 존재하지 않습니다.")
+
+        return accessTokenResponse.accessToken
+    }
 }

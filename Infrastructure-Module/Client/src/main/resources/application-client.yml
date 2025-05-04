@@ -1,0 +1,5 @@
+client:
+  oauth:
+    naver:
+      client_id: ${NAVER_OAUTH_CLIENT_ID}
+      client_secret: ${NAVER_OAUTH_CLIENT_SECRET}
