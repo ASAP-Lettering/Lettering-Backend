@@ -23,7 +23,7 @@ class NaverOAuthRetrieveHandler(
                 clientId = naverOAuthConfig.clientId,
                 clientSecret = naverOAuthConfig.clientSecret,
                 code = request.code,
-            ).toUriComponents(getApiEndpoint())
+            ).toUriComponents("/oauth2/token")
 
         val response =
             webClient
