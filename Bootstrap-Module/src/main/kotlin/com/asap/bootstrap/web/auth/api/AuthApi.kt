@@ -1,10 +1,7 @@
 package com.asap.bootstrap.web.auth.api
 
 import com.asap.bootstrap.common.exception.ExceptionResponse
-import com.asap.bootstrap.web.auth.dto.ReissueRequest
-import com.asap.bootstrap.web.auth.dto.ReissueResponse
-import com.asap.bootstrap.web.auth.dto.SocialLoginRequest
-import com.asap.bootstrap.web.auth.dto.SocialLoginResponse
+import com.asap.bootstrap.web.auth.dto.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -61,6 +58,38 @@ interface AuthApi {
         @PathVariable provider: String,
         @RequestBody request: SocialLoginRequest,
     ): ResponseEntity<SocialLoginResponse>
+
+    @Operation(summary = "OAuth 액세스 토큰 획득")
+    @PostMapping("/token/{provider}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "액세스 토큰 획득 성공",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = OAuthAccessTokenResponse::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "4XX",
+                description = "액세스 토큰 획득 실패",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ExceptionResponse::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    fun getAccessToken(
+        @Schema(description = "소셜 로그인 플랫폼, ex) KAKAO, GOOGLE, NAVER")
+        @PathVariable provider: String,
+        @RequestBody request: OAuthAccessTokenRequest,
+    ): OAuthAccessTokenResponse
 
     @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")

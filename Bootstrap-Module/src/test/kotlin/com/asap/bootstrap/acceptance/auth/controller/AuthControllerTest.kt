@@ -4,9 +4,12 @@ import com.asap.application.user.port.`in`.LogoutUsecase
 import com.asap.application.user.port.`in`.ReissueTokenUsecase
 import com.asap.application.user.port.`in`.SocialLoginUsecase
 import com.asap.application.user.port.`in`.TokenResolveUsecase
+import com.asap.application.user.port.out.AuthInfoRetrievePort
 import com.asap.bootstrap.AcceptanceSupporter
+import com.asap.bootstrap.web.auth.dto.OAuthAccessTokenRequest
 import com.asap.bootstrap.web.auth.dto.ReissueRequest
 import com.asap.bootstrap.web.auth.dto.SocialLoginRequest
+import com.asap.domain.user.enums.SocialLoginProvider
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -25,6 +28,9 @@ class AuthControllerTest : AcceptanceSupporter() {
 
     @MockBean
     private lateinit var logoutUsecase: LogoutUsecase
+
+    @MockBean
+    private lateinit var authInfoRetrievePort: AuthInfoRetrievePort
 
     @Test
     fun socialLoginSuccessTest() {
@@ -109,6 +115,37 @@ class AuthControllerTest : AcceptanceSupporter() {
                 exists()
                 isString()
                 isNotEmpty()
+            }
+        }
+    }
+
+    @Test
+    fun getAccessTokenTest() {
+        // given
+        val provider = "KAKAO"
+        val code = "authorization_code"
+        val state = "state"
+        val request = OAuthAccessTokenRequest(code, state)
+        val expectedAccessToken = "access_token"
+
+        BDDMockito
+            .given(authInfoRetrievePort.getAccessToken(SocialLoginProvider.valueOf(provider), code, state))
+            .willReturn(expectedAccessToken)
+
+        // when
+        val response =
+            mockMvc.post("/api/v1/auth/token/{provider}", provider) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.accessToken") {
+                exists()
+                isString()
+                value(expectedAccessToken)
             }
         }
     }

@@ -5,14 +5,17 @@ spring:
         - security
         - aws
         - persistence
+        - client
       local:
         - security-local
         - aws-local
         - persistence-local
+        - client-local
       test:
         - security-local
         - aws-local
         - persistence-test
+        - client-local
     active: local
 
 
