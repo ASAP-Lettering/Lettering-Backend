@@ -9,7 +9,7 @@ interface UploadImageUsecase {
 
     data class Command(
         val image: FileMetaData,
-        val userId: String
+        val userId: String? = null
     )
 
     data class Response(

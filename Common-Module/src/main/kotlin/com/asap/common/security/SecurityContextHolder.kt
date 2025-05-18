@@ -4,9 +4,7 @@ class SecurityContextHolder {
     companion object {
         private val contextHolder = ThreadLocal<SecurityContext<*, *>>()
 
-        fun getContext(): SecurityContext<*, *> {
-            return contextHolder.get()
-        }
+        fun getContext(): SecurityContext<*, *>? = contextHolder.get()
 
         fun setContext(context: SecurityContext<*, *>) {
             contextHolder.set(context)

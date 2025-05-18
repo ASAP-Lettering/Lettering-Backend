@@ -10,20 +10,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 
 @Component
-class AccessUserArgumentResolver: HandlerMethodArgumentResolver {
-
-    override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(AccessUser::class.java)
-    }
+class AccessUserArgumentResolver : HandlerMethodArgumentResolver {
+    override fun supportsParameter(parameter: MethodParameter): Boolean = parameter.hasParameterAnnotation(AccessUser::class.java)
 
     override fun resolveArgument(
         parameter: MethodParameter,
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
-        binderFactory: WebDataBinderFactory?
+        binderFactory: WebDataBinderFactory?,
     ): Any? {
-        val userAuthentication = SecurityContextHolder.getContext().getAuthentication() as UserAuthentication
-        val userId = userAuthentication.getDetails()
-        return userId
+        val authentication = SecurityContextHolder.getContext()?.getAuthentication()
+        val userAuthentication = authentication as? UserAuthentication
+        return userAuthentication?.getDetails()
     }
 }
