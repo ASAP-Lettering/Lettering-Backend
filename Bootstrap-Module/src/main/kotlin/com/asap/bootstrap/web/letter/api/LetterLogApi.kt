@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(name = "Letter", description = "Letter API")
 @RequestMapping("/api/v1/letters/logs")
 interface LetterLogApi {
-
     @Operation(summary = "편지 공유 상태 조회")
     @GetMapping("/share/status")
     @ApiResponses(
@@ -41,14 +40,14 @@ interface LetterLogApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = LetterShareStatusResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = LetterShareStatusResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun getLetterShareStatus(
         @RequestParam("letterCode") letterCode: String,
-        @AccessUser userId: String
+        @AccessUser userId: String?,
     ): LetterShareStatusResponse
 }
