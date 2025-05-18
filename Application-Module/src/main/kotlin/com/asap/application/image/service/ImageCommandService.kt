@@ -12,25 +12,13 @@ class ImageCommandService(
     private val imageManagementPort: ImageManagementPort,
     private val userManagementPort: UserManagementPort,
 ) : UploadImageUsecase {
-    companion object {
-        private const val ANONYMOUS_OWNER_ID = "anonymous"
-    }
-
     override fun upload(command: UploadImageUsecase.Command): UploadImageUsecase.Response {
-        val owner =
-            when {
-                command.userId != null -> {
-                    val user = userManagementPort.getUserNotNull(DomainId(command.userId))
-                    user.id.value
-                }
-
-                else -> ANONYMOUS_OWNER_ID
-            }
+        val user = command.userId?.let { userManagementPort.getUserNotNull(DomainId(it)) }
 
         val uploadedImage =
             imageManagementPort.save(
                 ImageMetadata(
-                    owner = owner,
+                    owner = user?.id?.value,
                     fileMetaData = command.image,
                 ),
             )
