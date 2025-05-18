@@ -54,4 +54,39 @@ class ImageControllerTest : AcceptanceSupporter() {
             }
         }
     }
+
+    @Test
+    fun uploadImageWithoutAuthentication() {
+        // given
+        val mockFile = MockMultipartFile("image", "test.jpg", "image/jpeg", "test".toByteArray())
+        val mockFileMetaData = FileMetaData("test.jpg", 4, "image/jpeg", mockFile.inputStream)
+        BDDMockito
+            .given(fileConverter.convert(mockFile))
+            .willReturn(mockFileMetaData)
+        BDDMockito
+            .given(
+                uploadImageUsecase.upload(
+                    UploadImageUsecase.Command(
+                        image = mockFileMetaData,
+                        userId = null,
+                    ),
+                ),
+            ).willReturn(UploadImageUsecase.Response("imageUrl"))
+        // when
+        val response =
+            mockMvc.multipart("/api/v1/images") {
+                file(mockFile)
+                contentType = MediaType.MULTIPART_FORM_DATA
+                // No Authorization header
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.imageUrl") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+        }
+    }
 }

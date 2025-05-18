@@ -13,7 +13,9 @@ class S3ImageManagementAdapter(
     private val s3Template: S3Template,
 ) : ImageManagementPort {
     override fun save(image: ImageMetadata): UploadedImage {
-        val key = "${image.owner}/${UUID.randomUUID()}"
+        val owner = image.owner ?: ANONYMOUS_OWNER_ID
+
+        val key = "$owner/${UUID.randomUUID()}"
 
         val resource =
             s3Template.upload(
@@ -33,5 +35,6 @@ class S3ImageManagementAdapter(
 
     companion object {
         private const val BUCKET_NAME = "lettering-images"
+        private const val ANONYMOUS_OWNER_ID = "anonymous"
     }
 }

@@ -10,19 +10,20 @@ import org.springframework.stereotype.Service
 @Service
 class ImageCommandService(
     private val imageManagementPort: ImageManagementPort,
-    private val userManagementPort: UserManagementPort
+    private val userManagementPort: UserManagementPort,
 ) : UploadImageUsecase {
     override fun upload(command: UploadImageUsecase.Command): UploadImageUsecase.Response {
-        val user = userManagementPort.getUserNotNull(DomainId(command.userId))
+        val user = command.userId?.let { userManagementPort.getUserNotNull(DomainId(it)) }
 
-        val uploadedImage = imageManagementPort.save(
-            ImageMetadata(
-                owner = user.id.value,
-                fileMetaData = command.image
+        val uploadedImage =
+            imageManagementPort.save(
+                ImageMetadata(
+                    owner = user?.id?.value,
+                    fileMetaData = command.image,
+                ),
             )
-        )
         return UploadImageUsecase.Response(
-            imageUrl = uploadedImage.imageUrl
+            imageUrl = uploadedImage.imageUrl,
         )
     }
 }

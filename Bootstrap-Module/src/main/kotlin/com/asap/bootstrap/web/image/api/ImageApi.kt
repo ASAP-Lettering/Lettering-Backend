@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile
 interface ImageApi {
     @Operation(
         summary = "이미지 업로드",
-        description = "이미지를 업로드합니다.",
+        description = "이미지를 업로드합니다. 회원과 비회원 모두 이용 가능합니다.",
     )
     @PostMapping(consumes = ["multipart/form-data"])
     @ApiResponses(
@@ -28,8 +28,8 @@ interface ImageApi {
                 headers = [
                     Header(
                         name = "Authorization",
-                        description = "액세스 토큰",
-                        required = true,
+                        description = "액세스 토큰 (선택사항)",
+                        required = false,
                     ),
                 ],
             ),
@@ -41,6 +41,6 @@ interface ImageApi {
     )
     fun uploadImage(
         @RequestPart image: MultipartFile,
-        @AccessUser userId: String,
+        @AccessUser userId: String?,
     ): UploadImageResponse
 }

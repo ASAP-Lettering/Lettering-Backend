@@ -14,7 +14,7 @@ class ImageController(
 ) : ImageApi {
     override fun uploadImage(
         image: MultipartFile,
-        userId: String,
+        userId: String?,
     ): UploadImageResponse {
         val response =
             uploadImageUsecase.upload(
