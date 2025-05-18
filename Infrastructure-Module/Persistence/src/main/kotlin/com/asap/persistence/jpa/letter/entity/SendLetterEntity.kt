@@ -26,7 +26,7 @@ class SendLetterEntity(
     content: String,
     images: List<String>,
     templateType: Int,
-    senderId: String,
+    senderId: String?,
     letterCode: String?,
     receiverId: String?,
     letterStatus: LetterStatus,
@@ -49,17 +49,16 @@ class SendLetterEntity(
     var images: List<String> = images
     var templateType: Int = templateType
 
-    @Column(name = "sender_id", nullable = false)
-    var senderId: String = senderId
+    @Column(name = "sender_id")
+    var senderId: String? = senderId
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "sender_id",
-        nullable = false,
         insertable = false,
         updatable = false,
     )
-    lateinit var sender: UserEntity
+    var sender: UserEntity? = null
 
     @Column(name = "receiver_id")
     var receiverId: String? = receiverId
