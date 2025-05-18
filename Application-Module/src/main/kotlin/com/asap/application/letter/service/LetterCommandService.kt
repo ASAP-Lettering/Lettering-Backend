@@ -152,6 +152,14 @@ class LetterCommandService(
         independentLetterManagementPort.save(independentLetter)
     }
 
+    override fun addAnonymousLetter(command: AddLetterUsecase.Command.AddAnonymousLetter) {
+        val sendLetter = sendLetterManagementPort.getLetterByCodeNotNull(command.letterCode)
+        val user = userManagementPort.getUserNotNull(DomainId(command.userId))
+
+        sendLetter.configSenderId(user.id)
+        sendLetterManagementPort.save(sendLetter)
+    }
+
     override fun moveToSpace(command: MoveLetterUsecase.Command.ToSpace) {
         independentLetterManagementPort.getIndependentLetterByIdNotNull(DomainId(command.letterId)).apply {
             val spaceLetter = SpaceLetter.createByIndependentLetter(this, DomainId(command.spaceId))

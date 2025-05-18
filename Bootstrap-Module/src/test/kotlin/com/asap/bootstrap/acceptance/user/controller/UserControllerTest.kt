@@ -40,7 +40,7 @@ class UserControllerTest : AcceptanceSupporter() {
     @Test
     fun registerUserTest() {
         // given
-        val request = RegisterUserRequest("register", true, true, true, LocalDate.now(), "realName")
+        val request = RegisterUserRequest("register", true, true, true, LocalDate.now(), "realName", null)
         val command =
             RegisterUserUsecase.Command(
                 request.registerToken,
@@ -53,8 +53,9 @@ class UserControllerTest : AcceptanceSupporter() {
         given(registerUserUsecase.registerUser(command)).willReturn(
             RegisterUserUsecase.Response(
                 "accessToken",
-                "refreshToken"
-            )
+                "refreshToken",
+                "userId",
+            ),
         )
         // when
         val response =
