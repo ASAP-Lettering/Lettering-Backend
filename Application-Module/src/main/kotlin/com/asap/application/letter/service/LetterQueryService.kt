@@ -32,9 +32,9 @@ class LetterQueryService(
                 receiverId = DomainId(query.userId),
                 letterId = DomainId(query.letterId),
             ).also {
-                val sender = userManagementPort.getUserNotNull(it.senderId)
+                val sender = it.senderId?.let { userManagementPort.getUserNotNull(it) }
                 return GetVerifiedLetterUsecase.Response(
-                    senderName = sender.username,
+                    senderName = sender?.username,
                     content = it.content.content,
                     sendDate = it.createdDate,
                     templateType = it.content.templateType,
