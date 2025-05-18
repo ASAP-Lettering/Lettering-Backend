@@ -69,10 +69,7 @@ class SendLetter(
             )
     }
 
-    fun isSameReceiver(receiver: () -> User): Boolean {
-        val receiverUser = receiver()
-        return receiverName == receiverUser.username && (receiverId == null || receiverId == receiverUser.id)
-    }
+    fun isSameReceiver(receiver: User): Boolean = receiverName == receiver.username && (receiverId == null || receiverId == receiver.id)
 
     fun readLetter(receiverId: DomainId) {
         this.receiverId = receiverId

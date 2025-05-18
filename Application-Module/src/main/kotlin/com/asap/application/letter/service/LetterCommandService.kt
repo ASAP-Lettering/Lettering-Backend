@@ -88,15 +88,15 @@ class LetterCommandService(
         }
 
         val sendLetter = sendLetterManagementPort.getLetterByCodeNotNull(command.letterCode)
-        sendLetter
-            .isSameReceiver {
-                userManagementPort.getUserNotNull(DomainId(command.userId))
-            }.takeIf { it }
-            ?.let {
-                sendLetter.readLetter(DomainId(command.userId))
-                sendLetterManagementPort.save(sendLetter)
-                return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
-            } ?: throw LetterException.InvalidLetterAccessException()
+        val receiver = userManagementPort.getUserNotNull(DomainId(command.userId))
+
+        if (sendLetter.isSameReceiver(receiver)) {
+            sendLetter.readLetter(DomainId(command.userId))
+            sendLetterManagementPort.save(sendLetter)
+            return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
+        }
+
+        throw LetterException.InvalidLetterAccessException()
     }
 
     override fun addVerifiedLetter(command: AddLetterUsecase.Command.VerifyLetter) {
