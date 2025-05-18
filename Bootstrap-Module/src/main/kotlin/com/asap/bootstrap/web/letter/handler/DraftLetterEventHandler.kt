@@ -16,7 +16,7 @@ class DraftLetterEventHandler(
         event.draftId?.let {
             removeDraftLetterUsecase.deleteBy(
                 RemoveDraftLetterUsecase.Command.Send(
-                    userId = event.sendLetter.senderId.value,
+                    userId = event.sendLetter.senderId!!.value,
                     draftId = it,
                 ),
             )

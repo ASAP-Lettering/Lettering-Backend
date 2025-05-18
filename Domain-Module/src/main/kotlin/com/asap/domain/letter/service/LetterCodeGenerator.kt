@@ -4,10 +4,9 @@ import java.security.MessageDigest
 import java.util.*
 
 class LetterCodeGenerator {
-
     fun generateCode(
         content: String,
-        ownerId: String
+        ownerId: String = UUID.randomUUID().toString(),
     ): String {
         val salt = UUID.randomUUID().toString()
         val input = content + ownerId + salt

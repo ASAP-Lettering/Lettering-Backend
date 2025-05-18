@@ -56,6 +56,27 @@ class LetterCommandService(
         return SendLetterUsecase.Response(letterCode = sendLetter.letterCode!!)
     }
 
+    override fun sendAnonymous(command: SendLetterUsecase.AnonymousCommand): SendLetterUsecase.Response {
+        val sendLetter =
+            SendLetter.createAnonymous(
+                receiverName = command.receiverName,
+                content =
+                    LetterContent(
+                        content = command.content,
+                        templateType = command.templateType,
+                        images = command.images.toMutableList(),
+                    ),
+                letterCode =
+                    letterCodeGenerator.generateCode(
+                        content = command.content,
+                    ),
+            )
+
+        sendLetterManagementPort.save(sendLetter)
+
+        return SendLetterUsecase.Response(letterCode = sendLetter.letterCode!!)
+    }
+
     override fun verify(command: VerifyLetterAccessibleUsecase.Command): VerifyLetterAccessibleUsecase.Response {
         if (sendLetterManagementPort.verifiedLetter(DomainId(command.userId), command.letterCode)) {
             val sendLetter =
@@ -67,15 +88,15 @@ class LetterCommandService(
         }
 
         val sendLetter = sendLetterManagementPort.getLetterByCodeNotNull(command.letterCode)
-        sendLetter
-            .isSameReceiver {
-                userManagementPort.getUserNotNull(DomainId(command.userId))
-            }.takeIf { it }
-            ?.let {
-                sendLetter.readLetter(DomainId(command.userId))
-                sendLetterManagementPort.save(sendLetter)
-                return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
-            } ?: throw LetterException.InvalidLetterAccessException()
+        val receiver = userManagementPort.getUserNotNull(DomainId(command.userId))
+
+        if (sendLetter.isSameReceiver(receiver)) {
+            sendLetter.readLetter(DomainId(command.userId))
+            sendLetterManagementPort.save(sendLetter)
+            return VerifyLetterAccessibleUsecase.Response(letterId = sendLetter.id.value)
+        }
+
+        throw LetterException.InvalidLetterAccessException()
     }
 
     override fun addVerifiedLetter(command: AddLetterUsecase.Command.VerifyLetter) {
@@ -89,7 +110,10 @@ class LetterCommandService(
                 sender =
                     SenderInfo(
                         senderId = sendLetter.senderId,
-                        senderName = userManagementPort.getUserNotNull(sendLetter.senderId).username,
+                        senderName =
+                            sendLetter.senderId
+                                ?.let { userManagementPort.getUserNotNull(it).username }
+                                .orEmpty(),
                     ),
                 receiver =
                     ReceiverInfo(

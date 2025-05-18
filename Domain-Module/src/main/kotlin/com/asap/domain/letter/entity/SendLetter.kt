@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class SendLetter(
     id: DomainId,
     val content: LetterContent,
-    val senderId: DomainId,
+    val senderId: DomainId? = null,
     var receiverName: String,
     var letterCode: String?,
     var status: LetterStatus,
@@ -46,12 +46,30 @@ class SendLetter(
         ).also {
             it.registerEvent(SendLetterEvent.SendLetterCreatedEvent(it, draftId?.value))
         }
+
+        fun createAnonymous(
+            content: LetterContent,
+            receiverName: String,
+            letterCode: String?,
+            status: LetterStatus = LetterStatus.SENDING,
+            receiverId: DomainId? = null,
+            createdAt: LocalDateTime = LocalDateTime.now(),
+            updatedAt: LocalDateTime = LocalDateTime.now(),
+        ): SendLetter =
+            SendLetter(
+                id = DomainId.generate(),
+                content = content,
+                senderId = null,
+                receiverName = receiverName,
+                letterCode = letterCode,
+                status = status,
+                receiverId = receiverId,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+            )
     }
 
-    fun isSameReceiver(receiver: () -> User): Boolean {
-        val receiverUser = receiver()
-        return receiverName == receiverUser.username && (receiverId == null || receiverId == receiverUser.id)
-    }
+    fun isSameReceiver(receiver: User): Boolean = receiverName == receiver.username && (receiverId == null || receiverId == receiver.id)
 
     fun readLetter(receiverId: DomainId) {
         this.receiverId = receiverId

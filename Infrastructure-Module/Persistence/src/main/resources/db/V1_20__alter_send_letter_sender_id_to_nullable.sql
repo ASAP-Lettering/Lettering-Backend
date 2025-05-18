@@ -1,0 +1,1 @@
+ALTER TABLE send_letter MODIFY COLUMN sender_id VARCHAR(255) NULL;

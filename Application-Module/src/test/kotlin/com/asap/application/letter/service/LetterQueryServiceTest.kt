@@ -42,7 +42,7 @@ class LetterQueryServiceTest :
                     userId = user.id.value,
                 )
             val mockSendLetter = LetterFixture.generateSendLetter(user.id)
-            val mockSender = UserFixture.createUser(mockSendLetter.senderId, "sender-name")
+            val mockSender = UserFixture.createUser(mockSendLetter.senderId!!, "sender-name")
             every {
                 mockSendLetterManagementPort.getReadLetterNotNull(
                     receiverId = DomainId(query.userId),
@@ -96,9 +96,10 @@ class LetterQueryServiceTest :
                     letterId = "letter-id",
                     userId = "user-id",
                 )
-            val space = SpaceFixture.createSpace(
-                userId = DomainId(query.userId),
-            )
+            val space =
+                SpaceFixture.createSpace(
+                    userId = DomainId(query.userId),
+                )
             val spaceLetter = LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
             val prevSpaceLetter =
                 LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
