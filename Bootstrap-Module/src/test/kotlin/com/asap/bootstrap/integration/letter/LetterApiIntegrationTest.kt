@@ -1081,4 +1081,32 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
             }
         }
     }
+
+    @Test
+    @DisplayName("비회원 편지 쓰기")
+    fun sendAnonymousLetter() {
+        // given
+        val request =
+            AnonymousSendLetterRequest(
+                receiverName = "receiverName",
+                content = "content",
+                images = listOf("images"),
+                templateType = 1,
+            )
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/anonymous/send") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.letterCode") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+        }
+    }
 }

@@ -265,4 +265,19 @@ class LetterController(
             ),
         )
     }
+
+    override fun sendAnonymousLetter(request: AnonymousSendLetterRequest): SendLetterResponse {
+        val response =
+            sendLetterUsecase.sendAnonymous(
+                SendLetterUsecase.AnonymousCommand(
+                    receiverName = request.receiverName,
+                    content = request.content,
+                    images = request.images,
+                    templateType = request.templateType,
+                ),
+            )
+        return SendLetterResponse(
+            letterCode = response.letterCode,
+        )
+    }
 }
