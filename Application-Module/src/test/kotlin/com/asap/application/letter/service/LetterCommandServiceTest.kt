@@ -57,6 +57,26 @@ class LetterCommandServiceTest :
             }
         }
 
+        given("익명 편지 전송 요청이 들어올 때") {
+            val command =
+                SendLetterUsecase.AnonymousCommand(
+                    receiverName = "receiver-name",
+                    content = "content",
+                    images = emptyList(),
+                    templateType = 1,
+                )
+            `when`("익명 편지 전송 요청을 처리하면") {
+                val response = letterCommandService.sendAnonymous(command)
+                then("편지 코드가 생성되고, 편지가 저장되어야 한다") {
+                    response.letterCode shouldNotBeNull {
+                        this.isNotBlank()
+                        this.isNotEmpty()
+                    }
+                    verify { mockSendLetterManagementPort.save(any()) }
+                }
+            }
+        }
+
         given("편지 검증 시에") {
             val letterCode = "letter-code"
             val mockUser = UserFixture.createUser(username = "receiver-name")
