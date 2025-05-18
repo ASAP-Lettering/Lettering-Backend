@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class SendLetter(
     id: DomainId,
     val content: LetterContent,
-    val senderId: DomainId? = null,
+    var senderId: DomainId?,
     var receiverName: String,
     var letterCode: String?,
     var status: LetterStatus,
@@ -88,6 +88,14 @@ class SendLetter(
         this.receiverName = ""
         this.letterCode = null
         this.receiverId = null
+        updateTime()
+    }
+
+    fun configSenderId(senderId: DomainId) {
+        check(this.senderId == null) {
+            "SenderId is already set"
+        }
+        this.senderId = senderId
         updateTime()
     }
 }

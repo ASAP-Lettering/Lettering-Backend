@@ -362,6 +362,40 @@ class LetterCommandServiceTest :
             }
         }
 
+
+        given("익명 편지를 사용자의 편지로 추가할 때") {
+            val letterCode = "letter-code"
+            val userId = "user-id"
+            val command = AddLetterUsecase.Command.AddAnonymousLetter(
+                letterCode = letterCode,
+                userId = userId,
+            )
+
+            // Create an anonymous letter using SendLetter.createAnonymous
+            val content = LetterContent(
+                content = "content",
+                templateType = 1,
+                images = mutableListOf("image1", "image2"),
+            )
+            val sendLetter = SendLetter.createAnonymous(
+                content = content,
+                receiverName = "receiverName",
+                letterCode = letterCode,
+            )
+
+            every { 
+                mockSendLetterManagementPort.getLetterByCodeNotNull(letterCode) 
+            } returns sendLetter
+
+            `when`("익명 편지를 사용자의 편지로 추가하면") {
+                letterCommandService.addAnonymousLetter(command)
+
+                then("편지의 발신자 ID가 설정되고 저장되어야 한다") {
+                    verify { mockSendLetterManagementPort.save(sendLetter) }
+                }
+            }
+        }
+
         given("보낸 편지 삭제 요청이 들어올 때") {
             val userId = "user-id"
             val sendLetters =

@@ -5,6 +5,8 @@ interface AddLetterUsecase {
 
     fun addPhysicalLetter(command: Command.AddPhysicalLetter)
 
+    fun addAnonymousLetter(command: Command.AddAnonymousLetter)
+
     sealed class Command {
         data class VerifyLetter(
             val letterId: String,
@@ -18,6 +20,11 @@ interface AddLetterUsecase {
             val templateType: Int,
             val userId: String,
             val draftId: String?,
+        ) : Command()
+
+        data class AddAnonymousLetter(
+            val letterCode: String,
+            val userId: String,
         ) : Command()
     }
 }

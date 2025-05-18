@@ -62,21 +62,19 @@ class UserCommandService(
 
         userTokenManagementPort.saveUserToken(UserToken.create(token = refreshToken, userId = registerUser.id))
 
-        return RegisterUserUsecase.Response(accessToken, refreshToken)
+        return RegisterUserUsecase.Response(accessToken, refreshToken, registerUser.id.value)
     }
 
     override fun delete(command: DeleteUserUsecase.Command) {
-        userManagementPort
-            .getUserNotNull(DomainId(command.userId))
-            .apply {
-                this.delete(command.reason)
-                userManagementPort.save(this)
-            }.also {
-                userAuthManagementPort.getNotNull(it.id).apply {
-                    this.delete()
-                    userAuthManagementPort.saveUserAuth(this)
-                }
-            }
+        val user = userManagementPort.getUserNotNull(DomainId(command.userId))
+
+        user.delete(command.reason)
+        userManagementPort.save(user)
+
+        val userAuth = userAuthManagementPort.getNotNull(user.id)
+
+        userAuth.delete()
+        userAuthManagementPort.saveUserAuth(userAuth)
     }
 
     override fun executeFor(command: UpdateUserUsecase.Command.Birthday) {
@@ -95,6 +93,5 @@ class UserCommandService(
                 this.updateOnboarding()
                 userManagementPort.save(this)
             }
-
     }
 }

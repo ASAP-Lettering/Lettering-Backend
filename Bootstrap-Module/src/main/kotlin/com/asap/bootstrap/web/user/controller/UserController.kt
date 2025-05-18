@@ -1,5 +1,6 @@
 package com.asap.bootstrap.web.user.controller
 
+import com.asap.application.letter.port.`in`.AddLetterUsecase
 import com.asap.application.user.port.`in`.*
 import com.asap.bootstrap.web.user.api.UserApi
 import com.asap.bootstrap.web.user.dto.*
@@ -12,6 +13,7 @@ class UserController(
     private val deleteUserUsecase: DeleteUserUsecase,
     private val getUserInfoUsecase: GetUserInfoUsecase,
     private val updateUserUsecase: UpdateUserUsecase,
+    private val addLetterUsecase: AddLetterUsecase,
 ) : UserApi {
     override fun registerUser(request: RegisterUserRequest): RegisterUserResponse {
         val response =
@@ -25,6 +27,17 @@ class UserController(
                     request.realName,
                 ),
             )
+
+        // Handle anonymous letter code if it exists
+        request.anonymousSendLetterCode?.let { letterCode ->
+            addLetterUsecase.addAnonymousLetter(
+                AddLetterUsecase.Command.AddAnonymousLetter(
+                    letterCode = letterCode,
+                    userId = response.userId,
+                ),
+            )
+        }
+
         return RegisterUserResponse(response.accessToken, response.refreshToken)
     }
 

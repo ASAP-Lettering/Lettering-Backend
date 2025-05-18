@@ -16,6 +16,7 @@ data class RegisterUserRequest(
     @Schema(description = "생년 월일, yyyy-MM-dd, 값이 안넘어올 수 있음")
     val birthday: LocalDate?,
     @Schema(description = "실명")
-    val realName: String
-) {
-}
+    val realName: String,
+    @Schema(description = "비회원 상태로 전송한 편지의 코드")
+    val anonymousSendLetterCode: String?,
+)
