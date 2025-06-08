@@ -75,6 +75,52 @@ class LetterCommandServiceTest :
                     verify { mockSendLetterManagementPort.save(any()) }
                 }
             }
+            
+            val commandWithSenderName =
+                SendLetterUsecase.AnonymousCommand(
+                    senderName = "Test Sender",
+                    receiverName = "receiver-name",
+                    content = "content",
+                    images = emptyList(),
+                    templateType = 1,
+                )
+            `when`("발송자 이름이 제공된 익명 편지 전송 요청을 처리하면") {
+                val response = letterCommandService.sendAnonymous(commandWithSenderName)
+                then("편지 코드가 생성되고, 제공된 발송자 이름으로 편지가 저장되어야 한다") {
+                    response.letterCode shouldNotBeNull {
+                        this.isNotBlank()
+                        this.isNotEmpty()
+                    }
+                    verify { 
+                        mockSendLetterManagementPort.save(match { sendLetter ->
+                            sendLetter.senderName == "Test Sender"
+                        })
+                    }
+                }
+            }
+            
+            val commandWithNullSenderName =
+                SendLetterUsecase.AnonymousCommand(
+                    senderName = null,
+                    receiverName = "receiver-name",
+                    content = "content",
+                    images = emptyList(),
+                    templateType = 1,
+                )
+            `when`("발송자 이름이 null인 익명 편지 전송 요청을 처리하면") {
+                val response = letterCommandService.sendAnonymous(commandWithNullSenderName)
+                then("편지 코드가 생성되고, Anonymous로 편지가 저장되어야 한다") {
+                    response.letterCode shouldNotBeNull {
+                        this.isNotBlank()
+                        this.isNotEmpty()
+                    }
+                    verify { 
+                        mockSendLetterManagementPort.save(match { sendLetter ->
+                            sendLetter.senderName == "Anonymous"
+                        })
+                    }
+                }
+            }
         }
 
         given("편지 검증 시에") {
@@ -381,6 +427,7 @@ class LetterCommandServiceTest :
                 content = content,
                 receiverName = "receiverName",
                 letterCode = letterCode,
+                senderName = "Anonymous",
             )
 
             every { 

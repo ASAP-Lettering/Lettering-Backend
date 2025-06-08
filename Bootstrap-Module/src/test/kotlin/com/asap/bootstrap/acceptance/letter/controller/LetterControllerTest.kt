@@ -626,4 +626,84 @@ class LetterControllerTest : LetterAcceptanceSupporter() {
             }
         }
     }
+
+    @Test
+    fun sendAnonymousLetterWithSenderName() {
+        // given
+        val request =
+            AnonymousSendLetterRequest(
+                senderName = "Test Sender",
+                receiverName = "receiverName",
+                content = "content",
+                images = listOf("images"),
+                templateType = 1,
+            )
+        BDDMockito
+            .given(
+                sendLetterUsecase.sendAnonymous(
+                    SendLetterUsecase.AnonymousCommand(
+                        senderName = request.senderName,
+                        receiverName = request.receiverName,
+                        content = request.content,
+                        images = request.images,
+                        templateType = request.templateType,
+                    ),
+                ),
+            ).willReturn(SendLetterUsecase.Response("letterCode"))
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/anonymous/send") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.letterCode") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+        }
+    }
+
+    @Test
+    fun sendAnonymousLetterWithNullSenderName() {
+        // given
+        val request =
+            AnonymousSendLetterRequest(
+                senderName = null,
+                receiverName = "receiverName",
+                content = "content",
+                images = listOf("images"),
+                templateType = 1,
+            )
+        BDDMockito
+            .given(
+                sendLetterUsecase.sendAnonymous(
+                    SendLetterUsecase.AnonymousCommand(
+                        senderName = null,
+                        receiverName = request.receiverName,
+                        content = request.content,
+                        images = request.images,
+                        templateType = request.templateType,
+                    ),
+                ),
+            ).willReturn(SendLetterUsecase.Response("letterCode"))
+        // when
+        val response =
+            mockMvc.post("/api/v1/letters/anonymous/send") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+        // then
+        response.andExpect {
+            status { isOk() }
+            jsonPath("$.letterCode") {
+                exists()
+                isString()
+                isNotEmpty()
+            }
+        }
+    }
 }

@@ -70,6 +70,7 @@ class LetterCommandService(
                     letterCodeGenerator.generateCode(
                         content = command.content,
                     ),
+                senderName = command.senderName ?: ANONYMOUS_SENDER_NAME,
             )
 
         sendLetterManagementPort.save(sendLetter)
@@ -111,9 +112,10 @@ class LetterCommandService(
                     SenderInfo(
                         senderId = sendLetter.senderId,
                         senderName =
-                            sendLetter.senderId
-                                ?.let { userManagementPort.getUserNotNull(it).username }
-                                .orEmpty(),
+                            sendLetter.senderName
+                                ?: sendLetter.senderId
+                                    ?.let { userManagementPort.getUserNotNull(it).username }
+                                    .orEmpty(),
                     ),
                 receiver =
                     ReceiverInfo(
@@ -272,5 +274,9 @@ class LetterCommandService(
             templateType = command.templateType,
         )
         spaceLetterManagementPort.save(spaceLetter)
+    }
+
+    companion object {
+        private const val ANONYMOUS_SENDER_NAME = "Anonymous"
     }
 }

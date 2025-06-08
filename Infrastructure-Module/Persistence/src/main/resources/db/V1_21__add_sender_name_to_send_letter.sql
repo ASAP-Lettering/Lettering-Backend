@@ -1,0 +1,1 @@
+ALTER TABLE send_letter ADD COLUMN sender_name VARCHAR(255) NULL;

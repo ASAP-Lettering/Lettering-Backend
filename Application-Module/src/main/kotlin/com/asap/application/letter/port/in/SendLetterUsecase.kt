@@ -15,6 +15,7 @@ interface SendLetterUsecase {
     )
 
     data class AnonymousCommand(
+        val senderName: String? = null,
         val receiverName: String,
         val content: String,
         val images: List<String>,
