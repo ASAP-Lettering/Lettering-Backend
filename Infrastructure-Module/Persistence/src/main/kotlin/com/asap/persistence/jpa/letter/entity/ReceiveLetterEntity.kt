@@ -53,7 +53,9 @@ class ReceiveLetterEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", insertable = false, updatable = false)
     var sender: UserEntity? = null
+
     var senderName: String = senderName
+        get() = sender?.username ?: field
 
     @Column(
         name = "receiver_id",

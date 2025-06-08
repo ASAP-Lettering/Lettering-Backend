@@ -5,7 +5,6 @@ import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
-import com.asap.application.user.port.out.UserManagementPort
 import com.asap.domain.LetterFixture
 import com.asap.domain.SpaceFixture
 import com.asap.domain.UserFixture
@@ -20,7 +19,6 @@ class LetterQueryServiceTest :
     BehaviorSpec({
 
         val mockSendLetterManagementPort = mockk<SendLetterManagementPort>(relaxed = true)
-        val mockUserManagementPort = mockk<UserManagementPort>(relaxed = true)
         val mockIndependentLetterManagementPort = mockk<IndependentLetterManagementPort>(relaxed = true)
         val mockSpaceLetterManagementPort = mockk<SpaceLetterManagementPort>(relaxed = true)
         val mockSpaceManagementPort = mockk<SpaceManagementPort>(relaxed = true)
@@ -28,7 +26,6 @@ class LetterQueryServiceTest :
         val letterQueryService =
             LetterQueryService(
                 mockSendLetterManagementPort,
-                mockUserManagementPort,
                 mockIndependentLetterManagementPort,
                 mockSpaceLetterManagementPort,
                 mockSpaceManagementPort,
@@ -41,25 +38,46 @@ class LetterQueryServiceTest :
                     letterId = "letter-id",
                     userId = user.id.value,
                 )
-            val mockSendLetter = LetterFixture.generateSendLetter(user.id)
-            val mockSender = UserFixture.createUser(mockSendLetter.senderId!!, "sender-name")
-            every {
-                mockSendLetterManagementPort.getReadLetterNotNull(
-                    receiverId = DomainId(query.userId),
-                    letterId = DomainId(query.letterId),
-                )
-            } returns mockSendLetter
-            every {
-                mockUserManagementPort.getUserNotNull(mockSender.id)
-            } returns mockSender
-            `when`("편지가 존재하면") {
+            
+            `when`("회원이 보낸 편지가 존재하면") {
+                val mockSendLetter = LetterFixture.generateSendLetter(user.id)
+                every {
+                    mockSendLetterManagementPort.getReadLetterNotNull(
+                        receiverId = DomainId(query.userId),
+                        letterId = DomainId(query.letterId),
+                    )
+                } returns mockSendLetter
+                
                 val response = letterQueryService.get(query)
-                then("편지 정보를 가져와야 한다") {
-                    response.senderName shouldBe mockSender.username
+                then("발신자 이름은 mapper에서 처리된 이름이어야 한다") {
+                    response.senderName shouldBe mockSendLetter.senderName
                     response.content shouldBe mockSendLetter.content.content
                     response.sendDate shouldBe mockSendLetter.createdDate
                     response.templateType shouldBe mockSendLetter.content.templateType
                     response.images shouldBe mockSendLetter.content.images
+                }
+            }
+            
+            `when`("익명으로 보낸 편지가 존재하면") {
+                val anonymousSenderName = "익명 발신자"
+                val mockAnonymousLetter = LetterFixture.generateAnonymousSendLetter(
+                    receiverId = user.id,
+                    senderName = anonymousSenderName
+                )
+                every {
+                    mockSendLetterManagementPort.getReadLetterNotNull(
+                        receiverId = DomainId(query.userId),
+                        letterId = DomainId(query.letterId),
+                    )
+                } returns mockAnonymousLetter
+                
+                val response = letterQueryService.get(query)
+                then("발신자 이름은 저장된 senderName이어야 한다") {
+                    response.senderName shouldBe anonymousSenderName
+                    response.content shouldBe mockAnonymousLetter.content.content
+                    response.sendDate shouldBe mockAnonymousLetter.createdDate
+                    response.templateType shouldBe mockAnonymousLetter.content.templateType
+                    response.images shouldBe mockAnonymousLetter.content.images
                 }
             }
         }
@@ -69,23 +87,29 @@ class LetterQueryServiceTest :
                 GetIndependentLettersUsecase.QueryAll(
                     userId = "user-id",
                 )
-            val mockLetters =
-                listOf(
-                    LetterFixture.generateIndependentLetter(
-                        senderId = DomainId.generate(),
-                        senderName = "sender-name",
-                        receiverId = DomainId(queryAll.userId),
-                    ),
+            
+            `when`("회원과 비회원 편지가 함께 존재하면") {
+                val memberLetter = LetterFixture.generateIndependentLetter(
+                    senderId = DomainId.generate(),
+                    senderName = "회원 발신자",
+                    receiverId = DomainId(queryAll.userId),
                 )
-            every {
-                mockIndependentLetterManagementPort.getAllByReceiverId(DomainId(queryAll.userId))
-            } returns mockLetters
-            `when`("편지가 존재하면") {
+                val anonymousLetter = LetterFixture.generateIndependentLetter(
+                    senderId = null,
+                    senderName = "비회원 발신자",
+                    receiverId = DomainId(queryAll.userId),
+                )
+                val mockLetters = listOf(memberLetter, anonymousLetter)
+                
+                every {
+                    mockIndependentLetterManagementPort.getAllByReceiverId(DomainId(queryAll.userId))
+                } returns mockLetters
+                
                 val response = letterQueryService.getAll(queryAll)
-                then("편지 정보를 가져와야 한다") {
-                    response.letters[0].letterId shouldBe mockLetters[0].id.value
-                    response.letters[0].senderName shouldBe mockLetters[0].sender.senderName
-                    response.letters[0].isNew shouldBe mockLetters[0].isNew()
+                then("모든 편지의 발신자 이름이 정상적으로 표시되어야 한다") {
+                    response.letters.size shouldBe 2
+                    val senderNames = response.letters.map { it.senderName }.toSet()
+                    senderNames shouldBe setOf("회원 발신자", "비회원 발신자")
                 }
             }
         }
@@ -100,40 +124,46 @@ class LetterQueryServiceTest :
                 SpaceFixture.createSpace(
                     userId = DomainId(query.userId),
                 )
-            val spaceLetter = LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
-            val prevSpaceLetter =
-                LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
-            val nextSpaceLetter =
-                LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
-            every {
-                mockSpaceLetterManagementPort.getSpaceLetterNotNull(
-                    DomainId(query.letterId),
-                    DomainId(query.userId),
+            
+            `when`("회원이 보낸 행성 편지가 존재하면") {
+                val spaceLetter = LetterFixture.generateSpaceLetter(
+                    receiverId = DomainId(query.userId), 
+                    spaceId = space.id,
+                    senderName = "회원 발신자"
                 )
-            } returns spaceLetter
-            every {
-                mockSpaceManagementPort.getSpaceNotNull(
-                    spaceLetter.receiver.receiverId,
-                    spaceLetter.spaceId,
-                )
-            } returns space
-            every {
-                mockSpaceLetterManagementPort.countSpaceLetterBy(
-                    spaceLetter.spaceId,
-                    spaceLetter.receiver.receiverId,
-                )
-            } returns 3
-            every {
-                mockSpaceLetterManagementPort.getNearbyLetter(
-                    spaceId = spaceLetter.spaceId,
-                    userId = spaceLetter.receiver.receiverId,
-                    letterId = spaceLetter.id,
-                )
-            } returns Pair(prevSpaceLetter, nextSpaceLetter)
-            `when`("편지가 존재하면") {
+                val prevSpaceLetter =
+                    LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
+                val nextSpaceLetter =
+                    LetterFixture.generateSpaceLetter(receiverId = DomainId(query.userId), spaceId = space.id)
+                every {
+                    mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                        DomainId(query.letterId),
+                        DomainId(query.userId),
+                    )
+                } returns spaceLetter
+                every {
+                    mockSpaceManagementPort.getSpaceNotNull(
+                        spaceLetter.receiver.receiverId,
+                        spaceLetter.spaceId,
+                    )
+                } returns space
+                every {
+                    mockSpaceLetterManagementPort.countSpaceLetterBy(
+                        spaceLetter.spaceId,
+                        spaceLetter.receiver.receiverId,
+                    )
+                } returns 3
+                every {
+                    mockSpaceLetterManagementPort.getNearbyLetter(
+                        spaceId = spaceLetter.spaceId,
+                        userId = spaceLetter.receiver.receiverId,
+                        letterId = spaceLetter.id,
+                    )
+                } returns Pair(prevSpaceLetter, nextSpaceLetter)
+                
                 val response = letterQueryService.get(query)
                 then("편지 정보를 가져와야 한다") {
-                    response.senderName shouldBe spaceLetter.sender.senderName
+                    response.senderName shouldBe "회원 발신자"
                     response.spaceName shouldBe space.name
                     response.letterCount shouldBe 3
                     response.content shouldBe spaceLetter.content.content
@@ -150,6 +180,53 @@ class LetterQueryServiceTest :
                     }
                 }
             }
+            
+            `when`("비회원이 보낸 행성 편지가 존재하면") {
+                val anonymousSpaceLetter = LetterFixture.generateSpaceLetter(
+                    receiverId = DomainId(query.userId), 
+                    spaceId = space.id,
+                    senderId = null,
+                    senderName = "비회원 발신자"
+                )
+                every {
+                    mockSpaceLetterManagementPort.getSpaceLetterNotNull(
+                        DomainId(query.letterId),
+                        DomainId(query.userId),
+                    )
+                } returns anonymousSpaceLetter
+                every {
+                    mockSpaceManagementPort.getSpaceNotNull(
+                        anonymousSpaceLetter.receiver.receiverId,
+                        anonymousSpaceLetter.spaceId,
+                    )
+                } returns space
+                every {
+                    mockSpaceLetterManagementPort.countSpaceLetterBy(
+                        anonymousSpaceLetter.spaceId,
+                        anonymousSpaceLetter.receiver.receiverId,
+                    )
+                } returns 1
+                every {
+                    mockSpaceLetterManagementPort.getNearbyLetter(
+                        spaceId = anonymousSpaceLetter.spaceId,
+                        userId = anonymousSpaceLetter.receiver.receiverId,
+                        letterId = anonymousSpaceLetter.id,
+                    )
+                } returns Pair(null, null)
+                
+                val response = letterQueryService.get(query)
+                then("비회원 발신자 이름이 정상적으로 표시되어야 한다") {
+                    response.senderName shouldBe "비회원 발신자"
+                    response.spaceName shouldBe space.name
+                    response.letterCount shouldBe 1
+                    response.content shouldBe anonymousSpaceLetter.content.content
+                    response.receiveDate shouldBe anonymousSpaceLetter.receiveDate
+                    response.images shouldBe anonymousSpaceLetter.content.images
+                    response.templateType shouldBe anonymousSpaceLetter.content.templateType
+                    response.prevLetter shouldBe null
+                    response.nextLetter shouldBe null
+                }
+            }
         }
 
         given("궤도 편지 상세 정보를 조회할 때") {
@@ -158,41 +235,43 @@ class LetterQueryServiceTest :
                     userId = "user-id",
                     letterId = "letter-id",
                 )
-            val independentLetter =
-                LetterFixture.generateIndependentLetter(
-                    senderId = DomainId.generate(),
-                    senderName = "sender-name",
-                    receiverId = DomainId(query.userId),
-                )
-            val prevIndependentLetter =
-                LetterFixture.generateIndependentLetter(
-                    senderId = DomainId.generate(),
-                    senderName = "prev-sender-name",
-                    receiverId = DomainId(query.userId),
-                )
+            
+            `when`("회원이 보낸 독립 편지가 존재하면") {
+                val independentLetter =
+                    LetterFixture.generateIndependentLetter(
+                        senderId = DomainId.generate(),
+                        senderName = "sender-name",
+                        receiverId = DomainId(query.userId),
+                    )
+                val prevIndependentLetter =
+                    LetterFixture.generateIndependentLetter(
+                        senderId = DomainId.generate(),
+                        senderName = "prev-sender-name",
+                        receiverId = DomainId(query.userId),
+                    )
 
-            val nextIndependentLetter =
-                LetterFixture.generateIndependentLetter(
-                    senderId = DomainId.generate(),
-                    senderName = "next-sender-name",
-                    receiverId = DomainId(query.userId),
-                )
-            every {
-                mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(
-                    DomainId(query.letterId),
-                    DomainId(query.userId),
-                )
-            } returns independentLetter
-            every {
-                mockIndependentLetterManagementPort.getNearbyLetter(
-                    userId = DomainId(query.userId),
-                    letterId = DomainId(query.letterId),
-                )
-            } returns Pair(prevIndependentLetter, nextIndependentLetter)
-            every {
-                mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
-            } returns 3
-            `when`("편지가 존재하면") {
+                val nextIndependentLetter =
+                    LetterFixture.generateIndependentLetter(
+                        senderId = DomainId.generate(),
+                        senderName = "next-sender-name",
+                        receiverId = DomainId(query.userId),
+                    )
+                every {
+                    mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(
+                        DomainId(query.letterId),
+                        DomainId(query.userId),
+                    )
+                } returns independentLetter
+                every {
+                    mockIndependentLetterManagementPort.getNearbyLetter(
+                        userId = DomainId(query.userId),
+                        letterId = DomainId(query.letterId),
+                    )
+                } returns Pair(prevIndependentLetter, nextIndependentLetter)
+                every {
+                    mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
+                } returns 3
+                
                 val response = letterQueryService.get(query)
                 then("편지 정보를 가져와야 한다") {
                     response.senderName shouldBe independentLetter.sender.senderName
@@ -209,6 +288,42 @@ class LetterQueryServiceTest :
                         this.letterId shouldBe nextIndependentLetter.id.value
                         this.senderName shouldBe nextIndependentLetter.sender.senderName
                     }
+                }
+            }
+            
+            `when`("비회원이 보낸 독립 편지가 존재하면") {
+                val anonymousIndependentLetter =
+                    LetterFixture.generateIndependentLetter(
+                        senderId = null,
+                        senderName = "비회원 발신자",
+                        receiverId = DomainId(query.userId),
+                    )
+                every {
+                    mockIndependentLetterManagementPort.getIndependentLetterByIdNotNull(
+                        DomainId(query.letterId),
+                        DomainId(query.userId),
+                    )
+                } returns anonymousIndependentLetter
+                every {
+                    mockIndependentLetterManagementPort.getNearbyLetter(
+                        userId = DomainId(query.userId),
+                        letterId = DomainId(query.letterId),
+                    )
+                } returns Pair(null, null)
+                every {
+                    mockIndependentLetterManagementPort.countIndependentLetterByReceiverId(DomainId(query.userId))
+                } returns 1
+                
+                val response = letterQueryService.get(query)
+                then("비회원 발신자 이름이 정상적으로 표시되어야 한다") {
+                    response.senderName shouldBe "비회원 발신자"
+                    response.letterCount shouldBe 1
+                    response.content shouldBe anonymousIndependentLetter.content.content
+                    response.sendDate shouldBe anonymousIndependentLetter.receiveDate
+                    response.images shouldBe anonymousIndependentLetter.content.images
+                    response.templateType shouldBe anonymousIndependentLetter.content.templateType
+                    response.prevLetter shouldBe null
+                    response.nextLetter shouldBe null
                 }
             }
         }

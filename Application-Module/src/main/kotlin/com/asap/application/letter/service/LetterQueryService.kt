@@ -5,7 +5,6 @@ import com.asap.application.letter.port.out.IndependentLetterManagementPort
 import com.asap.application.letter.port.out.SendLetterManagementPort
 import com.asap.application.letter.port.out.SpaceLetterManagementPort
 import com.asap.application.space.port.out.SpaceManagementPort
-import com.asap.application.user.port.out.UserManagementPort
 import com.asap.common.page.PageRequest
 import com.asap.common.page.Sort
 import com.asap.domain.common.DomainId
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class LetterQueryService(
     private val sendLetterManagementPort: SendLetterManagementPort,
-    private val userManagementPort: UserManagementPort,
     private val independentLetterManagementPort: IndependentLetterManagementPort,
     private val spaceLetterManagementPort: SpaceLetterManagementPort,
     private val spaceManagementPort: SpaceManagementPort,
@@ -32,9 +30,8 @@ class LetterQueryService(
                 receiverId = DomainId(query.userId),
                 letterId = DomainId(query.letterId),
             ).also {
-                val sender = it.senderId?.let { userManagementPort.getUserNotNull(it) }
                 return GetVerifiedLetterUsecase.Response(
-                    senderName = sender?.username,
+                    senderName = it.senderName,
                     content = it.content.content,
                     sendDate = it.createdDate,
                     templateType = it.content.templateType,
@@ -76,7 +73,7 @@ class LetterQueryService(
             independentLetterManagementPort.getNearbyLetter(DomainId(query.userId), DomainId(query.letterId))
         return GetIndependentLettersUsecase.Response.One(
             senderName = letter.sender.senderName,
-            letterCount = letterCount.toLong(),
+            letterCount = letterCount,
             content = letter.content.content,
             sendDate = letter.receiveDate,
             images = letter.content.images,
