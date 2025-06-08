@@ -270,6 +270,7 @@ class LetterController(
         val response =
             sendLetterUsecase.sendAnonymous(
                 SendLetterUsecase.AnonymousCommand(
+                    senderName = request.senderName,
                     receiverName = request.receiverName,
                     content = request.content,
                     images = request.images,
