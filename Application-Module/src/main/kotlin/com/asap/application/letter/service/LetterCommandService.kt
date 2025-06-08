@@ -106,16 +106,13 @@ class LetterCommandService(
                 receiverId = DomainId(command.userId),
                 letterId = DomainId(command.letterId),
             )
+
         val independentLetter =
             IndependentLetter.create(
                 sender =
                     SenderInfo(
                         senderId = sendLetter.senderId,
-                        senderName =
-                            sendLetter.senderName
-                                ?: sendLetter.senderId
-                                    ?.let { userManagementPort.getUserNotNull(it).username }
-                                    .orEmpty(),
+                        senderName = sendLetter.senderName ?: ANONYMOUS_SENDER_NAME,
                     ),
                 receiver =
                     ReceiverInfo(

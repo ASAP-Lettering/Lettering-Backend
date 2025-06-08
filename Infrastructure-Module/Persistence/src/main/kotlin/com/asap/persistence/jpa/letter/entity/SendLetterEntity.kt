@@ -55,6 +55,7 @@ class SendLetterEntity(
 
     @Column(name = "sender_name")
     var senderName: String? = senderName
+        get() = sender?.username ?: field
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
