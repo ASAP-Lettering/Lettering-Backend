@@ -32,11 +32,32 @@ object LetterFixture {
             status = status,
             receiverId = receiverId,
         )
+    
+    fun generateAnonymousSendLetter(
+        senderName: String = "Anonymous",
+        receiverName: String = "receiverName",
+        letterCode: String = "letterCode",
+        status: LetterStatus = LetterStatus.READ,
+        receiverId: DomainId = DomainId.generate(),
+    ): SendLetter =
+        SendLetter.createAnonymous(
+            content =
+                LetterContent(
+                    content = "content",
+                    templateType = 1,
+                    images = mutableListOf("image1", "image2"),
+                ),
+            receiverName = receiverName,
+            letterCode = letterCode,
+            senderName = senderName,
+            status = status,
+            receiverId = receiverId,
+        )
 
     fun generateIndependentLetter(
         id: DomainId = DomainId.generate(),
         content: String = "content",
-        senderId: DomainId = DomainId.generate(),
+        senderId: DomainId? = DomainId.generate(),
         senderName: String = "senderName",
         receiverId: DomainId = DomainId.generate(),
         receiveDate: LocalDate = LocalDate.now(),
