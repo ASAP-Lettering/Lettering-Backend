@@ -332,7 +332,7 @@ class UserApiIntegrationTest(
                 content = letterContent,
                 receiverName = receiverName,
                 letterCode = "test-letter-code",
-                status = LetterStatus.SENDING,
+                senderName = "Anonymous",
             )
         sendLetterManagementPort.save(anonymousSendLetter)
 

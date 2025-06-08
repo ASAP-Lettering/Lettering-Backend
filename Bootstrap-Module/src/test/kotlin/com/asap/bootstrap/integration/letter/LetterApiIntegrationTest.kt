@@ -3,7 +3,13 @@ package com.asap.bootstrap.integration.letter
 import com.asap.application.letter.LetterMockManager
 import com.asap.application.space.SpaceMockManager
 import com.asap.bootstrap.IntegrationSupporter
-import com.asap.bootstrap.web.letter.dto.*
+import com.asap.bootstrap.web.letter.dto.AddPhysicalLetterRequest
+import com.asap.bootstrap.web.letter.dto.AddVerifiedLetterRequest
+import com.asap.bootstrap.web.letter.dto.AnonymousSendLetterRequest
+import com.asap.bootstrap.web.letter.dto.DeleteSendLettersRequest
+import com.asap.bootstrap.web.letter.dto.LetterVerifyRequest
+import com.asap.bootstrap.web.letter.dto.ModifyLetterRequest
+import com.asap.bootstrap.web.letter.dto.SendLetterRequest
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -1082,30 +1088,92 @@ class LetterApiIntegrationTest : IntegrationSupporter() {
         }
     }
 
-    @Test
-    @DisplayName("비회원 편지 쓰기")
-    fun sendAnonymousLetter() {
-        // given
-        val request =
-            AnonymousSendLetterRequest(
-                receiverName = "receiverName",
-                content = "content",
-                images = listOf("images"),
-                templateType = 1,
-            )
-        // when
-        val response =
-            mockMvc.post("/api/v1/letters/anonymous/send") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
+    @Nested
+    @DisplayName("익명 편지 전송")
+    inner class SendAnonymousLetter {
+        @Test
+        @DisplayName("발송자 이름 없이 익명 편지 전송")
+        fun sendAnonymousLetter() {
+            // given
+            val request =
+                AnonymousSendLetterRequest(
+                    receiverName = "receiverName",
+                    content = "content",
+                    images = listOf("images"),
+                    templateType = 1,
+                )
+            // when
+            val response =
+                mockMvc.post("/api/v1/letters/anonymous/send") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.letterCode") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
             }
-        // then
-        response.andExpect {
-            status { isOk() }
-            jsonPath("$.letterCode") {
-                exists()
-                isString()
-                isNotEmpty()
+        }
+
+        @Test
+        @DisplayName("발송자 이름과 함께 익명 편지 전송")
+        fun sendAnonymousLetterWithSenderName() {
+            // given
+            val request =
+                AnonymousSendLetterRequest(
+                    senderName = "Test Sender",
+                    receiverName = "receiverName",
+                    content = "content",
+                    images = listOf("images"),
+                    templateType = 1,
+                )
+            // when
+            val response =
+                mockMvc.post("/api/v1/letters/anonymous/send") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.letterCode") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("발송자 이름이 null인 익명 편지 전송")
+        fun sendAnonymousLetterWithNullSenderName() {
+            // given
+            val request =
+                AnonymousSendLetterRequest(
+                    senderName = null,
+                    receiverName = "receiverName",
+                    content = "content",
+                    images = listOf("images"),
+                    templateType = 1,
+                )
+            // when
+            val response =
+                mockMvc.post("/api/v1/letters/anonymous/send") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }
+            // then
+            response.andExpect {
+                status { isOk() }
+                jsonPath("$.letterCode") {
+                    exists()
+                    isString()
+                    isNotEmpty()
+                }
             }
         }
     }
